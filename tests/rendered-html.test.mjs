@@ -82,6 +82,9 @@ test("standalone demo includes live AI learning tools and the film demo", async 
   assert.match(html, /renderLoadingState\(/);
   assert.match(html, /ai-loading-orbit/);
   assert.match(html, /hasRenderableStructuredContent\(/);
+  assert.match(html, /One habit · One phrase · Claude AI/);
+  assert.match(html, /\/api\/living-word/);
+  assert.match(html, /renderLivingWordCards\(/);
   assert.doesNotMatch(html, />Generate (?:phrases|lesson|comparison|documentary)</i);
   assert.match(html, /Community archive/);
   assert.match(html, /Compare cultures/);
@@ -93,6 +96,7 @@ test("standalone demo includes live AI learning tools and the film demo", async 
   await access(new URL("../PRD.md", import.meta.url));
   await access(new URL("public/living-voices-demo.html", templateRoot));
   await access(new URL("public/og.png", templateRoot));
+  await access(new URL("../app/api/living-word/route.ts", import.meta.url));
 });
 
 test("AI route reports configuration without exposing credentials", async () => {

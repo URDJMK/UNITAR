@@ -46,5 +46,23 @@ def test_phrase_schema_rejects_an_empty_structured_response() -> None:
 def test_word_schema_requires_a_featured_word() -> None:
     with pytest.raises(ValidationError):
         WordLearningResponse.model_validate(
-            {"title": "A word", "summary": "Context", "language": "Ainu"}
+            {"language": "Ainu", "cultural_habit": "People greet visitors warmly."}
         )
+
+
+def test_word_schema_accepts_one_habit_and_one_phrase() -> None:
+    result = WordLearningResponse.model_validate(
+        {
+            "language": "Ainu",
+            "variant": "Saru Ainu",
+            "cultural_habit": "Guests are welcomed with attentive conversation.",
+            "featured_word": {
+                "original": "Irankarapte",
+                "meaning": "Hello",
+                "usage": "A respectful greeting.",
+            },
+        }
+    )
+    assert result.cultural_habit
+    assert result.featured_word.original == "Irankarapte"
+    assert result.sections == []

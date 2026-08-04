@@ -1,4 +1,4 @@
-type AiAction =
+export type AiAction =
   | "ask"
   | "word"
   | "phrases"
@@ -85,7 +85,15 @@ function buildPrompt(payload: AiRequest) {
       return `Culture or community: ${culture}\nLearner question: ${question}\n\nAnswer with a concise title, two to four short sections, and a final **Verify this** list.`;
     }
     case "word":
-      return `Offer one well-attested everyday word or short expression connected to ${culture}. Name the specific language and variant. Use headings for the word, pronunciation, meaning, usage, and verification. If no single language represents the whole community or you cannot choose confidently, explain that instead of guessing.`;
+      return `Create the compact Living Word card for ${culture}. Return exactly these six labeled lines and nothing else:
+HABIT: One public, everyday cultural habit or custom in one short sentence. Never use a sacred, private, ceremonial, or stereotyped example.
+LANGUAGE: The specific language name.
+VARIANT: The specific regional variant in five words or fewer, or "Varies by community".
+PHRASE: One well-attested, useful everyday phrase in the original writing.
+MEANING: Its short English meaning.
+USE: A pronunciation hint or usage note in twelve words or fewer.
+
+If a phrase cannot be given confidently, say "Community verification needed" in PHRASE rather than guessing. Do not add an introduction, history, sources, caveats, headings, bullets, or explanation.`;
     case "phrases":
       return `Create a beginner learning set of up to 10 everyday phrases connected to ${culture}. Identify the specific language and variant first. For every phrase include the original writing, a careful romanization or pronunciation guide when appropriate, an English meaning, and a one-line usage note. Use a numbered list with bold phrase titles. Do not fabricate to reach ten; explain when fewer can be given confidently. End with a **Verify this** section.`;
     case "lesson": {
@@ -179,7 +187,12 @@ async function streamAnthropic(payload: AiRequest, apiKey: string) {
     },
     body: JSON.stringify({
       model,
-      max_tokens: payload.action === "phrases" || payload.action === "lesson" ? 1800 : 1200,
+      max_tokens:
+        payload.action === "phrases" || payload.action === "lesson"
+          ? 1800
+          : payload.action === "word"
+            ? 260
+            : 1200,
       thinking: { type: "disabled" },
       stream: true,
       system: systemPrompt,
@@ -265,7 +278,7 @@ export async function GET() {
   );
 }
 
-export async function POST(request: Request) {
+export async function handleAIRequest(request: Request, forcedAction?: AiAction) {
   if (isRateLimited(request)) {
     return new Response(
       packet("error", {
@@ -277,6 +290,7 @@ export async function POST(request: Request) {
 
   try {
     const payload = (await request.json()) as AiRequest;
+    if (forcedAction) payload.action = forcedAction;
     if (!payload.action || !allowedActions.has(payload.action)) {
       return new Response(packet("error", { error: "Unsupported AI experience." }), {
         status: 400,
@@ -304,4 +318,8 @@ export async function POST(request: Request) {
       headers: streamHeaders(),
     });
   }
+}
+
+export async function POST(request: Request) {
+  return handleAIRequest(request);
 }

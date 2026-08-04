@@ -49,6 +49,8 @@ Open `http://localhost:3000`.
   validated snapshots as NDJSON.
 - `/api/ai` proxies the Python stream without exposing credentials or the
   service URL to the browser.
+- `/api/living-word` is a separate compact experience that returns one everyday
+  cultural habit and one useful phrase without the full lesson explanation.
 - The browser safely renders model data into phrase cards, pronunciation and
   usage fields, content sections, confidence labels, and verification callouts.
 - If `PYDANTIC_AGENT_URL` is absent, `/api/ai` falls back to Anthropic's native

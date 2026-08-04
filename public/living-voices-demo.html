@@ -285,6 +285,46 @@
       }
       .living-word-copy { margin: 7px 0 0; line-height: 1.6; }
       .living-word-copy.loading { color: var(--muted); }
+      .living-mini-grid {
+        display: grid;
+        grid-template-columns: minmax(150px, .8fr) minmax(220px, 1.2fr);
+        gap: 10px;
+        margin-top: 12px;
+      }
+      .living-mini-card {
+        min-width: 0;
+        padding: 14px 16px;
+        border: 1px solid rgba(23,108,86,.18);
+        border-radius: 14px;
+        background: rgba(255,255,255,.7);
+      }
+      .living-mini-label {
+        display: block;
+        margin-bottom: 7px;
+        color: var(--green);
+        font-size: .68rem;
+        font-weight: 900;
+        letter-spacing: .1em;
+        text-transform: uppercase;
+      }
+      .living-habit { margin: 0; font-size: .9rem; line-height: 1.45; }
+      .living-phrase-top { display: flex; flex-wrap: wrap; align-items: baseline; gap: 7px 10px; }
+      .living-phrase {
+        font-family: Georgia, serif;
+        font-size: clamp(1.35rem, 3vw, 1.75rem);
+        line-height: 1.1;
+        overflow-wrap: anywhere;
+      }
+      .living-language {
+        padding: 3px 7px;
+        border-radius: 999px;
+        background: var(--green-soft);
+        color: var(--green);
+        font-size: .68rem;
+        font-weight: 800;
+      }
+      .living-meaning { display: block; margin-top: 6px; font-weight: 800; }
+      .living-use { display: block; margin-top: 3px; color: var(--muted); font-size: .76rem; }
 
       .feature-grid {
         display: grid;
@@ -711,7 +751,7 @@
       @media (max-width: 800px) {
         nav { display: none; }
         .culture-grid, .feature-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-        .module-grid, .profile-title, .form-grid, .living-word { grid-template-columns: 1fr; }
+        .module-grid, .profile-title, .form-grid, .living-word, .living-mini-grid { grid-template-columns: 1fr; }
         .placeholder-note { max-width: none; }
       }
 
@@ -867,7 +907,7 @@
 
           <div class="living-word">
             <div>
-              <div class="eyebrow">A living word · Claude AI</div>
+              <div class="eyebrow">One habit · One phrase · Claude AI</div>
               <div class="living-word-copy loading" id="living-word" aria-live="polite">Choose a culture to receive a language example.</div>
             </div>
             <button class="secondary" type="button" data-ai-action="phrases">Explore 10 phrases</button>
@@ -1223,18 +1263,72 @@
         parent.appendChild(card);
       }
 
+      function renderLivingWordCards(target, data, streaming = false) {
+        prepareRichTarget(target);
+        const grid = element("div", "living-mini-grid");
+
+        if (data.cultural_habit) {
+          const habit = element("article", "living-mini-card");
+          habit.appendChild(element("span", "living-mini-label", "Everyday habit"));
+          habit.appendChild(element("p", "living-habit", data.cultural_habit));
+          grid.appendChild(habit);
+        }
+
+        if (data.featured_word?.original) {
+          const phrase = element("article", "living-mini-card");
+          phrase.appendChild(element("span", "living-mini-label", "One useful phrase"));
+          const top = element("div", "living-phrase-top");
+          top.appendChild(element("strong", "living-phrase", data.featured_word.original));
+          const language = [data.language, data.variant].filter(Boolean).join(" · ");
+          if (language) top.appendChild(element("span", "living-language", language));
+          phrase.appendChild(top);
+          if (data.featured_word.meaning) phrase.appendChild(element("span", "living-meaning", data.featured_word.meaning));
+          const shortNote = data.featured_word.pronunciation || data.featured_word.usage;
+          if (shortNote) phrase.appendChild(element("span", "living-use", shortNote));
+          grid.appendChild(phrase);
+        }
+
+        target.replaceChildren(grid);
+        if (streaming) appendStreamCursor(target);
+      }
+
+      function parseCompactWord(markdown) {
+        const fields = {};
+        String(markdown || "").split(/\r?\n/).forEach((line) => {
+          const match = line.trim().match(/^(HABIT|LANGUAGE|VARIANT|PHRASE|MEANING|USE):\s*(.*)$/i);
+          if (match) fields[match[1].toLowerCase()] = match[2].trim();
+        });
+        return {
+          cultural_habit: fields.habit || "",
+          language: fields.language || "",
+          variant: fields.variant || "",
+          featured_word: {
+            original: fields.phrase || "",
+            meaning: fields.meaning || "",
+            usage: fields.use || ""
+          }
+        };
+      }
+
+      function renderCompactWordResponse(target, markdown, streaming = false) {
+        const data = parseCompactWord(markdown);
+        if (!data.cultural_habit && !data.featured_word.original) return false;
+        renderLivingWordCards(target, data, streaming);
+        return true;
+      }
+
       function renderLearningResponse(target, data, options = {}) {
+        if (options.compact) {
+          renderLivingWordCards(target, data, options.streaming);
+          return;
+        }
         prepareRichTarget(target);
         const fragment = document.createDocumentFragment();
 
-        if (!options.compact) {
-          const header = element("header", "rich-header");
-          if (data.title) header.appendChild(element("h2", "rich-title", data.title));
-          if (data.summary) header.appendChild(element("p", "rich-summary", data.summary));
-          if (header.childNodes.length) fragment.appendChild(header);
-        } else if (data.summary && !data.featured_word) {
-          fragment.appendChild(element("p", "rich-summary", data.summary));
-        }
+        const header = element("header", "rich-header");
+        if (data.title) header.appendChild(element("h2", "rich-title", data.title));
+        if (data.summary) header.appendChild(element("p", "rich-summary", data.summary));
+        if (header.childNodes.length) fragment.appendChild(header);
 
         if (data.language || data.variant) {
           const meta = element("div", "rich-meta");
@@ -1245,13 +1339,13 @@
 
         if (data.featured_word) renderPhrase(fragment, data.featured_word, 0, true);
 
-        if (!options.compact && Array.isArray(data.phrases) && data.phrases.length) {
+        if (Array.isArray(data.phrases) && data.phrases.length) {
           const grid = element("div", "rich-phrase-grid");
           data.phrases.forEach((phrase, index) => renderPhrase(grid, phrase, index));
           fragment.appendChild(grid);
         }
 
-        if (!options.compact && Array.isArray(data.sections) && data.sections.length) {
+        if (Array.isArray(data.sections) && data.sections.length) {
           const sections = element("div", "rich-section-grid");
           data.sections.forEach((section) => {
             const card = element("section", "response-section");
@@ -1275,7 +1369,7 @@
           fragment.appendChild(sections);
         }
 
-        if (!options.compact && Array.isArray(data.verification) && data.verification.length) {
+        if (Array.isArray(data.verification) && data.verification.length) {
           const verification = element("aside", "verification-card");
           verification.appendChild(element("strong", "", "Verify this with community-led sources"));
           const list = element("ul");
@@ -1284,7 +1378,7 @@
           fragment.appendChild(verification);
         }
 
-        if (!options.compact && data.disclaimer) fragment.appendChild(element("p", "rich-disclaimer", data.disclaimer));
+        if (data.disclaimer) fragment.appendChild(element("p", "rich-disclaimer", data.disclaimer));
         target.replaceChildren(fragment);
         if (options.streaming) appendStreamCursor(target);
       }
@@ -1357,7 +1451,7 @@
       }
 
       async function streamClaude(payload, target, options = {}) {
-        const response = await fetch("/api/ai", {
+        const response = await fetch(options.endpoint || "/api/ai", {
           method: "POST",
           headers: { "content-type": "application/json" },
           body: JSON.stringify({ culture: selectedCulture.name, ...payload })
@@ -1394,13 +1488,15 @@
               }
             } else if (event.type === "delta") {
               markdown += event.text || "";
-              renderMarkdownResponse(target, markdown, true);
+              if (options.compact) renderCompactWordResponse(target, markdown, true);
+              else renderMarkdownResponse(target, markdown, true);
             } else if (event.type === "done") {
               if (event.data) {
                 latestStructured = event.data;
                 renderLearningResponse(target, event.data, options);
               } else if (markdown) {
-                renderMarkdownResponse(target, markdown, false);
+                if (options.compact) renderCompactWordResponse(target, markdown, false);
+                else renderMarkdownResponse(target, markdown, false);
               }
             } else if (event.type === "error") {
               streamError = event.error || "The live guide stopped unexpectedly.";
@@ -1411,7 +1507,11 @@
         if (streamError) throw new Error(streamError);
         if (!response.ok) throw new Error("The live guide could not answer this request.");
         if (latestStructured) renderLearningResponse(target, latestStructured, options);
-        else if (markdown) renderMarkdownResponse(target, markdown, false);
+        else if (markdown && options.compact) {
+          if (!renderCompactWordResponse(target, markdown, false)) {
+            throw new Error("The Living Word response could not be formatted.");
+          }
+        } else if (markdown) renderMarkdownResponse(target, markdown, false);
         else throw new Error("The live guide returned an empty response.");
       }
 
@@ -1419,10 +1519,11 @@
         const word = document.getElementById("living-word");
         const cultureName = selectedCulture.name;
         word.className = "living-word-copy loading";
-        renderLoadingState(word, `Finding a ${cultureName} language example`, "Sonnet is checking language and variant details");
+        renderLoadingState(word, `Finding one ${cultureName} habit and phrase`, "Sonnet is keeping this short");
         try {
           await streamClaude({ action: "word" }, word, {
             compact: true,
+            endpoint: "/api/living-word",
             isCurrent: () => selectedCulture.name === cultureName
           });
           if (selectedCulture.name !== cultureName) return;

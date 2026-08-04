@@ -43,6 +43,13 @@ class PhraseCard(BaseModel):
     confidence: Literal["high", "medium", "verify"] = "verify"
 
 
+class CompactPhraseCard(PhraseCard):
+    original: str = Field(min_length=1, max_length=80)
+    pronunciation: str = Field(default="", max_length=100)
+    meaning: str = Field(min_length=1, max_length=120)
+    usage: str = Field(default="", max_length=160)
+
+
 class ContentSection(BaseModel):
     heading: str = ""
     body: str = ""
@@ -62,10 +69,10 @@ class LearningResponse(BaseModel):
 
 
 class WordLearningResponse(LearningResponse):
-    title: str = Field(min_length=1)
-    summary: str = Field(min_length=1)
     language: str = Field(min_length=1)
-    featured_word: PhraseCard
+    variant: str = Field(default="", max_length=60)
+    featured_word: CompactPhraseCard
+    cultural_habit: str = Field(min_length=1, max_length=180)
 
 
 class PhraseLearningResponse(LearningResponse):
@@ -132,7 +139,7 @@ def prompt_for(request: AgentRequest) -> str:
             raise HTTPException(400, "Please enter a question.")
         return f"Culture or community: {culture}\nQuestion: {request.question}\nAnswer with a summary, two to four clear sections, and verification guidance."
     if request.action == "word":
-        return f"Offer one well-attested everyday word or short expression connected to {culture}. Put it in featured_word. Name the specific language and variant. If no single language represents the community or you cannot choose confidently, explain that in the summary instead of guessing."
+        return f"Create a compact Living Word card for {culture}. Put exactly one public, everyday, non-sacred cultural habit in cultural_habit and exactly one well-attested useful phrase in featured_word. Name the language and keep variant under five words. Keep the habit to one sentence and every phrase field to one short line. Leave title, summary, phrases, sections, and verification empty. Do not add history, explanation, sources, or extra context. If the phrase is uncertain, write 'Community verification needed' rather than guessing."
     if request.action == "phrases":
         return f"Create up to 10 beginner everyday phrases connected to {culture}. Put each in phrases with original writing, pronunciation, meaning, usage, and confidence. Name the language and variant. Do not fabricate to reach ten."
     if request.action == "lesson":

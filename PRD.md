@@ -210,6 +210,7 @@ The whole P0 flow should be understandable in under three minutes and work witho
 - Documentary generation accepts selections, shows progress, and ends in a mock video state.
 - The live guide accepts suggested and free-form questions, shows a clear loading state, and returns Claude answers or an actionable configuration/error state.
 - Phrase, lesson, translation, timeline, museum, archive, comparison, and question tools call Claude, stream progressively, and render safe structured cards or formatted prose.
+- The culture-profile Living Word uses its own compact `/api/living-word` experience and returns only one public everyday habit plus one useful phrase; the full phrase lesson remains separate.
 - Phrase, lesson, timeline, museum, archive, comparison, and story-introduction tools begin automatically when opened; translation begins after the learner pauses typing.
 - Every featured culture card opens a working profile.
 - Education, Language, Timeline, Museum, Community, and Compare concepts are visible.
