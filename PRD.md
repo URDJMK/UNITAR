@@ -1,8 +1,8 @@
 # Living Voices — Product Requirements Document
 
-**Version:** 0.2 MVP foundation  
-**Status:** Ready for implementation  
-**Product type:** Community-led digital heritage and learning platform  
+**Version:** 0.3 live AI MVP
+**Status:** In implementation
+**Product type:** Community-led digital heritage and learning platform
 **Tagline:** *Not a museum of the past. A conversation with humanity.*
 
 ## 1. Product summary
@@ -29,7 +29,8 @@ Create an emotionally compelling, interactive front door to living heritage that
 
 ## 4. Non-goals for the demo
 
-- No production backend, authentication, payments, uploads, or AI model calls.
+- No production database, authentication, payments, or uploads.
+- Claude model calls are limited to learning aids such as cultural Q&A, phrase lessons, classroom materials, translation, timeline context, museum guidance, and respectful comparisons.
 - No claim that generated media is historically authoritative.
 - No unsupervised “digital replica” of a real elder or community member.
 - No attempt to cover every culture or fully teach a language.
@@ -75,10 +76,10 @@ Create an emotionally compelling, interactive front door to living heritage that
 
 - Display the Living Voices name and tagline.
 - Search placeholder: “Search a culture, language, or community…”
-- Show six featured cultures: Jeju, Ainu, Nüshu, Quechua, Amazigh, and Māori.
-- Selecting Ainu opens its profile. Other cards may show a “demo focuses on Ainu” message.
+- Show 18 featured cultures and communities, including Jeju, Ainu, Nüshu, Quechua, Amazigh, Māori, Sámi, Diné, Mapuche, Inuit, Yolŋu, Hmong, Haida, Cherokee, Garifuna, Sápara, Nenets, and Basque.
+- Selecting any card opens a working culture profile with access to the same live learning tools.
 
-#### Ainu profile
+#### Culture profile
 
 - Show location and an endangered-status label as **placeholder content pending community review**.
 - Show clear buttons for Story, Pronunciation, Phrases, Storyteller, Translate, Museum Tour, Documentary, and Story Companion.
@@ -91,12 +92,13 @@ Create an emotionally compelling, interactive front door to living heritage that
 - Sequential checklist: narration, music, historical photos, animation, subtitles.
 - Finish with a simulated video preview and a visible “AI-generated concept” label.
 
-#### Interactive storyteller
+#### Live cultural learning guide
 
-- Use a fictional, clearly labeled demo persona—not a replica of a real person.
-- Present a short invitation to hear a story.
-- Offer example child-friendly questions such as “Why?”, “What happened next?”, and “What does that word mean?”
-- Return scripted responses and keep a visible note that production answers require community-approved sources.
+- Use a neutral, clearly labeled AI guide—not a replica of a real person or a synthetic community representative.
+- Accept free-form questions and offer example learning prompts.
+- Return live Claude responses from a server-side API route.
+- Mark every answer as AI-generated and require verification with community-led and primary sources.
+- Refuse to invent sacred, private, restricted, or community-consensus claims.
 
 ### P1 — visible concept cards
 
@@ -118,7 +120,7 @@ Create an emotionally compelling, interactive front door to living heritage that
 
 ## 9. Key user flow
 
-**Discover → Ainu profile → Generate documentary → Watch simulated result → Ask storyteller a question → Explore Education / Language / Timeline / Community / Compare**
+**Discover → Select a culture → Ask the live guide or generate a learning aid → Explore Education / Language / Timeline / Museum / Community / Compare → Try the simulated documentary**
 
 The whole P0 flow should be understandable in under three minutes and work without sign-in.
 
@@ -188,8 +190,9 @@ The whole P0 flow should be understandable in under three minutes and work witho
 
 - Next.js 16 with the App Router, React 19, TypeScript, and a vinext/Vite development server.
 - The current interactive concept is served from the root route and remains self-contained for reliable demos.
-- No production backend or external APIs in the first milestone.
-- Local scripted data powers culture cards, story-companion responses, and generation progress.
+- A server-only `/api/ai` route calls Anthropic's Messages API; the API key is never sent to the browser or committed to Git.
+- Claude Sonnet is configurable through `ANTHROPIC_MODEL`, with strict input limits, output limits, timeouts, and basic per-client rate limiting.
+- Local structured data powers culture cards and profile context; Claude powers Q&A, phrase lessons, classroom materials, translation, timeline notes, museum guidance, and comparisons.
 - AI, voice, uploads, documentary generation, and video playback remain clearly labeled simulations.
 - Responsive support targets modern mobile and desktop browsers.
 - The architecture should allow later API routes, database persistence, authentication, and community moderation without changing the core user journey.
@@ -200,7 +203,9 @@ The whole P0 flow should be understandable in under three minutes and work witho
 - Search visibly filters culture cards.
 - Clicking Ainu opens the profile.
 - Documentary generation accepts selections, shows progress, and ends in a mock video state.
-- Story Companion accepts at least three suggested questions and returns scripted answers.
+- The live guide accepts suggested and free-form questions, shows a clear loading state, and returns Claude answers or an actionable configuration/error state.
+- Phrase, lesson, translation, timeline, museum, and comparison tools call Claude and render safe plain-text results.
+- Every featured culture card opens a working profile.
 - Education, Language, Timeline, Museum, Community, and Compare concepts are visible.
 - All simulated or unverified content is labeled clearly.
 - No network connection is required.

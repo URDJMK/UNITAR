@@ -25,6 +25,25 @@ async function render() {
   );
 }
 
+async function fetchWorker(path, init) {
+  const workerUrl = new URL("../dist/server/index.js", import.meta.url);
+  workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}-${Math.random()}`);
+  const { default: worker } = await import(workerUrl.href);
+
+  return worker.fetch(
+    new Request(`http://localhost${path}`, init),
+    {
+      ASSETS: {
+        fetch: async () => new Response("Not found", { status: 404 }),
+      },
+    },
+    {
+      waitUntil() {},
+      passThroughOnException() {},
+    },
+  );
+}
+
 test("server-renders the Living Voices demo shell", async () => {
   const response = await render();
   assert.equal(response.status, 200);
@@ -37,7 +56,7 @@ test("server-renders the Living Voices demo shell", async () => {
   assert.doesNotMatch(html, /codex-preview|SkeletonPreview|react-loading-skeleton/);
 });
 
-test("standalone demo includes the complete simulated journey", async () => {
+test("standalone demo includes live AI learning tools and the film demo", async () => {
   const html = await readFile(
     new URL("../public/living-voices-demo.html", import.meta.url),
     "utf8",
@@ -46,7 +65,13 @@ test("standalone demo includes the complete simulated journey", async () => {
   assert.match(html, /Not a museum of the past\. A conversation with humanity\./);
   assert.match(html, /data-open-ainu/);
   assert.match(html, /Generate documentary/);
-  assert.match(html, /Community-approved story companion/);
+  assert.match(html, /Live cultural learning guide/);
+  assert.match(html, /Claude AI live/);
+  assert.match(html, /data-name="Sámi"/);
+  assert.match(html, /data-name="Diné"/);
+  assert.match(html, /data-ai-action="phrases"/);
+  assert.match(html, /data-ai-action="lesson"/);
+  assert.match(html, /data-ai-action="compare"/);
   assert.match(html, /Community archive/);
   assert.match(html, /Compare cultures/);
   assert.match(html, /fake|simulat/i);
@@ -56,4 +81,14 @@ test("standalone demo includes the complete simulated journey", async () => {
   await assert.rejects(access(new URL("../app/_sites-preview/SkeletonPreview.tsx", import.meta.url)));
   await access(new URL("../PRD.md", import.meta.url));
   await access(new URL("public/living-voices-demo.html", templateRoot));
+  await access(new URL("public/og.png", templateRoot));
+});
+
+test("AI route reports configuration without exposing credentials", async () => {
+  const response = await fetchWorker("/api/ai");
+  assert.equal(response.status, 200);
+  const body = await response.json();
+  assert.equal(typeof body.configured, "boolean");
+  assert.equal(typeof body.model, "string");
+  assert.equal("apiKey" in body, false);
 });

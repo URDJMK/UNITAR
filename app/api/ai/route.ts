@@ -1,0 +1,196 @@
+type AiAction =
+  | "ask"
+  | "phrases"
+  | "lesson"
+  | "compare"
+  | "translate"
+  | "timeline"
+  | "museum";
+
+type AiRequest = {
+  action?: AiAction;
+  culture?: string;
+  question?: string;
+  grade?: string;
+  compareCulture?: string;
+  text?: string;
+  targetLanguage?: string;
+  year?: string;
+};
+
+const allowedActions = new Set<AiAction>([
+  "ask",
+  "phrases",
+  "lesson",
+  "compare",
+  "translate",
+  "timeline",
+  "museum",
+]);
+
+const rateLimits = new Map<string, { count: number; resetAt: number }>();
+const requestWindowMs = 10 * 60 * 1000;
+const requestsPerWindow = 12;
+
+const systemPrompt = `You are the Living Voices learning guide. You help people approach living cultures and languages with curiosity, humility, and respect.
+
+Rules:
+- You are an AI learning aid, not a community member, elder, cultural authority, or primary source.
+- Never invent quotations, ceremonies, sacred knowledge, private practices, or claims of community consensus.
+- Say clearly when facts, spellings, pronunciation, translations, or language status may vary or need verification.
+- Use the community's preferred name when known. Do not call every Indigenous people a "tribe."
+- Do not rank cultures or flatten meaningful differences.
+- For language examples, name the language or variant and provide fewer items if you cannot give ten confidently.
+- Encourage verification with community-led organizations, educators, and primary sources.
+- Keep the answer useful, warm, concise, and in plain text. Do not use markdown tables.`;
+
+function clean(value: unknown, maxLength: number) {
+  return typeof value === "string" ? value.trim().slice(0, maxLength) : "";
+}
+
+function getClientId(request: Request) {
+  return (
+    request.headers.get("cf-connecting-ip") ??
+    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+    "local"
+  );
+}
+
+function isRateLimited(request: Request) {
+  const now = Date.now();
+  const clientId = getClientId(request);
+  const current = rateLimits.get(clientId);
+
+  if (!current || current.resetAt <= now) {
+    rateLimits.set(clientId, { count: 1, resetAt: now + requestWindowMs });
+    return false;
+  }
+
+  current.count += 1;
+  return current.count > requestsPerWindow;
+}
+
+function buildPrompt(payload: AiRequest) {
+  const culture = clean(payload.culture, 80) || "the selected community";
+
+  switch (payload.action) {
+    case "ask": {
+      const question = clean(payload.question, 1200);
+      if (!question) throw new Error("Please enter a question.");
+      return `Culture or community: ${culture}\nLearner question: ${question}\n\nAnswer in two to four short paragraphs. Separate well-established context from anything uncertain. End with a one-sentence verification note.`;
+    }
+    case "phrases":
+      return `Create a beginner learning set of up to 10 everyday phrases connected to ${culture}. Identify the specific language and variant first. For each item provide: original writing, a careful romanization or pronunciation guide when appropriate, an English meaning, and a one-line usage note. Do not fabricate to reach ten; explain when fewer can be given confidently. End with a short verification note.`;
+    case "lesson": {
+      const grade = clean(payload.grade, 40) || "middle school";
+      return `Create a 35-minute, age-appropriate lesson kit about ${culture} for ${grade}. Include learning objectives, a respectful opening activity, three key ideas, one source-evaluation exercise, five quiz questions with answers, and a closing reflection. Avoid role-playing sacred practices or speaking on behalf of the community. Clearly mark facts that need community review.`;
+    }
+    case "compare": {
+      const compareCulture = clean(payload.compareCulture, 80);
+      if (!compareCulture) throw new Error("Choose a second culture to compare.");
+      return `Create a respectful introductory comparison of ${culture} and ${compareCulture}. Organize it under: living context today, language, relationships to place, arts or storytelling, shared themes, important differences, and what should be verified. Avoid claims of equivalence, ancestry, or cultural borrowing without strong evidence.`;
+    }
+    case "translate": {
+      const text = clean(payload.text, 3000);
+      const targetLanguage = clean(payload.targetLanguage, 60) || "English";
+      if (!text) throw new Error("Enter text to translate.");
+      return `Translate the following text into ${targetLanguage}, using cultural context related to ${culture} only when relevant. Preserve tone and explain ambiguous words. If the requested language or variant is uncertain, say so rather than guessing.\n\nText:\n${text}`;
+    }
+    case "timeline": {
+      const year = clean(payload.year, 12);
+      if (!year) throw new Error("Choose a timeline year.");
+      return `Give a concise historical context note for ${culture} around ${year}. Use four labeled parts: broader context, community continuity, what changed, and what needs verification. Avoid presenting a single date as representative of every person or place.`;
+    }
+    case "museum":
+      return `Write a short, responsible museum-audio-guide introduction to ${culture}. Explain how visitors should approach objects, archives, and reconstructions; distinguish community knowledge from museum interpretation; and name three questions a visitor should ask about provenance, consent, and present-day community life.`;
+    default:
+      throw new Error("Choose a supported AI experience.");
+  }
+}
+
+export async function GET() {
+  return Response.json(
+    {
+      configured: Boolean(process.env.ANTHROPIC_API_KEY),
+      model: process.env.ANTHROPIC_MODEL || "claude-sonnet-5",
+    },
+    { headers: { "cache-control": "no-store" } },
+  );
+}
+
+export async function POST(request: Request) {
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) {
+    return Response.json(
+      { error: "Claude is not configured yet. Add ANTHROPIC_API_KEY to the server environment." },
+      { status: 503 },
+    );
+  }
+
+  if (isRateLimited(request)) {
+    return Response.json(
+      { error: "The live guide has reached its short-term limit. Please try again in a few minutes." },
+      { status: 429 },
+    );
+  }
+
+  try {
+    const payload = (await request.json()) as AiRequest;
+    if (!payload.action || !allowedActions.has(payload.action)) {
+      return Response.json({ error: "Unsupported AI experience." }, { status: 400 });
+    }
+
+    const prompt = buildPrompt(payload);
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "x-api-key": apiKey,
+        "anthropic-version": "2023-06-01",
+      },
+      body: JSON.stringify({
+        model: process.env.ANTHROPIC_MODEL || "claude-sonnet-5",
+        max_tokens: payload.action === "phrases" || payload.action === "lesson" ? 1600 : 1000,
+        thinking: { type: "disabled" },
+        system: systemPrompt,
+        messages: [{ role: "user", content: prompt }],
+      }),
+      signal: AbortSignal.timeout(45_000),
+    });
+
+    const data = (await response.json()) as {
+      content?: Array<{ type?: string; text?: string }>;
+      error?: { message?: string };
+      model?: string;
+    };
+
+    if (!response.ok) {
+      const message =
+        response.status === 401
+          ? "The Anthropic API key was rejected. Check or rotate the server key."
+          : response.status === 429
+            ? "Anthropic is rate-limiting requests right now. Please try again shortly."
+            : data.error?.message || "Claude could not answer this request.";
+      return Response.json({ error: message }, { status: response.status });
+    }
+
+    const answer =
+      data.content
+        ?.filter((block) => block.type === "text" && block.text)
+        .map((block) => block.text)
+        .join("\n\n")
+        .trim() || "Claude returned an empty response. Please try again.";
+
+    return Response.json(
+      {
+        answer,
+        model: data.model || process.env.ANTHROPIC_MODEL || "claude-sonnet-5",
+        disclaimer: "AI-generated learning aid — verify with community-led and primary sources.",
+      },
+      { headers: { "cache-control": "no-store" } },
+    );
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Claude could not answer this request.";
+    return Response.json({ error: message }, { status: 400 });
+  }
+}

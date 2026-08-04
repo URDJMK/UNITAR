@@ -332,6 +332,71 @@
       }
       .module.dark .secondary { border-color: rgba(255,255,255,.4); }
 
+      .ai-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+      }
+      .ai-status::before {
+        content: "";
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--gold);
+      }
+      .ai-status.live::before { background: #42a77c; box-shadow: 0 0 0 4px rgba(66,167,124,.14); }
+
+      [hidden] { display: none !important; }
+      .ai-dialog {
+        width: min(720px, calc(100% - 28px));
+        max-height: min(86vh, 820px);
+        padding: 0;
+        overflow: auto;
+        border: 0;
+        border-radius: 24px;
+        background: var(--card);
+        color: var(--ink);
+        box-shadow: 0 32px 90px rgba(9, 24, 18, .32);
+      }
+      .ai-dialog::backdrop { background: rgba(10, 24, 19, .64); backdrop-filter: blur(5px); }
+      .ai-dialog-inner { padding: clamp(24px, 5vw, 42px); }
+      .dialog-top { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+      .dialog-close {
+        width: 38px;
+        height: 38px;
+        border: 1px solid var(--line);
+        border-radius: 50%;
+        background: transparent;
+        color: var(--ink);
+        font-size: 1.25rem;
+      }
+      .ai-dialog h2 { margin: 20px 0 8px; font-size: clamp(2rem, 5vw, 3.5rem); }
+      .ai-form { display: grid; gap: 16px; margin-top: 26px; }
+      .ai-form textarea {
+        width: 100%;
+        min-height: 130px;
+        resize: vertical;
+        padding: 13px 14px;
+        border: 1px solid var(--line);
+        border-radius: 11px;
+        background: white;
+        color: var(--ink);
+        font: inherit;
+      }
+      .ai-result {
+        display: none;
+        margin-top: 24px;
+        padding: 20px;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        background: #f7f4ec;
+        white-space: pre-wrap;
+        line-height: 1.65;
+      }
+      .ai-result.visible { display: block; }
+      .ai-result.loading { display: block; color: var(--muted); }
+      .ai-meta { margin-top: 14px; color: var(--muted); font-size: .78rem; }
+
       .timeline { display: flex; justify-content: space-between; margin: 38px 0 18px; }
       .year {
         position: relative;
@@ -524,7 +589,7 @@
         <button type="button" data-scroll="learn">Education</button>
         <button type="button" data-scroll="community">Community</button>
       </nav>
-      <span class="pill">Local concept demo</span>
+      <span class="pill ai-status" id="ai-status">Checking Claude…</span>
     </header>
 
     <main>
@@ -547,67 +612,115 @@
               <div class="eyebrow">Start listening</div>
               <h2>Featured voices</h2>
             </div>
-            <p class="muted">The demo journey focuses on Ainu.</p>
+            <p class="muted">18 communities · Every profile opens live learning tools.</p>
           </div>
           <div class="culture-grid" id="culture-grid">
-            <button class="culture-card" type="button" data-culture="jeju korea language">
-              <span class="culture-symbol" aria-hidden="true">🇰🇷</span>
+            <button class="culture-card" type="button" data-culture="jeju korea language island" data-name="Jeju" data-region="Jeju Island, South Korea" data-focus="Jejueo language and island heritage">
+              <span class="culture-symbol" aria-hidden="true">◒</span>
               <span><span class="culture-name">Jeju</span><br /><span class="culture-meta">Jeju Island · Language</span></span>
             </button>
-            <button class="culture-card" type="button" data-culture="ainu hokkaido japan language" data-open-ainu>
+            <button class="culture-card" type="button" data-culture="ainu hokkaido japan language stories" data-name="Ainu" data-region="Hokkaido and northern Japan" data-focus="Ainu language, stories, and living heritage" data-open-ainu>
               <span class="culture-symbol" aria-hidden="true">◌</span>
               <span><span class="culture-name">Ainu</span><br /><span class="culture-meta">Hokkaido · Language & stories</span></span>
             </button>
-            <button class="culture-card" type="button" data-culture="nushu china script women">
-              <span class="culture-symbol" aria-hidden="true">🇨🇳</span>
+            <button class="culture-card" type="button" data-culture="nushu china hunan script women writing" data-name="Nüshu" data-region="Jiangyong County, Hunan, China" data-focus="A women-associated writing tradition and its cultural context">
+              <span class="culture-symbol" aria-hidden="true">文</span>
               <span><span class="culture-name">Nüshu</span><br /><span class="culture-meta">Hunan · Writing tradition</span></span>
             </button>
-            <button class="culture-card" type="button" data-culture="quechua peru andes language">
-              <span class="culture-symbol" aria-hidden="true">🇵🇪</span>
+            <button class="culture-card" type="button" data-culture="quechua peru bolivia ecuador andes language" data-name="Quechua" data-region="The Andes, South America" data-focus="Quechuan languages and diverse Andean communities">
+              <span class="culture-symbol" aria-hidden="true">◆</span>
               <span><span class="culture-name">Quechua</span><br /><span class="culture-meta">Andes · Language family</span></span>
             </button>
-            <button class="culture-card" type="button" data-culture="amazigh morocco north africa language">
-              <span class="culture-symbol" aria-hidden="true">🇲🇦</span>
+            <button class="culture-card" type="button" data-culture="amazigh berber morocco algeria north africa language" data-name="Amazigh" data-region="North Africa and the Amazigh diaspora" data-focus="Amazigh languages, arts, and living heritage">
+              <span class="culture-symbol" aria-hidden="true">ⵣ</span>
               <span><span class="culture-name">Amazigh</span><br /><span class="culture-meta">North Africa · Living heritage</span></span>
             </button>
-            <button class="culture-card" type="button" data-culture="maori aotearoa new zealand language">
-              <span class="culture-symbol" aria-hidden="true">🇳🇿</span>
+            <button class="culture-card" type="button" data-culture="maori māori aotearoa new zealand te reo language" data-name="Māori" data-region="Aotearoa New Zealand" data-focus="Te reo Māori and mātauranga Māori">
+              <span class="culture-symbol" aria-hidden="true">∞</span>
               <span><span class="culture-name">Māori</span><br /><span class="culture-meta">Aotearoa · Language & knowledge</span></span>
             </button>
+            <button class="culture-card" type="button" data-culture="sami sámi sapmi norway sweden finland russia languages" data-name="Sámi" data-region="Sápmi, across northern Europe" data-focus="Sámi languages, livelihoods, and contemporary culture">
+              <span class="culture-symbol" aria-hidden="true">◇</span>
+              <span><span class="culture-name">Sámi</span><br /><span class="culture-meta">Sápmi · Languages & land</span></span>
+            </button>
+            <button class="culture-card" type="button" data-culture="dine diné navajo southwest united states language oral history" data-name="Diné" data-region="Diné Bikéyah, Southwestern United States" data-focus="Diné language and community knowledge">
+              <span class="culture-symbol" aria-hidden="true">✦</span>
+              <span><span class="culture-name">Diné</span><br /><span class="culture-meta">Southwest US · Language</span></span>
+            </button>
+            <button class="culture-card" type="button" data-culture="mapuche chile argentina mapudungun language" data-name="Mapuche" data-region="Southern Chile and Argentina" data-focus="Mapudungun and Mapuche cultural continuity">
+              <span class="culture-symbol" aria-hidden="true">◐</span>
+              <span><span class="culture-name">Mapuche</span><br /><span class="culture-meta">Wallmapu · Mapudungun</span></span>
+            </button>
+            <button class="culture-card" type="button" data-culture="inuit arctic greenland canada alaska languages knowledge" data-name="Inuit" data-region="Arctic regions of Greenland, Canada, and Alaska" data-focus="Diverse Inuit languages and knowledge systems">
+              <span class="culture-symbol" aria-hidden="true">❄</span>
+              <span><span class="culture-name">Inuit</span><br /><span class="culture-meta">Arctic · Languages & knowledge</span></span>
+            </button>
+            <button class="culture-card" type="button" data-culture="yolngu yolŋu arnhem land australia language kinship" data-name="Yolŋu" data-region="North-east Arnhem Land, Australia" data-focus="Yolŋu languages, kinship, and living traditions">
+              <span class="culture-symbol" aria-hidden="true">◎</span>
+              <span><span class="culture-name">Yolŋu</span><br /><span class="culture-meta">Arnhem Land · Living knowledge</span></span>
+            </button>
+            <button class="culture-card" type="button" data-culture="hmong southeast asia diaspora language textiles stories" data-name="Hmong" data-region="Southeast Asia and global diaspora communities" data-focus="Hmong languages, textiles, and oral traditions">
+              <span class="culture-symbol" aria-hidden="true">✺</span>
+              <span><span class="culture-name">Hmong</span><br /><span class="culture-meta">Southeast Asia · Diaspora</span></span>
+            </button>
+            <button class="culture-card" type="button" data-culture="haida x̱aayda haida gwaii alaska language art" data-name="Haida" data-region="Haida Gwaii and southern Alaska" data-focus="Haida language, art, and community continuity">
+              <span class="culture-symbol" aria-hidden="true">◍</span>
+              <span><span class="culture-name">Haida</span><br /><span class="culture-meta">Haida Gwaii · Language & art</span></span>
+            </button>
+            <button class="culture-card" type="button" data-culture="cherokee ᏣᎳᎩ southeast united states syllabary language" data-name="Cherokee" data-region="Southeastern United States and Oklahoma" data-focus="Cherokee language, syllabary, and living communities">
+              <span class="culture-symbol" aria-hidden="true">Ꮳ</span>
+              <span><span class="culture-name">Cherokee</span><br /><span class="culture-meta">US Southeast · ᏣᎳᎩ</span></span>
+            </button>
+            <button class="culture-card" type="button" data-culture="garifuna caribbean belize honduras guatemala nicaragua language music" data-name="Garifuna" data-region="Caribbean and Central American communities" data-focus="Garifuna language, music, and transnational heritage">
+              <span class="culture-symbol" aria-hidden="true">≈</span>
+              <span><span class="culture-name">Garifuna</span><br /><span class="culture-meta">Caribbean · Language & music</span></span>
+            </button>
+            <button class="culture-card" type="button" data-culture="sapara sápara ecuador peru amazon language forest" data-name="Sápara" data-region="Amazonian Ecuador and Peru" data-focus="Sápara language and forest knowledge">
+              <span class="culture-symbol" aria-hidden="true">✧</span>
+              <span><span class="culture-name">Sápara</span><br /><span class="culture-meta">Amazonia · Language</span></span>
+            </button>
+            <button class="culture-card" type="button" data-culture="nenets russia arctic siberia language reindeer" data-name="Nenets" data-region="Russian Arctic and western Siberia" data-focus="Nenets language and diverse contemporary livelihoods">
+              <span class="culture-symbol" aria-hidden="true">△</span>
+              <span><span class="culture-name">Nenets</span><br /><span class="culture-meta">Russian Arctic · Language</span></span>
+            </button>
+            <button class="culture-card" type="button" data-culture="basque euskara spain france language europe" data-name="Basque" data-region="Euskal Herria, Spain and France" data-focus="Euskara and contemporary Basque culture">
+              <span class="culture-symbol" aria-hidden="true">✣</span>
+              <span><span class="culture-name">Basque</span><br /><span class="culture-meta">Euskal Herria · Euskara</span></span>
+            </button>
           </div>
-          <div class="empty" id="empty-state">No featured result yet. Try “Ainu,” “language,” or “Japan.”</div>
+          <div class="empty" id="empty-state">No featured result yet. Try “Ainu,” “Sámi,” “language,” or “Arctic.”</div>
         </div>
       </section>
 
-      <section id="ainu-view" class="view" aria-labelledby="ainu-title">
+      <section id="culture-view" class="view" aria-labelledby="culture-title">
         <div class="section">
           <div class="profile-hero">
             <button class="back" type="button" data-go="home">← Back to discover</button>
             <div class="profile-title">
               <div>
                 <div class="eyebrow">Living culture profile</div>
-                <h1 id="ainu-title">Ainu</h1>
+                <h1 id="culture-title">Ainu</h1>
                 <div class="profile-meta">
-                  <span class="pill">Hokkaido, Japan</span>
-                  <span class="pill warning">Endangered language</span>
+                  <span class="pill" id="culture-region">Hokkaido and northern Japan</span>
+                  <span class="pill warning" id="culture-focus">Ainu language, stories, and living heritage</span>
                   <span class="pill">Community review required</span>
                 </div>
               </div>
-              <div class="placeholder-note">Profile facts, language examples, and generated outputs in this prototype are illustrative placeholders—not authoritative cultural records.</div>
+              <div class="placeholder-note">Claude creates learning aids from general knowledge. It is not a community voice or authority. Verify language and cultural details with community-led sources.</div>
             </div>
           </div>
 
-          <p class="quote">“Our stories live as long as someone is still listening.”</p>
+          <p class="quote" id="culture-quote">Language carries memory, place, and ways of understanding the world.</p>
 
           <div id="features" class="feature-grid">
-            <button class="feature-button" type="button" data-toast="Story preview would open here."><span class="feature-icon">▶</span><strong>Watch Story</strong><small>Community-selected film</small></button>
+            <button class="feature-button" type="button" data-toast="Short films remain a clearly labeled demo in this version."><span class="feature-icon">▶</span><strong>Watch Story</strong><small>Demo film experience</small></button>
             <button class="feature-button" type="button" data-toast="Pronunciation player is simulated in this demo."><span class="feature-icon">◉</span><strong>Hear Pronunciation</strong><small>Native speaker recordings</small></button>
-            <button class="feature-button" type="button" data-toast="Phrase lesson is shown below."><span class="feature-icon">Aa</span><strong>Learn 10 Phrases</strong><small>Listen and practice</small></button>
+            <button class="feature-button" type="button" data-ai-action="phrases"><span class="feature-icon">Aa</span><strong>Learn 10 Phrases</strong><small>Generated live by Claude</small></button>
             <button class="feature-button" type="button" data-go="story"><span class="feature-icon">✦</span><strong>Story Companion</strong><small>Ask about a story</small></button>
-            <button class="feature-button" type="button" data-toast="A production translation would include reviewer and source details."><span class="feature-icon">文</span><strong>Translate Story</strong><small>With human review</small></button>
-            <button class="feature-button" type="button" data-scroll="museum"><span class="feature-icon">⌂</span><strong>Museum Tour</strong><small>Explore a reconstruction</small></button>
+            <button class="feature-button" type="button" data-ai-action="translate"><span class="feature-icon">文</span><strong>Translate Text</strong><small>Claude + review notes</small></button>
+            <button class="feature-button" type="button" data-ai-action="museum"><span class="feature-icon">⌂</span><strong>Museum Guide</strong><small>Generate an introduction</small></button>
             <button class="feature-button" type="button" data-go="documentary"><span class="feature-icon">▣</span><strong>Documentary</strong><small>Generate a short film</small></button>
-            <button class="feature-button" type="button" data-go="story"><span class="feature-icon">◌</span><strong>Ask a Question</strong><small>Community-approved sources</small></button>
+            <button class="feature-button" type="button" data-go="story"><span class="feature-icon">◌</span><strong>Ask a Question</strong><small>Live Claude response</small></button>
           </div>
 
           <div id="learn" class="module-grid">
@@ -616,15 +729,15 @@
               <h3>Create a lesson kit</h3>
               <p class="muted">Choose a grade level and create a reviewable classroom bundle.</p>
               <div class="mini-row"><span class="chip">Slides</span><span class="chip">Quiz</span><span class="chip">Worksheet</span><span class="chip">Discussion</span></div>
-              <button class="secondary" type="button" data-toast="Lesson kit generated — simulated for the demo.">Generate lesson kit</button>
+              <button class="secondary" type="button" data-ai-action="lesson">Generate lesson kit</button>
             </article>
 
             <article class="module dark">
-              <div class="eyebrow">Today’s phrase</div>
-              <h3>Irankarapte</h3>
-              <p class="muted">A commonly shared Ainu greeting. Exact meaning and usage must be community-reviewed.</p>
-              <div class="mini-row"><span class="chip">▶ Listen</span><span class="chip">🎤 Practice</span><span class="chip">★★★★☆</span></div>
-              <button class="secondary" type="button" data-toast="Speaking feedback is simulated.">Practice speaking</button>
+              <div class="eyebrow">Language lab</div>
+              <h3>Start with everyday phrases</h3>
+              <p class="muted">Claude can create a reviewed-ready phrase list with pronunciation, meaning, usage, and uncertainty notes.</p>
+              <div class="mini-row"><span class="chip">10 phrases</span><span class="chip">Pronunciation</span><span class="chip">Usage</span></div>
+              <button class="secondary" type="button" data-ai-action="phrases">Generate phrase lesson</button>
             </article>
 
             <article class="module">
@@ -636,14 +749,14 @@
                 <button class="year" type="button" data-year="1950">1950</button>
                 <button class="year" type="button" data-year="2025">2025</button>
               </div>
-              <p id="timeline-copy" class="muted">1900 selected: view an explicitly labeled, source-linked reconstruction.</p>
+              <p id="timeline-copy" class="muted">Choose a year to ask Claude for a cautious historical context note.</p>
             </article>
 
             <article id="museum" class="module dark">
               <div class="eyebrow">Museum mode</div>
               <h3>Walk through a reconstruction</h3>
               <p class="muted">An AI guide explains objects and spaces using approved museum and community sources.</p>
-              <button class="secondary" type="button" data-toast="Museum walk-through would open here.">▶ Enter museum</button>
+              <button class="secondary" type="button" data-ai-action="museum">Generate visitor guide</button>
             </article>
 
             <article id="community" class="module">
@@ -656,10 +769,10 @@
 
             <article class="module">
               <div class="eyebrow">Compare cultures</div>
-              <h3>Jeju + Māori</h3>
+              <h3><span id="compare-from">Ainu</span> + another culture</h3>
               <p class="muted">Explore shared themes and distinct traditions without ranking or flattening either culture.</p>
               <div class="mini-row"><span class="chip">Language</span><span class="chip">Food</span><span class="chip">Music</span><span class="chip">Worldviews</span></div>
-              <button class="secondary" type="button" data-toast="Comparison generated with source and review placeholders.">Generate comparison</button>
+              <button class="secondary" type="button" data-ai-action="compare">Generate comparison</button>
             </article>
           </div>
         </div>
@@ -667,7 +780,7 @@
 
       <section id="documentary-view" class="view" aria-labelledby="documentary-title">
         <div class="demo-panel">
-          <button class="back" type="button" data-go="ainu">← Back to Ainu</button>
+          <button class="back" type="button" data-go="culture">← Back to culture profile</button>
           <div class="panel-card">
             <div class="eyebrow">AI documentary studio</div>
             <h1 id="documentary-title">Turn a story into a doorway.</h1>
@@ -708,21 +821,21 @@
 
       <section id="story-view" class="view" aria-labelledby="story-title">
         <div class="demo-panel">
-          <button class="back" type="button" data-go="ainu">← Back to Ainu</button>
+          <button class="back" type="button" data-go="culture">← Back to culture profile</button>
           <div class="panel-card">
-            <div class="eyebrow">Community-approved story companion</div>
+            <div class="eyebrow">Live cultural learning guide</div>
             <h1 id="story-title">A story that listens back.</h1>
             <div class="story-intro">
-              <strong>Grandmother Aiko · fictional demo persona</strong>
-              “Hello. Would you like to hear the story of the Bear Spirit?”
+              <strong>Living Voices AI guide · not a community representative</strong>
+              Ask for context, definitions, learning ideas, or help finding what should be verified with community sources.
             </div>
             <div class="chat-log" id="chat-log" aria-live="polite">
-              <div class="message">Choose a question below. My demo answers are scripted placeholders, not community teachings.</div>
+              <div class="message" id="chat-welcome">Ask a question about Ainu culture or language. Answers are generated live and must be verified.</div>
             </div>
             <div class="quick-questions">
-              <button type="button" data-question="Why is the bear important?">Why is the bear important?</button>
-              <button type="button" data-question="What happened next?">What happened next?</button>
-              <button type="button" data-question="What does that word mean?">What does that word mean?</button>
+              <button type="button" data-question="What languages are connected to this community?">What languages are connected?</button>
+              <button type="button" data-question="What should a first-time learner understand?">What should I understand first?</button>
+              <button type="button" data-question="Where should I verify this information?">Where should I verify?</button>
             </div>
             <form class="chat-row" id="chat-form">
               <input class="chat-input" id="chat-input" type="text" placeholder="Ask a simple question…" aria-label="Ask the story companion" />
@@ -742,12 +855,47 @@
 
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
+    <dialog class="ai-dialog" id="ai-dialog" aria-labelledby="ai-dialog-title">
+      <div class="ai-dialog-inner">
+        <div class="dialog-top">
+          <span class="pill ai-status live">Claude-powered learning tool</span>
+          <form method="dialog"><button class="dialog-close" type="submit" aria-label="Close">×</button></form>
+        </div>
+        <h2 id="ai-dialog-title">Generate a learning aid</h2>
+        <p class="muted" id="ai-dialog-copy">Claude will answer with clear uncertainty and review notes.</p>
+        <form class="ai-form" id="ai-tool-form">
+          <label id="grade-field" hidden>Grade level
+            <select id="grade"><option>Elementary school</option><option selected>Middle school</option><option>High school</option><option>University</option><option>Adult learners</option></select>
+          </label>
+          <label id="compare-field" hidden>Compare with
+            <select id="compare-culture"></select>
+          </label>
+          <label id="translation-field" hidden>Text to translate
+            <textarea id="translation-text" placeholder="Paste a short passage here…"></textarea>
+          </label>
+          <label id="language-field" hidden>Target language
+            <select id="target-language"><option>English</option><option>Korean</option><option>Japanese</option><option>Spanish</option><option>French</option><option>Arabic</option></select>
+          </label>
+          <button class="primary" id="ai-submit" type="submit">Ask Claude</button>
+        </form>
+        <div class="ai-result" id="ai-result" aria-live="polite"></div>
+        <div class="ai-meta">AI-generated learning aid · Not community-approved · Verify with primary and community-led sources.</div>
+      </div>
+    </dialog>
+
     <script>
       const views = {
         home: document.getElementById("home-view"),
-        ainu: document.getElementById("ainu-view"),
+        culture: document.getElementById("culture-view"),
         documentary: document.getElementById("documentary-view"),
         story: document.getElementById("story-view")
+      };
+
+      const cultureCards = [...document.querySelectorAll(".culture-card")];
+      let selectedCulture = {
+        name: "Ainu",
+        region: "Hokkaido and northern Japan",
+        focus: "Ainu language, stories, and living heritage"
       };
 
       function showView(name) {
@@ -756,11 +904,26 @@
         window.scrollTo({ top: 0, behavior: "smooth" });
       }
 
+      function selectCulture(card) {
+        selectedCulture = {
+          name: card.dataset.name,
+          region: card.dataset.region,
+          focus: card.dataset.focus
+        };
+        document.getElementById("culture-title").textContent = selectedCulture.name;
+        document.getElementById("culture-region").textContent = selectedCulture.region;
+        document.getElementById("culture-focus").textContent = selectedCulture.focus;
+        document.getElementById("culture-quote").textContent = `${selectedCulture.name} knowledge is living, diverse, and best understood through community voices.`;
+        document.getElementById("compare-from").textContent = selectedCulture.name;
+        document.getElementById("chat-welcome").textContent = `Ask a question about ${selectedCulture.name} culture or language. Answers are generated live and must be verified.`;
+        showView("culture");
+      }
+
       document.querySelectorAll("[data-go]").forEach((button) => {
         button.addEventListener("click", () => showView(button.dataset.go));
       });
 
-      document.querySelector("[data-open-ainu]").addEventListener("click", () => showView("ainu"));
+      cultureCards.forEach((card) => card.addEventListener("click", () => selectCulture(card)));
 
       let toastTimer;
       function showToast(message) {
@@ -768,22 +931,14 @@
         toast.textContent = message;
         toast.classList.add("visible");
         clearTimeout(toastTimer);
-        toastTimer = setTimeout(() => toast.classList.remove("visible"), 2600);
+        toastTimer = setTimeout(() => toast.classList.remove("visible"), 3000);
       }
 
       document.querySelectorAll("[data-toast]").forEach((button) => {
         button.addEventListener("click", () => showToast(button.dataset.toast));
       });
 
-      document.querySelectorAll("[data-scroll]").forEach((button) => {
-        button.addEventListener("click", () => {
-          showView("ainu");
-          setTimeout(() => document.getElementById(button.dataset.scroll)?.scrollIntoView({ behavior: "smooth" }), 60);
-        });
-      });
-
       const searchInput = document.getElementById("culture-search");
-      const cultureCards = [...document.querySelectorAll(".culture-card")];
       const emptyState = document.getElementById("empty-state");
 
       function filterCultures() {
@@ -801,19 +956,125 @@
         event.preventDefault();
         filterCultures();
         const visibleCards = cultureCards.filter((card) => card.style.display !== "none");
-        if (visibleCards.length === 1 && visibleCards[0].hasAttribute("data-open-ainu")) showView("ainu");
+        if (visibleCards.length === 1) selectCulture(visibleCards[0]);
       });
       searchInput.addEventListener("input", filterCultures);
 
-      cultureCards.filter((card) => !card.hasAttribute("data-open-ainu")).forEach((card) => {
-        card.addEventListener("click", () => showToast("This simple demo focuses on the Ainu journey."));
+      async function refreshAIStatus() {
+        const status = document.getElementById("ai-status");
+        try {
+          const response = await fetch("/api/ai", { cache: "no-store" });
+          const data = await response.json();
+          if (data.configured) {
+            status.textContent = "Claude AI live";
+            status.classList.add("live");
+          } else {
+            status.textContent = "Claude key needed";
+            status.classList.remove("live");
+          }
+        } catch {
+          status.textContent = "Claude unavailable";
+          status.classList.remove("live");
+        }
+      }
+      refreshAIStatus();
+
+      async function callClaude(payload) {
+        const response = await fetch("/api/ai", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ culture: selectedCulture.name, ...payload })
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "Claude could not answer.");
+        return data;
+      }
+
+      const aiDialog = document.getElementById("ai-dialog");
+      const aiForm = document.getElementById("ai-tool-form");
+      const aiResult = document.getElementById("ai-result");
+      const aiSubmit = document.getElementById("ai-submit");
+      const compareSelect = document.getElementById("compare-culture");
+      let currentAction = "phrases";
+      let currentYear = "1900";
+
+      const toolCopy = {
+        phrases: ["Learn everyday phrases", "Claude will name the language or variant, add usage notes, and flag uncertainty."],
+        lesson: ["Create a lesson kit", "Generate a classroom-ready outline with objectives, activities, questions, and review notes."],
+        compare: ["Compare cultures respectfully", "Explore living context, language, place, arts, shared themes, and important differences."],
+        translate: ["Translate with context", "Translate a short passage and surface ambiguity instead of hiding it."],
+        timeline: ["Place a year in context", "Generate a cautious historical overview that distinguishes continuity from change."],
+        museum: ["Create a responsible museum guide", "Prepare an introduction centered on provenance, consent, and present-day community life."]
+      };
+
+      cultureCards.forEach((card) => {
+        const option = document.createElement("option");
+        option.value = card.dataset.name;
+        option.textContent = card.dataset.name;
+        compareSelect.appendChild(option);
+      });
+
+      function openAITool(action, options = {}) {
+        currentAction = action;
+        currentYear = options.year || currentYear;
+        const [title, copy] = toolCopy[action];
+        document.getElementById("ai-dialog-title").textContent = `${title}: ${selectedCulture.name}`;
+        document.getElementById("ai-dialog-copy").textContent = copy;
+        document.getElementById("grade-field").hidden = action !== "lesson";
+        document.getElementById("compare-field").hidden = action !== "compare";
+        document.getElementById("translation-field").hidden = action !== "translate";
+        document.getElementById("language-field").hidden = action !== "translate";
+        [...compareSelect.options].forEach((option) => {
+          option.disabled = option.value === selectedCulture.name;
+        });
+        if (compareSelect.selectedOptions[0]?.disabled) {
+          compareSelect.value = [...compareSelect.options].find((option) => !option.disabled)?.value || "";
+        }
+        aiResult.className = "ai-result";
+        aiResult.textContent = "";
+        aiSubmit.textContent = action === "phrases" ? "Generate phrases" : action === "lesson" ? "Generate lesson" : "Ask Claude";
+        aiDialog.showModal();
+      }
+
+      document.querySelectorAll("[data-ai-action]").forEach((button) => {
+        button.addEventListener("click", () => openAITool(button.dataset.aiAction));
+      });
+
+      aiForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const payload = { action: currentAction };
+        if (currentAction === "lesson") payload.grade = document.getElementById("grade").value;
+        if (currentAction === "compare") payload.compareCulture = compareSelect.value;
+        if (currentAction === "translate") {
+          payload.text = document.getElementById("translation-text").value;
+          payload.targetLanguage = document.getElementById("target-language").value;
+        }
+        if (currentAction === "timeline") payload.year = currentYear;
+
+        aiSubmit.disabled = true;
+        aiSubmit.textContent = "Claude is thinking…";
+        aiResult.className = "ai-result loading";
+        aiResult.textContent = "Creating a careful learning aid…";
+
+        try {
+          const data = await callClaude(payload);
+          aiResult.textContent = data.answer;
+          aiResult.className = "ai-result visible";
+        } catch (error) {
+          aiResult.textContent = error.message;
+          aiResult.className = "ai-result visible";
+        } finally {
+          aiSubmit.disabled = false;
+          aiSubmit.textContent = "Generate again";
+        }
       });
 
       document.querySelectorAll(".year").forEach((button) => {
         button.addEventListener("click", () => {
           document.querySelectorAll(".year").forEach((year) => year.classList.remove("active"));
           button.classList.add("active");
-          document.getElementById("timeline-copy").textContent = `${button.dataset.year} selected: view an explicitly labeled, source-linked reconstruction.`;
+          document.getElementById("timeline-copy").textContent = `${button.dataset.year} selected: Claude can generate a contextual overview with uncertainty notes.`;
+          openAITool("timeline", { year: button.dataset.year });
         });
       });
 
@@ -828,7 +1089,7 @@
         status.classList.add("visible");
         video.classList.remove("visible");
         button.disabled = true;
-        button.textContent = "Generating…";
+        button.textContent = "Generating demo…";
         bar.style.width = "0%";
         checks.forEach((check) => {
           check.classList.remove("done");
@@ -843,19 +1104,13 @@
             if (index === checks.length - 1) {
               video.classList.add("visible");
               button.disabled = false;
-              button.textContent = "Generate again";
+              button.textContent = "Generate demo again";
             }
           }, 520 * (index + 1));
         });
       });
 
-      const scriptedAnswers = {
-        "Why is the bear important?": "In this concept, the bear introduces a relationship between people, animals, and the spirit world. A real answer would use a community-approved recording and citation.",
-        "What happened next?": "The storyteller would continue only with the approved version of the story, preserving the original speaker’s meaning and any cultural restrictions.",
-        "What does that word mean?": "I would play the original speaker’s pronunciation, explain the context, and show who reviewed the translation. This demo does not invent a definition."
-      };
-
-      function askQuestion(question) {
+      async function askQuestion(question) {
         if (!question.trim()) return;
         const log = document.getElementById("chat-log");
         const userMessage = document.createElement("div");
@@ -865,11 +1120,16 @@
 
         const answer = document.createElement("div");
         answer.className = "message";
-        answer.textContent = scriptedAnswers[question] || "That is a thoughtful question. In the production experience, I would answer only from community-approved sources and show you where the answer came from.";
-        setTimeout(() => {
-          log.appendChild(answer);
-          answer.scrollIntoView({ behavior: "smooth", block: "nearest" });
-        }, 260);
+        answer.textContent = "Claude is thinking…";
+        log.appendChild(answer);
+        answer.scrollIntoView({ behavior: "smooth", block: "nearest" });
+
+        try {
+          const data = await callClaude({ action: "ask", question });
+          answer.textContent = `${data.answer}\n\n${data.disclaimer}`;
+        } catch (error) {
+          answer.textContent = error.message;
+        }
       }
 
       document.querySelectorAll("[data-question]").forEach((button) => {

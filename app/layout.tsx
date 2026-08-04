@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { headers } from "next/headers";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -12,11 +13,38 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "Living Voices — A Conversation with Humanity",
-  description:
-    "A local concept demo for a community-led, AI-assisted cultural heritage platform.",
-};
+const title = "Living Voices — A Conversation with Humanity";
+const description =
+  "Explore living cultures, learn phrases, ask questions, and create respectful learning materials with a community-first AI guide.";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const requestHeaders = await headers();
+  const host =
+    requestHeaders.get("x-forwarded-host") ??
+    requestHeaders.get("host") ??
+    "localhost:3000";
+  const protocol =
+    requestHeaders.get("x-forwarded-proto") ??
+    (host.startsWith("localhost") ? "http" : "https");
+  const imageUrl = `${protocol}://${host}/og.png`;
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: "website",
+      images: [{ url: imageUrl, width: 1717, height: 916, alt: "Living Voices — A conversation with humanity." }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [imageUrl],
+    },
+  };
+}
 
 export default function RootLayout({
   children,
