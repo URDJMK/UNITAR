@@ -1,7 +1,7 @@
 # Living Voices — Product Requirements Document
 
-**Version:** 0.1 concept demo  
-**Status:** Teammate review  
+**Version:** 0.2 MVP foundation  
+**Status:** Ready for implementation  
 **Product type:** Community-led digital heritage and learning platform  
 **Tagline:** *Not a museum of the past. A conversation with humanity.*
 
@@ -184,17 +184,19 @@ The whole P0 flow should be understandable in under three minutes and work witho
 - Teacher reuse of generated materials after review.
 - Corrections and withdrawal requests resolved within an agreed service level.
 
-## 14. Technical approach for this demo
+## 14. Technical approach for the MVP
 
-- One self-contained HTML file with embedded CSS and JavaScript.
-- No backend and no external dependencies.
-- Local scripted data for cultures, chat responses, and loading states.
-- Fake generation progress; no AI, voice, upload, or video generation API.
-- Responsive layout for laptop and mobile sharing.
+- Next.js 16 with the App Router, React 19, TypeScript, and a vinext/Vite development server.
+- The current interactive concept is served from the root route and remains self-contained for reliable demos.
+- No production backend or external APIs in the first milestone.
+- Local scripted data powers culture cards, story-companion responses, and generation progress.
+- AI, voice, uploads, documentary generation, and video playback remain clearly labeled simulations.
+- Responsive support targets modern mobile and desktop browsers.
+- The architecture should allow later API routes, database persistence, authentication, and community moderation without changing the core user journey.
 
 ## 15. Demo acceptance criteria
 
-- Opens locally in a modern browser.
+- Runs from the Next.js development server and opens at the root route in a modern browser.
 - Search visibly filters culture cards.
 - Clicking Ainu opens the profile.
 - Documentary generation accepts selections, shows progress, and ends in a mock video state.
