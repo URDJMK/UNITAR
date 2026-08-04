@@ -85,6 +85,10 @@ test("standalone demo includes live AI learning tools and the film demo", async 
   assert.match(html, /Living word · Culture · Claude AI/);
   assert.match(html, /"Living word"/);
   assert.match(html, /"Culture"/);
+  assert.match(html, /"Explore 10 phrases"/);
+  assert.match(html, /"Ask more"/);
+  assert.match(html, /living-mini-action/);
+  assert.doesNotMatch(html, /<button class="secondary" type="button" data-ai-action="phrases">Explore 10 phrases<\/button>/);
   assert.match(html, /\/api\/living-word/);
   assert.match(html, /renderLivingWordCards\(/);
   assert.doesNotMatch(html, />Generate (?:phrases|lesson|comparison|documentary)</i);

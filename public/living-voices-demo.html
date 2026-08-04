@@ -274,7 +274,7 @@
 
       .living-word {
         display: grid;
-        grid-template-columns: minmax(0, 1fr) auto;
+        grid-template-columns: minmax(0, 1fr);
         align-items: center;
         gap: 24px;
         margin: -14px 0 34px;
@@ -292,6 +292,8 @@
         margin-top: 12px;
       }
       .living-mini-card {
+        display: flex;
+        flex-direction: column;
         min-width: 0;
         padding: 14px 16px;
         border: 1px solid rgba(23,108,86,.18);
@@ -325,6 +327,22 @@
       }
       .living-meaning { display: block; margin-top: 6px; font-weight: 800; }
       .living-use { display: block; margin-top: 3px; color: var(--muted); font-size: .76rem; }
+      .living-mini-action {
+        align-self: flex-start;
+        margin-top: auto;
+        padding: 11px 0 0;
+        border: 0;
+        background: transparent;
+        color: var(--green);
+        font: inherit;
+        font-size: .76rem;
+        font-weight: 900;
+        text-decoration: underline;
+        text-underline-offset: 3px;
+        cursor: pointer;
+      }
+      .living-mini-action:hover { color: var(--ink); }
+      .living-mini-action:focus-visible { outline: 2px solid var(--green); outline-offset: 4px; }
 
       .feature-grid {
         display: grid;
@@ -910,7 +928,6 @@
               <div class="eyebrow">Living word · Culture · Claude AI</div>
               <div class="living-word-copy loading" id="living-word" aria-live="polite">Choose a culture to receive a language example.</div>
             </div>
-            <button class="secondary" type="button" data-ai-action="phrases">Explore 10 phrases</button>
           </div>
 
           <div id="features" class="feature-grid">
@@ -1278,6 +1295,10 @@
           if (data.featured_word.meaning) phrase.appendChild(element("span", "living-meaning", data.featured_word.meaning));
           const shortNote = data.featured_word.pronunciation || data.featured_word.usage;
           if (shortNote) phrase.appendChild(element("span", "living-use", shortNote));
+          const explorePhrases = element("button", "living-mini-action", "Explore 10 phrases");
+          explorePhrases.type = "button";
+          explorePhrases.addEventListener("click", () => openAITool("phrases"));
+          phrase.appendChild(explorePhrases);
           grid.appendChild(phrase);
         }
 
@@ -1285,6 +1306,13 @@
           const culture = element("article", "living-mini-card");
           culture.appendChild(element("span", "living-mini-label", "Culture"));
           culture.appendChild(element("p", "living-habit", data.cultural_habit));
+          const askMore = element("button", "living-mini-action", "Ask more");
+          askMore.type = "button";
+          askMore.addEventListener("click", () => {
+            showView("story");
+            setTimeout(() => document.getElementById("chat-input").focus(), 50);
+          });
+          culture.appendChild(askMore);
           grid.appendChild(culture);
         }
 
