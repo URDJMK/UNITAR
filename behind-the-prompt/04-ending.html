@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101419">
+  <meta name="description" content="The final trigger for the Behind the Prompt AI film-editing demonstration.">
+  <title>Behind the Prompt — Final Trigger</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="css/shared.css">
+  <script defer src="js/shared.js"></script>
+  <script defer src="js/ending.js"></script>
+</head>
+<body>
+  <main class="scene-shell ending-shell" aria-labelledby="ending-title">
+    <div class="ending-grid">
+      <section aria-label="Two simple AI editing steps">
+        <p class="chapter-label">Final / Behind the Prompt</p>
+        <div class="concept-stack">
+          <div class="concept-line" data-concept-line><span>Decisions</span><span class="concept-arrow" aria-hidden="true">→</span><span>Prompt</span></div>
+          <div class="concept-line" data-concept-line><span>Person + Background</span><span class="concept-arrow" aria-hidden="true">→</span><span>Editable Layers</span></div>
+        </div>
+      </section>
+
+      <section class="ending-message" data-ending-message aria-hidden="true">
+        <h1 id="ending-title">A frame becomes editable in seconds.<br><span>You choose the look. AI handles the setup.</span></h1>
+        <div class="ending-actions">
+          <button class="primary-button" type="button" data-restart-experience disabled>Restart Experience</button>
+          <button class="secondary-button" type="button" data-open-menu>Scene Menu</button>
+        </div>
+        <p class="sr-only">The workflow stays simple: choose the direction, let AI prepare the scene, then keep editing.</p>
+      </section>
+    </div>
+
+    <div class="screen-reader-live" aria-live="polite" data-live-message></div>
+  </main>
+
+  <div class="utility-tray" aria-label="Scene utilities">
+    <a class="utility-link" href="02-digital-actor.html">← <span class="utility-label">Scene Scan</span></a>
+    <span class="utility-separator" aria-hidden="true"></span>
+    <button class="utility-button" type="button" data-restart aria-label="Restart Final Trigger">↺ <span class="utility-label">Restart scene</span></button>
+    <span class="utility-separator" aria-hidden="true"></span>
+    <button class="utility-button" type="button" data-open-menu><span aria-hidden="true">☷</span> <span class="utility-label">Scene menu</span></button>
+  </div>
+
+  <dialog class="scene-menu" data-scene-menu aria-labelledby="scene-menu-title">
+    <div class="scene-menu-inner">
+      <div class="scene-menu-header">
+        <div><p class="chapter-label">Presentation recovery</p><h2 id="scene-menu-title">Open any scene</h2></div>
+        <button class="menu-close" type="button" data-close-menu aria-label="Close scene menu">×</button>
+      </div>
+      <ol class="scene-menu-list">
+        <li><a href="index.html"><span class="menu-number">00</span><span>Opening</span><span class="menu-file">index.html</span></a></li>
+        <li><a href="01-decisions.html"><span class="menu-number">01</span><span>The Decisions</span><span class="menu-file">01-decisions.html</span></a></li>
+        <li><a href="02-digital-actor.html"><span class="menu-number">02</span><span>Automatic Scene Scan</span><span class="menu-file">02-digital-actor.html</span></a></li>
+        <li><a href="04-ending.html"><span class="menu-number">END</span><span>Final Trigger</span><span class="menu-file">04-ending.html</span></a></li>
+      </ol>
+    </div>
+  </dialog>
+</body>
+</html>

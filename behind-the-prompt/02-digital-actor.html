@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101419">
+  <meta name="description" content="See AI automatically separate a person and background into editable video layers.">
+  <title>Behind the Prompt — Automatic Scene Scan</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="css/shared.css">
+  <script defer src="js/shared.js"></script>
+  <script defer src="js/digital-actor.js"></script>
+</head>
+<body>
+  <main class="scene-shell" aria-labelledby="scene-title">
+    <header class="scene-header">
+      <div>
+        <p class="chapter-label">02 / Frame → Editable Layers</p>
+        <h1 class="scene-heading" id="scene-title">Automatic Scene Scan</h1>
+      </div>
+      <span class="scene-count" aria-hidden="true">02—02</span>
+    </header>
+
+    <div class="actor-layout">
+      <section class="actor-stage" data-actor-stage data-asset-frame aria-label="Video frame person and background scan">
+        <img class="actor-image" src="assets/images/daniel-base.webp" alt="A fictional person standing in a dark studio background" data-fallback-label="Source video frame unavailable">
+        <div class="asset-fallback" aria-hidden="true">Source video frame unavailable</div>
+
+        <div class="background-mask" aria-hidden="true">
+          <span class="mask-zone mask-top"></span>
+          <span class="mask-zone mask-left"></span>
+          <span class="mask-zone mask-right"></span>
+          <span class="mask-zone mask-bottom"></span>
+        </div>
+
+        <div class="scan-line" aria-hidden="true"></div>
+        <div class="actor-outline" aria-hidden="true">
+          <span class="tracking-node"></span><span class="tracking-node"></span><span class="tracking-node"></span>
+          <span class="tracking-node"></span><span class="tracking-node"></span><span class="tracking-node"></span>
+        </div>
+
+        <div class="detection-label background-detection" data-background-label hidden>
+          <span class="detection-dot" aria-hidden="true"></span> Background detected
+        </div>
+        <div class="detection-label subject-detection" data-subject-label hidden>
+          <span class="detection-dot" aria-hidden="true"></span> Person detected
+        </div>
+
+        <div class="actor-tag">
+          <strong>Source frame / 0042</strong>
+          <span>One person + studio background</span>
+        </div>
+      </section>
+
+      <section class="actor-copy" aria-label="Automatic scene separation">
+        <p class="lead">Drop in a frame. AI automatically finds the person and separates the background.</p>
+        <div class="scene-actions">
+          <button class="primary-button" type="button" data-scan>Auto-scan Frame</button>
+        </div>
+
+        <div class="status-panel" data-scan-status aria-live="polite">Ready to analyze one video frame.</div>
+
+        <p class="transition-label" data-actor-transition hidden>Video Frame <span class="arrow" aria-hidden="true">→</span> Editable Layers</p>
+        <p class="actor-thesis" data-actor-thesis hidden>AI found the <span>person</span> and the <span>background</span> automatically.</p>
+
+        <section class="layer-results" data-layer-results hidden aria-label="Detected editable layers">
+          <div class="layer-result">
+            <span class="layer-number">01</span>
+            <div><strong>Person layer</strong><span>Clean subject mask</span></div>
+            <span class="layer-ready">Ready</span>
+          </div>
+          <div class="layer-result">
+            <span class="layer-number">02</span>
+            <div><strong>Background layer</strong><span>Editable scene mask</span></div>
+            <span class="layer-ready">Ready</span>
+          </div>
+        </section>
+
+        <p class="scan-ready-message" data-scan-ready hidden><strong>1 frame became 2 editable layers.</strong><br>Ready for removal, relighting, or replacement.</p>
+
+        <div class="scene-actions">
+          <button class="primary-button" type="button" data-continue disabled>Continue <span class="button-arrow" aria-hidden="true">→</span></button>
+        </div>
+      </section>
+    </div>
+
+    <div class="screen-reader-live" aria-live="polite" data-live-message></div>
+  </main>
+
+  <div class="utility-tray" aria-label="Scene utilities">
+    <a class="utility-link" href="01-decisions.html">← <span class="utility-label">The Decisions</span></a>
+    <span class="utility-separator" aria-hidden="true"></span>
+    <button class="utility-button" type="button" data-restart aria-label="Restart Automatic Scene Scan">↺ <span class="utility-label">Restart</span></button>
+    <span class="utility-separator" aria-hidden="true"></span>
+    <button class="utility-button" type="button" data-open-menu><span aria-hidden="true">☷</span> <span class="utility-label">Scene menu</span></button>
+  </div>
+
+  <dialog class="scene-menu" data-scene-menu aria-labelledby="scene-menu-title">
+    <div class="scene-menu-inner">
+      <div class="scene-menu-header">
+        <div><p class="chapter-label">Presentation recovery</p><h2 id="scene-menu-title">Open any scene</h2></div>
+        <button class="menu-close" type="button" data-close-menu aria-label="Close scene menu">×</button>
+      </div>
+      <ol class="scene-menu-list">
+        <li><a href="index.html"><span class="menu-number">00</span><span>Opening</span><span class="menu-file">index.html</span></a></li>
+        <li><a href="01-decisions.html"><span class="menu-number">01</span><span>The Decisions</span><span class="menu-file">01-decisions.html</span></a></li>
+        <li><a href="02-digital-actor.html"><span class="menu-number">02</span><span>Automatic Scene Scan</span><span class="menu-file">02-digital-actor.html</span></a></li>
+        <li><a href="04-ending.html"><span class="menu-number">END</span><span>Final Trigger</span><span class="menu-file">04-ending.html</span></a></li>
+      </ol>
+    </div>
+  </dialog>
+</body>
+</html>

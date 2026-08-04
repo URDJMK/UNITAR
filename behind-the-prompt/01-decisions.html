@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101419">
+  <meta name="description" content="Direct a scene, build a prompt, and reveal the decisions made by the system.">
+  <title>Behind the Prompt — The Decisions</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="css/shared.css">
+  <script defer src="js/shared.js"></script>
+  <script defer src="js/decisions.js"></script>
+</head>
+<body>
+  <main class="scene-shell" aria-labelledby="scene-title">
+    <header class="scene-header">
+      <div>
+        <p class="chapter-label">01 / Decisions → Prompt</p>
+        <h1 class="scene-heading" id="scene-title">The Decisions</h1>
+      </div>
+      <span class="scene-count" aria-hidden="true">01—02</span>
+    </header>
+
+    <div class="decisions-layout">
+      <section class="decision-controls" aria-label="Scene direction controls">
+        <p class="scene-setup">A woman enters an empty house at midnight.<br>She hears something behind her.</p>
+
+        <section class="choice-group" aria-labelledby="shot-title">
+          <h2 class="choice-group-title" id="shot-title">SHOT</h2>
+          <div class="choice-row" role="group" aria-label="Choose a shot">
+            <button class="choice-card" type="button" aria-pressed="false" data-choice-group="shot" data-choice-value="Wide">Wide</button>
+            <button class="choice-card" type="button" aria-pressed="false" data-choice-group="shot" data-choice-value="Medium">Medium</button>
+            <button class="choice-card" type="button" aria-pressed="false" data-choice-group="shot" data-choice-value="Close-up">Close-up</button>
+          </div>
+        </section>
+
+        <section class="choice-group" aria-labelledby="light-title">
+          <h2 class="choice-group-title" id="light-title">LIGHT</h2>
+          <div class="choice-row" role="group" aria-label="Choose lighting">
+            <button class="choice-card" type="button" aria-pressed="false" data-choice-group="light" data-choice-value="Cold">Cold</button>
+            <button class="choice-card" type="button" aria-pressed="false" data-choice-group="light" data-choice-value="Warm">Warm</button>
+            <button class="choice-card" type="button" aria-pressed="false" data-choice-group="light" data-choice-value="Dark">Dark</button>
+          </div>
+        </section>
+
+        <section class="choice-group" aria-labelledby="pace-title">
+          <h2 class="choice-group-title" id="pace-title">PACE</h2>
+          <div class="choice-row" role="group" aria-label="Choose pacing">
+            <button class="choice-card" type="button" aria-pressed="false" data-choice-group="pace" data-choice-value="Slow reveal">Slow reveal</button>
+            <button class="choice-card" type="button" aria-pressed="false" data-choice-group="pace" data-choice-value="Sudden cut">Sudden cut</button>
+            <button class="choice-card" type="button" aria-pressed="false" data-choice-group="pace" data-choice-value="Long take">Long take</button>
+          </div>
+        </section>
+
+        <div class="live-prompt" aria-label="Live prompt">
+          <span class="technical-label">Live prompt</span>
+          <p data-live-prompt>Create a suspenseful scene using [choose a shot], [choose lighting], and [choose pacing].</p>
+        </div>
+
+        <div class="decision-actions">
+          <button class="primary-button" type="button" data-generate disabled>Generate</button>
+        </div>
+        <div class="status-panel" data-generation-status aria-live="polite">Choose one option from each group to build the prompt.</div>
+      </section>
+
+      <section aria-label="Cinematic preview and generation result">
+        <div class="image-stage" data-preview-stage data-asset-frame>
+          <img src="assets/images/scene-wide.webp" alt="A fictional woman standing in a dark, rain-soaked house" data-scene-preview data-fallback-label="Cinematic scene preview unavailable">
+          <div class="asset-fallback" aria-hidden="true">Cinematic scene preview unavailable</div>
+          <div class="stage-label" data-stage-label>Unselected / live preview</div>
+          <div class="generated-result" data-generated-result data-asset-frame aria-hidden="true">
+            <img src="assets/images/generated-storyboard.webp" alt="A generated three-panel storyboard moving from a wide shot to a close-up" data-fallback-label="Generated storyboard unavailable">
+            <div class="asset-fallback" aria-hidden="true">Generated storyboard unavailable</div>
+            <div class="stage-label">Generated storyboard / 03 frames</div>
+          </div>
+        </div>
+
+        <div class="auto-decision-panel" data-auto-decisions hidden aria-label="Automatic decisions completed by AI">
+          <div class="auto-decision"><span>Camera movement</span><strong>Slow dolly-in</strong></div>
+          <div class="auto-decision"><span>Lens</span><strong>35 mm</strong></div>
+          <div class="auto-decision"><span>Color palette</span><strong>Desaturated blue</strong></div>
+          <div class="auto-decision"><span>Actor blocking</span><strong>Center frame</strong></div>
+          <div class="auto-decision"><span>Weather</span><strong>Light rain</strong></div>
+          <div class="auto-decision"><span>Set design</span><strong>Minimal interior</strong></div>
+        </div>
+
+        <div class="decision-reveal" data-decision-reveal hidden>
+          <p><strong>AI completed 6 decisions you never made.</strong></p>
+          <p>3 decisions became 1 prompt.<br>But who decided the rest?</p>
+        </div>
+
+        <div class="scene-actions" style="margin-top: 12px">
+          <button class="primary-button" type="button" data-continue disabled>Continue <span class="button-arrow" aria-hidden="true">→</span></button>
+        </div>
+      </section>
+    </div>
+
+    <div class="screen-reader-live" aria-live="polite" data-live-message></div>
+  </main>
+
+  <div class="utility-tray" aria-label="Scene utilities">
+    <a class="utility-link" href="index.html">← <span class="utility-label">Opening</span></a>
+    <span class="utility-separator" aria-hidden="true"></span>
+    <button class="utility-button" type="button" data-restart aria-label="Restart The Decisions">↺ <span class="utility-label">Restart</span></button>
+    <span class="utility-separator" aria-hidden="true"></span>
+    <button class="utility-button" type="button" data-open-menu><span aria-hidden="true">☷</span> <span class="utility-label">Scene menu</span></button>
+  </div>
+
+  <dialog class="scene-menu" data-scene-menu aria-labelledby="scene-menu-title">
+    <div class="scene-menu-inner">
+      <div class="scene-menu-header">
+        <div><p class="chapter-label">Presentation recovery</p><h2 id="scene-menu-title">Open any scene</h2></div>
+        <button class="menu-close" type="button" data-close-menu aria-label="Close scene menu">×</button>
+      </div>
+      <ol class="scene-menu-list">
+        <li><a href="index.html"><span class="menu-number">00</span><span>Opening</span><span class="menu-file">index.html</span></a></li>
+        <li><a href="01-decisions.html"><span class="menu-number">01</span><span>The Decisions</span><span class="menu-file">01-decisions.html</span></a></li>
+        <li><a href="02-digital-actor.html"><span class="menu-number">02</span><span>Automatic Scene Scan</span><span class="menu-file">02-digital-actor.html</span></a></li>
+        <li><a href="04-ending.html"><span class="menu-number">END</span><span>Final Trigger</span><span class="menu-file">04-ending.html</span></a></li>
+      </ol>
+    </div>
+  </dialog>
+</body>
+</html>

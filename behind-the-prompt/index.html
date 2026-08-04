@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101419">
+  <meta name="description" content="Behind the Prompt: a fast interactive AI film-editing demonstration.">
+  <title>Behind the Prompt — Opening</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="css/shared.css">
+  <script defer src="js/shared.js"></script>
+  <script defer src="js/opening.js"></script>
+</head>
+<body>
+  <main class="scene-shell opening-shell" aria-labelledby="opening-title">
+    <section class="opening-content">
+      <p class="chapter-label opening-kicker">AI &amp; THE FILM INDUSTRY / INTERACTIVE PROLOGUE</p>
+      <h1 class="opening-title" id="opening-title">Behind<br>the Prompt</h1>
+      <p class="opening-subtitle">What if directing and preparing a film scene took only a few clear choices?</p>
+      <div class="opening-actions">
+        <button class="primary-button" type="button" data-begin>
+          Begin <span class="button-arrow" aria-hidden="true">→</span>
+        </button>
+        <button class="secondary-button" type="button" data-open-menu>Open Scene Menu</button>
+      </div>
+      <p class="disclosure">A scripted simulation using pre-generated visuals.</p>
+    </section>
+
+    <div class="opening-transition transition-label" data-opening-transition hidden>
+      Decisions <span class="arrow" aria-hidden="true">→</span> Prompt
+    </div>
+
+    <div class="screen-reader-live" aria-live="polite" data-live-message></div>
+  </main>
+
+  <div class="utility-tray" aria-label="Scene utilities">
+    <button class="utility-button" type="button" data-restart aria-label="Restart opening">
+      ↺ <span class="utility-label">Restart</span>
+    </button>
+    <span class="utility-separator" aria-hidden="true"></span>
+    <button class="utility-button" type="button" data-open-menu>
+      <span aria-hidden="true">☷</span> <span class="utility-label">Scene menu</span>
+    </button>
+  </div>
+
+  <dialog class="scene-menu" data-scene-menu aria-labelledby="scene-menu-title">
+    <div class="scene-menu-inner">
+      <div class="scene-menu-header">
+        <div>
+          <p class="chapter-label">Presentation recovery</p>
+          <h2 id="scene-menu-title">Open any scene</h2>
+        </div>
+        <button class="menu-close" type="button" data-close-menu aria-label="Close scene menu">×</button>
+      </div>
+      <ol class="scene-menu-list">
+        <li><a href="index.html"><span class="menu-number">00</span><span>Opening</span><span class="menu-file">index.html</span></a></li>
+        <li><a href="01-decisions.html"><span class="menu-number">01</span><span>The Decisions</span><span class="menu-file">01-decisions.html</span></a></li>
+        <li><a href="02-digital-actor.html"><span class="menu-number">02</span><span>Automatic Scene Scan</span><span class="menu-file">02-digital-actor.html</span></a></li>
+        <li><a href="04-ending.html"><span class="menu-number">END</span><span>Final Trigger</span><span class="menu-file">04-ending.html</span></a></li>
+      </ol>
+    </div>
+  </dialog>
+</body>
+</html>
