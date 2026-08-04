@@ -192,10 +192,13 @@ The whole P0 flow should be understandable in under three minutes and work witho
 
 - Next.js 16 with the App Router, React 19, TypeScript, and a vinext/Vite development server.
 - The current interactive concept is served from the root route and remains self-contained for reliable demos.
-- A server-only `/api/ai` route calls Anthropic's Messages API; the API key is never sent to the browser or committed to Git.
-- Claude Sonnet is configurable through `ANTHROPIC_MODEL`, with strict input limits, output limits, timeouts, and basic per-client rate limiting.
+- A Python PydanticAI service owns the primary LLM workflow. It uses a typed `LearningResponse` model for titles, summaries, phrase cards, lesson sections, source-verification notes, and disclaimers.
+- The PydanticAI agent calls Claude through `Agent.run_stream()` and emits progressively validated snapshots from `stream_output()` as newline-delimited JSON (NDJSON).
+- A server-only Next.js `/api/ai` route proxies that stream so credentials and the private agent URL never reach browser code. If the Python service is not configured, the route falls back to Anthropic's streaming Messages API so the live site still returns progressive answers.
+- Claude Sonnet is configurable through `ANTHROPIC_MODEL`, with strict input limits, output limits, timeouts, a service-to-service shared secret, and basic per-client rate limiting.
 - Local structured data powers culture cards and profile context; Claude powers Q&A, phrase lessons, classroom materials, translation, timeline notes, museum guidance, and comparisons.
-- AI, voice, uploads, documentary generation, and video playback remain clearly labeled simulations.
+- Typed PydanticAI responses render as semantic interface components: language chips, phrase cards, pronunciation and usage fields, lesson sections, verification callouts, and confidence labels. The direct Anthropic fallback renders safe headings, lists, and emphasis without injecting model-produced HTML.
+- Short-film generation and video playback remain clearly labeled simulations; supported learning tools use live LLM answers.
 - Responsive support targets modern mobile and desktop browsers.
 - The architecture should allow later API routes, database persistence, authentication, and community moderation without changing the core user journey.
 
@@ -206,12 +209,12 @@ The whole P0 flow should be understandable in under three minutes and work witho
 - Clicking Ainu opens the profile.
 - Documentary generation accepts selections, shows progress, and ends in a mock video state.
 - The live guide accepts suggested and free-form questions, shows a clear loading state, and returns Claude answers or an actionable configuration/error state.
-- Phrase, lesson, translation, timeline, museum, and comparison tools call Claude and render safe plain-text results.
+- Phrase, lesson, translation, timeline, museum, archive, comparison, and question tools call Claude, stream progressively, and render safe structured cards or formatted prose.
 - Phrase, lesson, timeline, museum, archive, comparison, and story-introduction tools begin automatically when opened; translation begins after the learner pauses typing.
 - Every featured culture card opens a working profile.
 - Education, Language, Timeline, Museum, Community, and Compare concepts are visible.
 - All simulated or unverified content is labeled clearly.
-- No network connection is required.
+- The interface shell and short-film demo work without an LLM request; live learning answers require network access and configured server credentials.
 
 ## 16. Decisions needed after teammate review
 

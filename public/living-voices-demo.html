@@ -283,7 +283,7 @@
         border-radius: var(--radius);
         background: var(--green-soft);
       }
-      .living-word-copy { margin: 7px 0 0; white-space: pre-wrap; line-height: 1.6; }
+      .living-word-copy { margin: 7px 0 0; line-height: 1.6; }
       .living-word-copy.loading { color: var(--muted); }
 
       .feature-grid {
@@ -404,12 +404,86 @@
         border: 1px solid var(--line);
         border-radius: 16px;
         background: #f7f4ec;
-        white-space: pre-wrap;
         line-height: 1.65;
       }
       .ai-result.visible { display: block; }
       .ai-result.loading { display: block; color: var(--muted); }
       .ai-meta { margin-top: 14px; color: var(--muted); font-size: .78rem; }
+
+      .rich-response { color: var(--ink); }
+      .rich-response > :first-child { margin-top: 0; }
+      .rich-response > :last-child { margin-bottom: 0; }
+      .rich-header { display: grid; gap: 8px; margin-bottom: 18px; }
+      .rich-title { margin: 0; font-family: Georgia, serif; font-size: clamp(1.55rem, 4vw, 2.35rem); line-height: 1.08; }
+      .rich-summary { max-width: 66ch; margin: 0; color: #35443e; }
+      .rich-meta { display: flex; flex-wrap: wrap; gap: 7px; margin: 10px 0 18px; }
+      .rich-pill {
+        display: inline-flex;
+        padding: 5px 9px;
+        border-radius: 999px;
+        background: #e3eee8;
+        color: #15513f;
+        font-size: .74rem;
+        font-weight: 800;
+      }
+      .featured-word {
+        display: grid;
+        gap: 6px;
+        margin: 14px 0;
+        padding: 18px;
+        border-left: 4px solid var(--green);
+        border-radius: 0 14px 14px 0;
+        background: rgba(255,255,255,.72);
+      }
+      .featured-original { font-family: Georgia, serif; font-size: 1.75rem; line-height: 1.15; }
+      .featured-pronunciation { color: var(--green); font-weight: 800; }
+      .rich-phrase-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin: 16px 0; }
+      .phrase-card {
+        display: grid;
+        align-content: start;
+        gap: 6px;
+        min-width: 0;
+        padding: 16px;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: white;
+      }
+      .phrase-number { color: var(--green); font-size: .72rem; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; }
+      .phrase-original { font-family: Georgia, serif; font-size: 1.25rem; line-height: 1.22; overflow-wrap: anywhere; }
+      .phrase-pronunciation { color: var(--green); font-size: .85rem; font-weight: 800; }
+      .phrase-meaning { font-weight: 800; }
+      .phrase-usage { color: var(--muted); font-size: .82rem; }
+      .confidence { margin-top: 4px; color: var(--muted); font-size: .7rem; text-transform: uppercase; letter-spacing: .06em; }
+      .rich-section-grid { display: grid; gap: 11px; margin: 16px 0; }
+      .response-section { padding: 16px 18px; border: 1px solid var(--line); border-radius: 14px; background: white; }
+      .response-section h3, .markdown-response h3 { margin: 0 0 8px; font-family: Georgia, serif; font-size: 1.3rem; }
+      .response-section p, .markdown-response p { margin: 0 0 9px; }
+      .response-section ul, .markdown-response ul, .markdown-response ol { margin: 8px 0 0; padding-left: 21px; }
+      .verification-card {
+        margin-top: 16px;
+        padding: 16px 18px;
+        border-radius: 14px;
+        background: #fff2df;
+        color: #62461b;
+      }
+      .verification-card strong { display: block; margin-bottom: 6px; }
+      .verification-card ul { margin: 0; padding-left: 20px; }
+      .rich-disclaimer { margin-top: 14px; color: var(--muted); font-size: .75rem; }
+      .markdown-response h2 { margin: 18px 0 8px; font-family: Georgia, serif; font-size: 1.65rem; }
+      .markdown-response blockquote { margin: 12px 0; padding: 12px 14px; border-left: 3px solid var(--gold); background: #fff8ea; }
+      .stream-cursor {
+        display: inline-block;
+        width: 7px;
+        height: 1em;
+        margin-left: 4px;
+        border-radius: 2px;
+        background: var(--green);
+        vertical-align: -.12em;
+        animation: stream-pulse .8s ease-in-out infinite alternate;
+      }
+      .response-error { padding: 14px 16px; border-radius: 12px; background: #f8e6e3; color: var(--danger); }
+      .message.ai-rich { width: min(94%, 680px); max-width: 94%; padding: 16px; }
+      @keyframes stream-pulse { to { opacity: .2; } }
 
       .timeline { display: flex; justify-content: space-between; margin: 38px 0 18px; }
       .year {
@@ -585,6 +659,7 @@
         .search button { padding-inline: 14px; }
         .checks { grid-template-columns: 1fr; }
         .chat-row { align-items: stretch; flex-direction: column; }
+        .rich-phrase-grid { grid-template-columns: 1fr; }
       }
 
       @media (prefers-reduced-motion: reduce) {
@@ -729,7 +804,7 @@
           <div class="living-word">
             <div>
               <div class="eyebrow">A living word · Claude AI</div>
-              <p class="living-word-copy loading" id="living-word" aria-live="polite">Choose a culture to receive a language example.</p>
+              <div class="living-word-copy loading" id="living-word" aria-live="polite">Choose a culture to receive a language example.</div>
             </div>
             <button class="secondary" type="button" data-ai-action="phrases">Explore 10 phrases</button>
           </div>
@@ -999,7 +1074,7 @@
           const response = await fetch("/api/ai", { cache: "no-store" });
           const data = await response.json();
           if (data.configured) {
-            status.textContent = "Claude AI live";
+            status.textContent = data.runtime === "pydantic-ai" ? "PydanticAI · Claude live" : "Claude stream live";
             status.classList.add("live");
           } else {
             status.textContent = "Claude key needed";
@@ -1012,15 +1087,225 @@
       }
       refreshAIStatus();
 
-      async function callClaude(payload) {
+      function element(tag, className, text) {
+        const node = document.createElement(tag);
+        if (className) node.className = className;
+        if (text !== undefined && text !== null) node.textContent = text;
+        return node;
+      }
+
+      function appendInlineText(parent, value) {
+        const parts = String(value || "").split(/(\*\*[^*]+\*\*)/g);
+        parts.forEach((part) => {
+          if (part.startsWith("**") && part.endsWith("**")) {
+            parent.appendChild(element("strong", "", part.slice(2, -2)));
+          } else if (part) {
+            parent.appendChild(document.createTextNode(part));
+          }
+        });
+      }
+
+      function prepareRichTarget(target) {
+        target.classList.remove("loading");
+        target.classList.add("rich-response");
+        if (target.id === "ai-result") target.classList.add("visible");
+      }
+
+      function appendStreamCursor(target) {
+        const cursor = element("span", "stream-cursor");
+        cursor.setAttribute("aria-label", "Response streaming");
+        target.appendChild(cursor);
+      }
+
+      function renderPhrase(parent, phrase, index, featured = false) {
+        const card = element("article", featured ? "featured-word" : "phrase-card");
+        if (!featured) card.appendChild(element("span", "phrase-number", `Phrase ${index + 1}`));
+        if (phrase.original) card.appendChild(element("strong", featured ? "featured-original" : "phrase-original", phrase.original));
+        if (phrase.pronunciation) card.appendChild(element("span", featured ? "featured-pronunciation" : "phrase-pronunciation", phrase.pronunciation));
+        if (phrase.meaning) card.appendChild(element("span", "phrase-meaning", phrase.meaning));
+        if (phrase.usage) card.appendChild(element("span", "phrase-usage", phrase.usage));
+        if (!featured && phrase.confidence) card.appendChild(element("span", "confidence", `${phrase.confidence} confidence`));
+        parent.appendChild(card);
+      }
+
+      function renderLearningResponse(target, data, options = {}) {
+        prepareRichTarget(target);
+        const fragment = document.createDocumentFragment();
+
+        if (!options.compact) {
+          const header = element("header", "rich-header");
+          if (data.title) header.appendChild(element("h2", "rich-title", data.title));
+          if (data.summary) header.appendChild(element("p", "rich-summary", data.summary));
+          if (header.childNodes.length) fragment.appendChild(header);
+        } else if (data.summary && !data.featured_word) {
+          fragment.appendChild(element("p", "rich-summary", data.summary));
+        }
+
+        if (data.language || data.variant) {
+          const meta = element("div", "rich-meta");
+          if (data.language) meta.appendChild(element("span", "rich-pill", data.language));
+          if (data.variant) meta.appendChild(element("span", "rich-pill", data.variant));
+          fragment.appendChild(meta);
+        }
+
+        if (data.featured_word) renderPhrase(fragment, data.featured_word, 0, true);
+
+        if (!options.compact && Array.isArray(data.phrases) && data.phrases.length) {
+          const grid = element("div", "rich-phrase-grid");
+          data.phrases.forEach((phrase, index) => renderPhrase(grid, phrase, index));
+          fragment.appendChild(grid);
+        }
+
+        if (!options.compact && Array.isArray(data.sections) && data.sections.length) {
+          const sections = element("div", "rich-section-grid");
+          data.sections.forEach((section) => {
+            const card = element("section", "response-section");
+            if (section.heading) card.appendChild(element("h3", "", section.heading));
+            if (section.body) {
+              const body = element("p");
+              appendInlineText(body, section.body);
+              card.appendChild(body);
+            }
+            if (Array.isArray(section.bullets) && section.bullets.length) {
+              const list = element("ul");
+              section.bullets.forEach((bullet) => {
+                const item = element("li");
+                appendInlineText(item, bullet);
+                list.appendChild(item);
+              });
+              card.appendChild(list);
+            }
+            sections.appendChild(card);
+          });
+          fragment.appendChild(sections);
+        }
+
+        if (!options.compact && Array.isArray(data.verification) && data.verification.length) {
+          const verification = element("aside", "verification-card");
+          verification.appendChild(element("strong", "", "Verify this with community-led sources"));
+          const list = element("ul");
+          data.verification.forEach((item) => list.appendChild(element("li", "", item)));
+          verification.appendChild(list);
+          fragment.appendChild(verification);
+        }
+
+        if (!options.compact && data.disclaimer) fragment.appendChild(element("p", "rich-disclaimer", data.disclaimer));
+        target.replaceChildren(fragment);
+        if (options.streaming) appendStreamCursor(target);
+      }
+
+      function renderMarkdownResponse(target, markdown, streaming = false) {
+        prepareRichTarget(target);
+        const wrapper = element("div", "markdown-response");
+        let activeList = null;
+
+        String(markdown || "").split(/\r?\n/).forEach((line) => {
+          const trimmed = line.trim();
+          if (!trimmed) {
+            activeList = null;
+            return;
+          }
+
+          const heading = trimmed.match(/^(#{2,4})\s+(.+)/);
+          if (heading) {
+            activeList = null;
+            const level = heading[1].length === 2 ? "h2" : "h3";
+            const title = element(level);
+            appendInlineText(title, heading[2]);
+            wrapper.appendChild(title);
+            return;
+          }
+
+          const unordered = trimmed.match(/^[-*]\s+(.+)/);
+          const ordered = trimmed.match(/^\d+[.)]\s+(.+)/);
+          if (unordered || ordered) {
+            const type = ordered ? "ol" : "ul";
+            if (!activeList || activeList.tagName.toLowerCase() !== type) {
+              activeList = element(type);
+              wrapper.appendChild(activeList);
+            }
+            const item = element("li");
+            appendInlineText(item, (unordered || ordered)[1]);
+            activeList.appendChild(item);
+            return;
+          }
+
+          activeList = null;
+          if (trimmed.startsWith("> ")) {
+            const quote = element("blockquote");
+            appendInlineText(quote, trimmed.slice(2));
+            wrapper.appendChild(quote);
+          } else {
+            const paragraph = element("p");
+            appendInlineText(paragraph, trimmed.replace(/^#\s+/, ""));
+            wrapper.appendChild(paragraph);
+          }
+        });
+
+        target.replaceChildren(wrapper);
+        if (streaming) appendStreamCursor(target);
+      }
+
+      function renderResponseError(target, message) {
+        prepareRichTarget(target);
+        target.replaceChildren(element("div", "response-error", message));
+      }
+
+      async function streamClaude(payload, target, options = {}) {
         const response = await fetch("/api/ai", {
           method: "POST",
           headers: { "content-type": "application/json" },
           body: JSON.stringify({ culture: selectedCulture.name, ...payload })
         });
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.error || "Claude could not answer.");
-        return data;
+        if (!response.body) throw new Error("The live guide returned no stream.");
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = "";
+        let markdown = "";
+        let latestStructured = null;
+        let streamError = "";
+
+        while (true) {
+          if (options.isCurrent && !options.isCurrent()) {
+            await reader.cancel();
+            return;
+          }
+          const { done, value } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split("\n");
+          buffer = lines.pop() || "";
+
+          for (const line of lines) {
+            if (!line.trim()) continue;
+            const event = JSON.parse(line);
+            if (event.type === "meta") {
+              target.dataset.runtime = event.runtime || "unknown";
+            } else if (event.type === "snapshot" && event.data) {
+              latestStructured = event.data;
+              renderLearningResponse(target, event.data, { ...options, streaming: true });
+            } else if (event.type === "delta") {
+              markdown += event.text || "";
+              renderMarkdownResponse(target, markdown, true);
+            } else if (event.type === "done") {
+              if (event.data) {
+                latestStructured = event.data;
+                renderLearningResponse(target, event.data, options);
+              } else if (markdown) {
+                renderMarkdownResponse(target, markdown, false);
+              }
+            } else if (event.type === "error") {
+              streamError = event.error || "The live guide stopped unexpectedly.";
+            }
+          }
+        }
+
+        if (streamError) throw new Error(streamError);
+        if (!response.ok) throw new Error("The live guide could not answer this request.");
+        if (latestStructured) renderLearningResponse(target, latestStructured, options);
+        else if (markdown) renderMarkdownResponse(target, markdown, false);
+        else throw new Error("The live guide returned an empty response.");
       }
 
       async function loadFeaturedWord() {
@@ -1029,14 +1314,14 @@
         word.className = "living-word-copy loading";
         word.textContent = `Claude is finding a well-attested ${cultureName} language example…`;
         try {
-          const data = await callClaude({ action: "word" });
+          await streamClaude({ action: "word" }, word, {
+            compact: true,
+            isCurrent: () => selectedCulture.name === cultureName
+          });
           if (selectedCulture.name !== cultureName) return;
-          word.textContent = data.answer;
-          word.className = "living-word-copy";
         } catch (error) {
           if (selectedCulture.name !== cultureName) return;
-          word.textContent = error.message;
-          word.className = "living-word-copy";
+          renderResponseError(word, error.message);
         }
       }
 
@@ -1091,14 +1376,12 @@
         aiResult.className = "ai-result loading";
         aiResult.textContent = "Claude is preparing a careful answer…";
         try {
-          const data = await callClaude(currentToolPayload());
-          if (requestNumber !== aiRequestNumber) return;
-          aiResult.textContent = data.answer;
-          aiResult.className = "ai-result visible";
+          await streamClaude(currentToolPayload(), aiResult, {
+            isCurrent: () => requestNumber === aiRequestNumber
+          });
         } catch (error) {
           if (requestNumber !== aiRequestNumber) return;
-          aiResult.textContent = error.message;
-          aiResult.className = "ai-result visible";
+          renderResponseError(aiResult, error.message);
         }
       }
 
@@ -1202,16 +1485,15 @@
         log.appendChild(userMessage);
 
         const answer = document.createElement("div");
-        answer.className = "message";
+        answer.className = "message ai-rich loading";
         answer.textContent = "Claude is thinking…";
         log.appendChild(answer);
         answer.scrollIntoView({ behavior: "smooth", block: "nearest" });
 
         try {
-          const data = await callClaude({ action: "ask", question });
-          answer.textContent = `${data.answer}\n\n${data.disclaimer}`;
+          await streamClaude({ action: "ask", question }, answer);
         } catch (error) {
-          answer.textContent = error.message;
+          renderResponseError(answer, error.message);
         }
       }
 

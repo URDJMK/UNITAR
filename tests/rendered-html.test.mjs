@@ -66,7 +66,7 @@ test("standalone demo includes live AI learning tools and the film demo", async 
   assert.match(html, /data-open-ainu/);
   assert.match(html, /Replay film demo/);
   assert.match(html, /Live cultural learning guide/);
-  assert.match(html, /Claude AI live/);
+  assert.match(html, /Claude stream live/);
   assert.match(html, /data-name="Sámi"/);
   assert.match(html, /data-name="Diné"/);
   assert.match(html, /data-ai-action="phrases"/);
@@ -76,6 +76,9 @@ test("standalone demo includes live AI learning tools and the film demo", async 
   assert.match(html, /data-auto-question=/);
   assert.match(html, /loadFeaturedWord\(\)/);
   assert.match(html, /runCurrentTool\(\)/);
+  assert.match(html, /streamClaude\(/);
+  assert.match(html, /renderLearningResponse\(/);
+  assert.match(html, /rich-phrase-grid/);
   assert.doesNotMatch(html, />Generate (?:phrases|lesson|comparison|documentary)</i);
   assert.match(html, /Community archive/);
   assert.match(html, /Compare cultures/);
@@ -95,5 +98,14 @@ test("AI route reports configuration without exposing credentials", async () => 
   const body = await response.json();
   assert.equal(typeof body.configured, "boolean");
   assert.equal(typeof body.model, "string");
+  assert.equal(typeof body.runtime, "string");
+  assert.equal(body.streaming, true);
   assert.equal("apiKey" in body, false);
+});
+
+test("AI route is implemented as an NDJSON stream", async () => {
+  const source = await readFile(new URL("../app/api/ai/route.ts", import.meta.url), "utf8");
+  assert.match(source, /application\/x-ndjson/);
+  assert.match(source, /PYDANTIC_AGENT_URL/);
+  assert.match(source, /stream:\s*true/);
 });

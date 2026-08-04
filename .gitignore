@@ -42,3 +42,7 @@ next-env.d.ts
 /outputs/
 /work/
 /.tmp/
+**/__pycache__/
+**/.pytest_cache/
+**/.venv/
+*.py[cod]
