@@ -169,7 +169,7 @@ async function proxyPydanticAgent(payload: AiRequest, agentUrl: string) {
 }
 
 async function streamAnthropic(payload: AiRequest, apiKey: string) {
-  const model = process.env.ANTHROPIC_MODEL || "claude-haiku-4-5-20251001";
+  const model = process.env.ANTHROPIC_MODEL || "claude-sonnet-5";
   const response = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
     headers: {
@@ -257,7 +257,7 @@ export async function GET() {
   return Response.json(
     {
       configured: Boolean(pydanticAgentUrl || process.env.ANTHROPIC_API_KEY),
-      model: process.env.ANTHROPIC_MODEL || "claude-haiku-4-5-20251001",
+      model: process.env.ANTHROPIC_MODEL || "claude-sonnet-5",
       runtime: pydanticAgentUrl ? "pydantic-ai" : "anthropic-direct",
       streaming: true,
     },

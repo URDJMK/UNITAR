@@ -20,7 +20,7 @@ agent URL:
 
 ```dotenv
 ANTHROPIC_API_KEY=your-server-only-key
-ANTHROPIC_MODEL=claude-haiku-4-5-20251001
+ANTHROPIC_MODEL=claude-sonnet-5
 PYDANTIC_AGENT_URL=http://127.0.0.1:8100
 ```
 

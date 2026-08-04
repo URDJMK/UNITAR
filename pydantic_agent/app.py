@@ -103,7 +103,7 @@ Rules:
 """
 
 
-model_name = os.getenv("ANTHROPIC_MODEL", "claude-haiku-4-5-20251001")
+model_name = os.getenv("ANTHROPIC_MODEL", "claude-sonnet-5")
 agent = Agent(
     f"anthropic:{model_name}",
     output_type=LearningResponse,

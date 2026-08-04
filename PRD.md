@@ -195,7 +195,7 @@ The whole P0 flow should be understandable in under three minutes and work witho
 - A Python PydanticAI service owns the primary LLM workflow. It uses a typed `LearningResponse` model for titles, summaries, phrase cards, lesson sections, source-verification notes, and disclaimers.
 - The PydanticAI agent calls Claude through `Agent.run_stream()` and emits progressively validated snapshots from `stream_output()` as newline-delimited JSON (NDJSON).
 - A server-only Next.js `/api/ai` route proxies that stream so credentials and the private agent URL never reach browser code. If the Python service is not configured, the route falls back to Anthropic's streaming Messages API so the live site still returns progressive answers.
-- Claude Haiku 4.5 is the default through `ANTHROPIC_MODEL`, with strict input limits, output limits, timeouts, a service-to-service shared secret, and basic per-client rate limiting.
+- Claude Sonnet 5 is the default through `ANTHROPIC_MODEL`, with strict input limits, output limits, timeouts, a service-to-service shared secret, and basic per-client rate limiting.
 - Local structured data powers culture cards and profile context; Claude powers Q&A, phrase lessons, classroom materials, translation, timeline notes, museum guidance, and comparisons.
 - Typed PydanticAI responses render as semantic interface components: language chips, phrase cards, pronunciation and usage fields, lesson sections, verification callouts, and confidence labels. The direct Anthropic fallback renders safe headings, lists, and emphasis without injecting model-produced HTML.
 - Short-film generation and video playback remain clearly labeled simulations; supported learning tools use live LLM answers.

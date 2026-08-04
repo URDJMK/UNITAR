@@ -79,6 +79,9 @@ test("standalone demo includes live AI learning tools and the film demo", async 
   assert.match(html, /streamClaude\(/);
   assert.match(html, /renderLearningResponse\(/);
   assert.match(html, /rich-phrase-grid/);
+  assert.match(html, /renderLoadingState\(/);
+  assert.match(html, /ai-loading-orbit/);
+  assert.match(html, /hasRenderableStructuredContent\(/);
   assert.doesNotMatch(html, />Generate (?:phrases|lesson|comparison|documentary)</i);
   assert.match(html, /Community archive/);
   assert.match(html, /Compare cultures/);

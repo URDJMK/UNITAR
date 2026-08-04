@@ -10,6 +10,6 @@ services:
       - key: ANTHROPIC_API_KEY
         sync: false
       - key: ANTHROPIC_MODEL
-        value: claude-haiku-4-5-20251001
+        value: claude-sonnet-5
       - key: PYDANTIC_AGENT_SECRET
         generateValue: true
