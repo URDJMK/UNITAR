@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { access, readFile } from "node:fs/promises";
 import test from "node:test";
+import { runInNewContext } from "node:vm";
 
 const templateRoot = new URL("../", import.meta.url);
 
@@ -78,6 +79,8 @@ test("standalone demo includes live AI learning tools and the film demo", async 
   assert.match(html, /runCurrentTool\(\)/);
   assert.match(html, /streamClaude\(/);
   assert.match(html, /renderLearningResponse\(/);
+  assert.match(html, /parsePhraseSet\(/);
+  assert.match(html, /renderPhraseSetResponse\(/);
   assert.match(html, /rich-phrase-grid/);
   assert.match(html, /renderLoadingState\(/);
   assert.match(html, /ai-loading-orbit/);
@@ -152,4 +155,41 @@ test("every direct Claude experience has an explicit format and sample answer", 
       `${action} should attach its response guide`,
     );
   }
+});
+
+test("the direct phrase prompt requires ten parseable cards", async () => {
+  const source = await readFile(new URL("../app/api/ai/route.ts", import.meta.url), "utf8");
+  assert.match(source, /Create exactly 10 compact beginner items/);
+  assert.match(source, /PHRASE 10: See you again/);
+  assert.match(source, /VERIFY 2: Check a current language-learning source/);
+  assert.doesNotMatch(source, /provide fewer items if you cannot give ten/);
+});
+
+test("the live phrase parser turns all ten streamed slots into cards", async () => {
+  const html = await readFile(
+    new URL("../public/living-voices-demo.html", import.meta.url),
+    "utf8",
+  );
+  const parserStart = html.indexOf("function parsePhraseSet(markdown)");
+  const parserEnd = html.indexOf("function renderPhraseSetResponse", parserStart);
+  assert.ok(parserStart > -1 && parserEnd > parserStart);
+
+  const slots = Array.from({ length: 10 }, (_, index) => {
+    const number = index + 1;
+    return [
+      `PHRASE ${number}: Phrase ${number}`,
+      `PRONUNCIATION ${number}: pronunciation ${number}`,
+      `MEANING ${number}: meaning ${number}`,
+      `USE ${number}: use ${number}`,
+      `CONFIDENCE ${number}: verify`,
+    ].join("\n");
+  }).join("\n");
+  const context = {
+    markdown: `TITLE: 10 useful phrases\nLANGUAGE: Test language\nVARIANT: Test variant\nNOTE: Compact note\n${slots}\nVERIFY 1: Check a speaker.`,
+  };
+
+  runInNewContext(`${html.slice(parserStart, parserEnd)}\nparsed = parsePhraseSet(markdown);`, context);
+  assert.equal(context.parsed.phrases.length, 10);
+  assert.equal(context.parsed.phrases[9].original, "Phrase 10");
+  assert.equal(context.parsed.verification[0], "Check a speaker.");
 });

@@ -88,7 +88,7 @@ class PhraseLearningResponse(LearningResponse):
     title: str = Field(min_length=1)
     summary: str = Field(min_length=1)
     language: str = Field(min_length=1)
-    phrases: list[PhraseCard] = Field(min_length=1, max_length=10)
+    phrases: list[PhraseCard] = Field(min_length=10, max_length=10)
 
 
 class SectionLearningResponse(LearningResponse):
@@ -112,7 +112,7 @@ Rules:
 - Say clearly when facts, spellings, pronunciation, translations, or language status may vary or need verification.
 - Use the community's preferred name when known. Do not call every Indigenous people a tribe.
 - Do not rank cultures or flatten meaningful differences.
-- For language examples, name the language or variant and provide fewer items if you cannot give ten confidently.
+- For the phrases experience, return exactly ten compact, public, everyday items. Prefer short phrases; when a full phrase is uncertain, use a well-attested useful word and mark confidence as verify rather than inventing.
 - Put major content in sections and bullets, not one long paragraph.
 - Put concrete verification advice in the verification list.
 - Keep the disclaimer intact.
@@ -166,6 +166,48 @@ SAMPLE ANSWER (Ainu example; copy the format, never copy this content for anothe
 DISCLAIMER = "AI-generated learning aid — verify with community-led and primary sources."
 
 
+def phrase_item(
+    original: str,
+    pronunciation: str,
+    meaning: str,
+    usage: str,
+    confidence: Literal["high", "medium", "verify"] = "high",
+) -> dict[str, str]:
+    return {
+        "original": original,
+        "pronunciation": pronunciation,
+        "meaning": meaning,
+        "usage": usage,
+        "confidence": confidence,
+    }
+
+
+PHRASE_RESPONSE_SHAPE = [
+    phrase_item(
+        f"Phrase {index} in original writing",
+        f"Short pronunciation {index}",
+        f"Short English meaning {index}",
+        f"One-line everyday context {index}",
+        "verify",
+    )
+    for index in range(1, 11)
+]
+
+
+ENGLISH_PHRASE_SAMPLE = [
+    phrase_item("Hello", "heh-LOH", "A greeting", "Use when greeting someone."),
+    phrase_item("Good morning", "good MOR-ning", "A morning greeting", "Use earlier in the day."),
+    phrase_item("Thank you", "thank yoo", "An expression of gratitude", "Use after receiving help."),
+    phrase_item("Please", "pleez", "A polite request marker", "Use when making a request."),
+    phrase_item("Excuse me", "ik-SKYOOZ mee", "A polite way to get attention", "Use before interrupting."),
+    phrase_item("How are you?", "how ar yoo", "A wellbeing question", "Use in a friendly greeting."),
+    phrase_item("I am well", "eye am well", "A positive reply", "Use when answering a wellbeing question."),
+    phrase_item("What is your name?", "what iz yor naym", "A question about someone's name", "Use during an introduction."),
+    phrase_item("Goodbye", "good-BYE", "A farewell", "Use when leaving."),
+    phrase_item("See you again", "see yoo uh-GEN", "A future-facing farewell", "Use when you expect to meet again."),
+]
+
+
 def response_guide(
     response_shape: dict[str, object],
     sample_label: str,
@@ -214,44 +256,21 @@ ACTION_RESPONSE_GUIDES: dict[Action, str] = {
     "phrases": response_guide(
         {
             "title": "10 useful phrases",
-            "summary": "One-sentence scope and confidence note",
+            "summary": "One confidence note of no more than 24 words",
             "language": "Specific language name",
-            "variant": "Specific variant or Varies by community",
-            "phrases": [
-                {
-                    "original": "Phrase in original writing",
-                    "pronunciation": "Short pronunciation guide",
-                    "meaning": "Short English meaning",
-                    "usage": "One-line usage note",
-                    "confidence": "high, medium, or verify",
-                }
-            ],
-            "verification": ["Specific language source to consult"],
+            "variant": "Specific variant in no more than 12 words, or Varies by community",
+            "phrases": PHRASE_RESPONSE_SHAPE,
+            "verification": ["One specific language source or community review step"],
             "disclaimer": DISCLAIMER,
         },
-        "abbreviated two-item example; the real answer should contain ten when supported",
+        "complete English format example; copy all ten slots, never copy its content",
         {
-            "title": "Everyday greetings",
-            "summary": "These examples need confirmation for the learner's community and variant.",
-            "language": "Example language",
-            "variant": "Varies by community",
-            "phrases": [
-                {
-                    "original": "Example phrase one",
-                    "pronunciation": "example pronunciation",
-                    "meaning": "Hello",
-                    "usage": "Use as an everyday greeting when locally appropriate.",
-                    "confidence": "verify",
-                },
-                {
-                    "original": "Example phrase two",
-                    "pronunciation": "example pronunciation",
-                    "meaning": "Thank you",
-                    "usage": "Use to express gratitude when locally appropriate.",
-                    "confidence": "verify",
-                },
-            ],
-            "verification": ["Confirm spelling and pronunciation with a community-led language source."],
+            "title": "10 useful English phrases",
+            "summary": "Ten compact everyday examples in the required card format.",
+            "language": "English",
+            "variant": "General international English",
+            "phrases": ENGLISH_PHRASE_SAMPLE,
+            "verification": ["Confirm local pronunciation and usage with a fluent speaker."],
             "disclaimer": DISCLAIMER,
         },
     ),
@@ -588,7 +607,7 @@ Put exactly one public, everyday, non-sacred cultural habit in cultural_habit an
 
 {WORD_RESPONSE_GUIDE}"""
     if request.action == "phrases":
-        return f"""Create up to 10 beginner everyday phrases connected to {culture}. Put each in phrases with original writing, pronunciation, meaning, usage, and confidence. Name the language and variant. Do not fabricate to reach ten. MUST PROVIDE TEN PHRASES when they can be supported; otherwise explain why fewer are safe to provide.
+        return f"""Create exactly 10 compact beginner items connected to {culture}. Prefer public, everyday phrases; if a full phrase is uncertain, use a well-attested useful word instead of stopping early or inventing. Put exactly ten objects in phrases, numbered by array order. Keep summary under 24 words, variant under 12 words, and each phrase field to one short line. Put uncertainty only in each item's confidence field and the single verification note. Do not add a history lesson or a long introduction.
 
 {ACTION_RESPONSE_GUIDES["phrases"]}"""
     if request.action == "lesson":

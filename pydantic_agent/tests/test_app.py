@@ -53,6 +53,35 @@ def test_phrase_schema_rejects_an_empty_structured_response() -> None:
         PhraseLearningResponse.model_validate({})
 
 
+def test_phrase_schema_requires_exactly_ten_items() -> None:
+    phrase = {
+        "original": "Hello",
+        "pronunciation": "heh-LOH",
+        "meaning": "A greeting",
+        "usage": "Use when greeting someone.",
+        "confidence": "high",
+    }
+    with pytest.raises(ValidationError):
+        PhraseLearningResponse.model_validate(
+            {
+                "title": "Nine phrases",
+                "summary": "This set is incomplete.",
+                "language": "English",
+                "phrases": [phrase] * 9,
+            }
+        )
+
+    result = PhraseLearningResponse.model_validate(
+        {
+            "title": "Ten phrases",
+            "summary": "This set is complete.",
+            "language": "English",
+            "phrases": [phrase] * 10,
+        }
+    )
+    assert len(result.phrases) == 10
+
+
 def test_word_schema_requires_a_featured_word() -> None:
     with pytest.raises(ValidationError):
         WordLearningResponse.model_validate(
@@ -124,6 +153,14 @@ def test_every_action_prompt_includes_a_format_and_sample(
     prompt = prompt_for(agent_request)
     assert "RESPONSE FORMAT (required)" in prompt
     assert "SAMPLE ANSWER" in prompt
+
+
+def test_phrase_prompt_contains_a_complete_ten_item_sample() -> None:
+    prompt = prompt_for(AgentRequest(action="phrases", culture="Ainu"))
+    assert "Create exactly 10 compact beginner items" in prompt
+    assert '"original": "Hello"' in prompt
+    assert '"original": "See you again"' in prompt
+    assert prompt.count('"original":') == 20
 
 
 def test_word_stream_uses_prompted_output_for_incremental_json() -> None:

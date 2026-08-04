@@ -1345,6 +1345,55 @@
         return true;
       }
 
+      function parsePhraseSet(markdown) {
+        const metadata = {};
+        const phraseFields = new Map();
+        const verification = [];
+
+        String(markdown || "").split(/\r?\n/).forEach((line) => {
+          const trimmed = line.trim();
+          const metaMatch = trimmed.match(/^(TITLE|LANGUAGE|VARIANT|NOTE):\s*(.*)$/i);
+          if (metaMatch) {
+            metadata[metaMatch[1].toLowerCase()] = metaMatch[2].trim();
+            return;
+          }
+
+          const phraseMatch = trimmed.match(/^(PHRASE|PRONUNCIATION|MEANING|USE|CONFIDENCE)\s+(\d{1,2}):\s*(.*)$/i);
+          if (phraseMatch) {
+            const index = Number(phraseMatch[2]);
+            if (index < 1 || index > 10) return;
+            const fields = phraseFields.get(index) || {};
+            const key = phraseMatch[1].toLowerCase() === "phrase" ? "original" : phraseMatch[1].toLowerCase();
+            fields[key] = phraseMatch[3].trim();
+            phraseFields.set(index, fields);
+            return;
+          }
+
+          const verifyMatch = trimmed.match(/^VERIFY\s+\d+:\s*(.*)$/i);
+          if (verifyMatch?.[1]) verification.push(verifyMatch[1].trim());
+        });
+
+        return {
+          title: metadata.title || "10 useful phrases",
+          summary: metadata.note || "",
+          language: metadata.language || "",
+          variant: metadata.variant || "",
+          phrases: [...phraseFields.entries()]
+            .sort(([first], [second]) => first - second)
+            .map(([, fields]) => fields)
+            .filter((phrase) => phrase.original),
+          verification,
+          disclaimer: "AI-generated learning aid — verify with community-led and primary sources."
+        };
+      }
+
+      function renderPhraseSetResponse(target, markdown, streaming = false) {
+        const data = parsePhraseSet(markdown);
+        if (!data.phrases.length) return false;
+        renderLearningResponse(target, data, { streaming });
+        return true;
+      }
+
       function pauseForLivePaint() {
         return new Promise((resolve) => setTimeout(resolve, 18));
       }
@@ -1534,6 +1583,11 @@
                   markdown += piece;
                   if (renderCompactWordResponse(target, markdown, true)) await pauseForLivePaint();
                 }
+              } else if (payload.action === "phrases") {
+                markdown += event.text || "";
+                if (!renderPhraseSetResponse(target, markdown, true)) {
+                  renderMarkdownResponse(target, markdown, true);
+                }
               } else {
                 markdown += event.text || "";
                 renderMarkdownResponse(target, markdown, true);
@@ -1544,7 +1598,9 @@
                 renderLearningResponse(target, event.data, options);
               } else if (markdown) {
                 if (options.compact) renderCompactWordResponse(target, markdown, false);
-                else renderMarkdownResponse(target, markdown, false);
+                else if (payload.action !== "phrases" || !renderPhraseSetResponse(target, markdown, false)) {
+                  renderMarkdownResponse(target, markdown, false);
+                }
               }
             } else if (event.type === "error") {
               streamError = event.error || "The live guide stopped unexpectedly.";
@@ -1559,6 +1615,8 @@
           if (!renderCompactWordResponse(target, markdown, false)) {
             throw new Error("The Living Word response could not be formatted.");
           }
+        } else if (markdown && payload.action === "phrases") {
+          if (!renderPhraseSetResponse(target, markdown, false)) renderMarkdownResponse(target, markdown, false);
         } else if (markdown) renderMarkdownResponse(target, markdown, false);
         else throw new Error("The live guide returned an empty response.");
       }

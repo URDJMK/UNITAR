@@ -44,7 +44,7 @@ Rules:
 - Say clearly when facts, spellings, pronunciation, translations, or language status may vary or need verification.
 - Use the community's preferred name when known. Do not call every Indigenous people a "tribe."
 - Do not rank cultures or flatten meaningful differences.
-- For language examples, name the language or variant and provide fewer items if you cannot give ten confidently.
+- For the phrases experience, return exactly ten compact, public, everyday items. Prefer short phrases; when a full phrase is uncertain, use a well-attested useful word and mark its confidence as verify rather than inventing.
 - Encourage verification with community-led organizations, educators, and primary sources.
 - Format the answer with short Markdown headings, paragraphs, and lists. Never use a Markdown table.
 - Keep the answer useful, warm, concise, and visually scannable.`;
@@ -82,31 +82,83 @@ MEANING: Thank you
 USE: Roughly ee-yai-rai-keh-reh; verify with a fluent speaker.
 HABIT: Traditional embroidery is practiced as a living art in many Ainu communities.`,
   phrases: `RESPONSE FORMAT (required)
-# 10 useful phrases
-**Language:** Specific language · **Variant:** Specific variant or Varies by community
-One short confidence note.
+Return exactly these labeled lines in this order. Do not use Markdown, headings, bullets, blank commentary, or extra fields. Fill all ten phrase slots.
 
-1. **Phrase in original writing**
-   - Pronunciation: short guide
-   - Meaning: short English meaning
-   - Use: one-line everyday context
-   - Confidence: high, medium, or verify
+TITLE: 10 useful [language] phrases
+LANGUAGE: Specific language name
+VARIANT: Specific variant in 12 words or fewer, or Varies by community
+NOTE: One confidence note in 24 words or fewer
+PHRASE 1: Phrase in original writing
+PRONUNCIATION 1: Short guide
+MEANING 1: Short English meaning
+USE 1: One-line everyday context
+CONFIDENCE 1: high, medium, or verify
+PHRASE 2: Phrase in original writing
+PRONUNCIATION 2: Short guide
+MEANING 2: Short English meaning
+USE 2: One-line everyday context
+CONFIDENCE 2: high, medium, or verify
+Continue the same five labeled lines for PHRASE 3 through PHRASE 10.
+VERIFY 1: One specific community-led language source or review step
+VERIFY 2: One spelling, pronunciation, or variant check
 
-Repeat the numbered entry through 10 when supported, then end with ## Verify this.
-
-SAMPLE ANSWER (abbreviated format-only example; the real answer should contain ten when supported)
-# Everyday greetings
-**Language:** Example language · **Variant:** Varies by community
-These examples need confirmation for the learner's community.
-
-1. **Example phrase**
-   - Pronunciation: example pronunciation
-   - Meaning: Hello
-   - Use: An everyday greeting when locally appropriate.
-   - Confidence: verify
-
-## Verify this
-- Confirm spelling and pronunciation with a community-led language source.`,
+SAMPLE ANSWER (complete English format example; copy all ten slots, never copy its content)
+TITLE: 10 useful English phrases
+LANGUAGE: English
+VARIANT: General international English
+NOTE: Ten compact everyday examples in the required card format.
+PHRASE 1: Hello
+PRONUNCIATION 1: heh-LOH
+MEANING 1: A greeting
+USE 1: Use when greeting someone.
+CONFIDENCE 1: high
+PHRASE 2: Good morning
+PRONUNCIATION 2: good MOR-ning
+MEANING 2: A morning greeting
+USE 2: Use earlier in the day.
+CONFIDENCE 2: high
+PHRASE 3: Thank you
+PRONUNCIATION 3: thank yoo
+MEANING 3: An expression of gratitude
+USE 3: Use after receiving help.
+CONFIDENCE 3: high
+PHRASE 4: Please
+PRONUNCIATION 4: pleez
+MEANING 4: A polite request marker
+USE 4: Use when making a request.
+CONFIDENCE 4: high
+PHRASE 5: Excuse me
+PRONUNCIATION 5: ik-SKYOOZ mee
+MEANING 5: A polite way to get attention
+USE 5: Use before interrupting.
+CONFIDENCE 5: high
+PHRASE 6: How are you?
+PRONUNCIATION 6: how ar yoo
+MEANING 6: A wellbeing question
+USE 6: Use in a friendly greeting.
+CONFIDENCE 6: high
+PHRASE 7: I am well
+PRONUNCIATION 7: eye am well
+MEANING 7: A positive reply
+USE 7: Use when answering a wellbeing question.
+CONFIDENCE 7: high
+PHRASE 8: What is your name?
+PRONUNCIATION 8: what iz yor naym
+MEANING 8: A question about someone's name
+USE 8: Use during an introduction.
+CONFIDENCE 8: high
+PHRASE 9: Goodbye
+PRONUNCIATION 9: good-BYE
+MEANING 9: A farewell
+USE 9: Use when leaving.
+CONFIDENCE 9: high
+PHRASE 10: See you again
+PRONUNCIATION 10: see yoo uh-GEN
+MEANING 10: A future-facing farewell
+USE 10: Use when you expect to meet again.
+CONFIDENCE 10: high
+VERIFY 1: Confirm local pronunciation and usage with a fluent speaker.
+VERIFY 2: Check a current language-learning source.`,
   lesson: `RESPONSE FORMAT (required)
 # 35-minute lesson title
 One-sentence lesson overview.
@@ -339,7 +391,7 @@ If a phrase cannot be given confidently, say "Community verification needed" in 
     case "phrases":
       return withResponseGuide(
         "phrases",
-        `Create a beginner learning set of up to 10 everyday phrases connected to ${culture}. Identify the specific language and variant first. For every phrase include the original writing, a careful romanization or pronunciation guide when appropriate, an English meaning, and a one-line usage note. Use a numbered list with bold phrase titles. Do not fabricate to reach ten; explain when fewer can be given confidently. End with a **Verify this** section.`,
+        `Create exactly 10 compact beginner items connected to ${culture}. Prefer public, everyday phrases; if a full phrase is uncertain, use a well-attested useful word instead of stopping early or inventing. Fill every numbered slot from 1 through 10. Keep NOTE under 24 words, VARIANT under 12 words, and every item field to one short line. Put uncertainty only in CONFIDENCE and VERIFY. Do not add history, an introduction, or commentary.`,
       );
     case "lesson": {
       const grade = clean(payload.grade, 40) || "middle school";
