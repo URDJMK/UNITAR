@@ -20,8 +20,8 @@ async function render() {
       },
     },
     {
-      waitUntil() {},
-      passThroughOnException() {},
+      waitUntil() { },
+      passThroughOnException() { },
     },
   );
 }
@@ -39,8 +39,8 @@ async function fetchWorker(path, init) {
       },
     },
     {
-      waitUntil() {},
-      passThroughOnException() {},
+      waitUntil() { },
+      passThroughOnException() { },
     },
   );
 }
@@ -94,8 +94,8 @@ test("standalone demo includes live AI learning tools and the film demo", async 
   assert.match(html, /data-ai-vignette/);
   assert.match(html, /id="voice-dialog"/);
   assert.match(html, /Village Testimony/);
-  assert.match(html, /A life in two paragraphs/);
-  assert.match(html, /Dramatized testimony/);
+  assert.match(html, /A life in two\s+paragraphs/);
+  assert.match(html, /testimony/);
   assert.match(html, /const cultureVignettes = Object\.freeze/);
   assert.match(html, /openAIVignette\(\)/);
   for (const culture of [
@@ -127,6 +127,22 @@ test("standalone demo includes live AI learning tools and the film demo", async 
   assert.match(html, /data-documentary-mode="generate"[\s\S]*<strong>Documentary<\/strong>/);
   assert.match(html, /Create a cultural video/);
   assert.match(html, /showDocumentaryPreview\(\)/);
+  assert.match(html, /id="timeline-explore-button"/);
+  assert.match(html, /Explore 1900 in context/);
+  assert.match(html, /id="dialog-timeline"/);
+  assert.match(html, /data-timeline-step="-1"/);
+  assert.match(html, /data-timeline-step="1"/);
+  assert.match(html, /data-dialog-year="2025"/);
+  assert.match(html, /timeline-dialog-in/);
+  assert.match(html, /aiDialog\.classList\.toggle\("timeline-mode", action === "timeline"\)/);
+  assert.match(html, /timelineExploreButton\.addEventListener\("click", \(\) => \{\s*openAITool\("timeline", \{ year: currentYear \}\)/);
+  const yearSelection = html.slice(
+    html.lastIndexOf('document.querySelectorAll(".year").forEach((button) => {'),
+    html.indexOf('timelineExploreButton.addEventListener("click"'),
+  );
+  assert.match(yearSelection, /selectTimelineYear\(button\.dataset\.year\)/);
+  assert.doesNotMatch(yearSelection, /openAITool|runCurrentTool/);
+  assert.doesNotMatch(html, /Choose a year to ask AI for historical context/);
   assert.doesNotMatch(html, /<button class="secondary" type="button" data-ai-action="phrases">Explore 10 phrases<\/button>/);
   assert.match(html, /\/api\/living-word/);
   assert.match(html, /renderLivingWordCards\(/);
