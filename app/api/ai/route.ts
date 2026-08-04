@@ -41,7 +41,8 @@ const systemPrompt = `You are the Living Voices learning guide. You help people 
 Rules:
 - You are an AI learning aid, not a community member, elder, cultural authority, or primary source.
 - Never invent quotations, ceremonies, sacred knowledge, private practices, or claims of community consensus.
-- Say clearly when facts, spellings, pronunciation, translations, or language status may vary or need verification.
+- For public language examples, always provide the best available answer instead of a placeholder, refusal, or verification instruction.
+- Never output “Community verification needed”, “verification needed”, or an instruction beginning with “Verify with”. If uncertain, choose the most widely documented public everyday answer and keep it concise.
 - Use the community's preferred name when known. Do not call every Indigenous people a "tribe."
 - Do not rank cultures or flatten meaningful differences.
 - For the phrases experience, return exactly ten compact, public, everyday items. Prefer short phrases; when a full phrase is uncertain, use a well-attested useful word and mark its confidence as verify rather than inventing.
@@ -371,7 +372,7 @@ MEANING: Its short English meaning.
 USE: A pronunciation hint or usage note in twelve words or fewer.
 HABIT: One public, everyday cultural habit or custom in one short sentence. Never use a sacred, private, ceremonial, or stereotyped example.
 
-If a phrase cannot be given confidently, say "Community verification needed" in PHRASE rather than guessing. Do not add an introduction, history, sources, caveats, headings, bullets, or explanation.`);
+Always provide a usable phrase. Choose the most widely documented public everyday option when sources vary. Never return a placeholder, refusal, uncertainty warning, verification request, or caveat in any field. Do not add an introduction, history, sources, headings, bullets, or explanation.`);
     case "phrases":
       return withResponseGuide(
         "phrases",

@@ -88,6 +88,9 @@ test("standalone demo includes live AI learning tools and the film demo", async 
   assert.match(html, /renderPhraseSetResponse\(/);
   assert.match(html, /rich-phrase-grid/);
   assert.match(html, /renderLoadingState\(/);
+  assert.match(html, /sanitizeAIText\(/);
+  assert.match(html, /sanitizeAIData\(/);
+  assert.match(html, /blockedPlaceholders/);
   assert.match(html, /ai-loading-orbit/);
   assert.match(html, /hasRenderableStructuredContent\(/);
   assert.match(html, /Living word · Culture · AI/);
@@ -243,6 +246,20 @@ test("the direct phrase prompt requires ten parseable cards", async () => {
   assert.match(source, /Continue the same four labeled lines for PHRASE 3 through PHRASE 10/);
   assert.doesNotMatch(source, /CONFIDENCE 10:|VERIFY 2:/);
   assert.doesNotMatch(source, /provide fewer items if you cannot give ten/);
+});
+
+test("the living word always asks for a usable answer and filters verification placeholders", async () => {
+  const source = await readFile(new URL("../app/api/ai/route.ts", import.meta.url), "utf8");
+  const html = await readFile(
+    new URL("../public/living-voices-demo.html", import.meta.url),
+    "utf8",
+  );
+
+  assert.match(source, /Always provide a usable phrase/);
+  assert.match(source, /Never return a placeholder, refusal, uncertainty warning, verification request, or caveat/);
+  assert.doesNotMatch(source, /say "Community verification needed"/);
+  assert.match(html, /verification\\s\+\(\?:is\\s\+\)\?needed/);
+  assert.match(html, /verify\\s\+with/);
 });
 
 test("the live phrase parser turns all ten streamed slots into cards", async () => {

@@ -2740,10 +2740,31 @@
     }
     refreshAIStatus();
 
+    function sanitizeAIText(value) {
+      const raw = String(value || "");
+      const compact = raw.trim().toLowerCase();
+      const blockedPlaceholders = ["community verification needed", "verification needed"];
+      if (compact && blockedPlaceholders.some((placeholder) => placeholder.startsWith(compact))) return "";
+
+      return raw
+        .replace(/(?:community\s+)?verification\s+(?:is\s+)?needed[.!]?/gi, "")
+        .replace(/(?:please\s+)?verify\s+with\b[^.\n]*(?:\.|$)/gi, "")
+        .replace(/\b(?:needs?|requires?)\s+(?:community\s+)?verification\b[^.\n]*(?:\.|$)/gi, "")
+        .replace(/[ \t]{2,}/g, " ")
+        .trim();
+    }
+
+    function sanitizeAIData(value) {
+      if (typeof value === "string") return sanitizeAIText(value);
+      if (Array.isArray(value)) return value.map(sanitizeAIData).filter((item) => item !== "");
+      if (!value || typeof value !== "object") return value;
+      return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, sanitizeAIData(item)]));
+    }
+
     function element(tag, className, text) {
       const node = document.createElement(tag);
       if (className) node.className = className;
-      if (text !== undefined && text !== null) node.textContent = text;
+      if (text !== undefined && text !== null) node.textContent = sanitizeAIText(text);
       return node;
     }
 
@@ -2779,7 +2800,7 @@
     }
 
     function appendInlineText(parent, value) {
-      const parts = String(value || "").split(/(\*\*[^*]+\*\*)/g);
+      const parts = sanitizeAIText(value).split(/(\*\*[^*]+\*\*)/g);
       parts.forEach((part) => {
         if (part.startsWith("**") && part.endsWith("**")) {
           parent.appendChild(element("strong", "", part.slice(2, -2)));
@@ -2812,6 +2833,7 @@
     }
 
     function renderLivingWordCards(target, data, streaming = false) {
+      data = sanitizeAIData(data);
       prepareRichTarget(target);
       const grid = element("div", "living-mini-grid");
 
@@ -2855,7 +2877,7 @@
       const fields = {};
       String(markdown || "").split(/\r?\n/).forEach((line) => {
         const match = line.trim().match(/^(HABIT|LANGUAGE|VARIANT|PHRASE|MEANING|USE):\s*(.*)$/i);
-        if (match) fields[match[1].toLowerCase()] = match[2].trim();
+        if (match) fields[match[1].toLowerCase()] = sanitizeAIText(match[2]);
       });
       return {
         cultural_habit: fields.habit || "",
@@ -2946,6 +2968,7 @@
     }
 
     function renderLearningResponse(target, data, options = {}) {
+      data = sanitizeAIData(data);
       if (options.compact) {
         renderLivingWordCards(target, data, options.streaming);
         return;
@@ -3008,7 +3031,7 @@
       let suppressSection = false;
 
       String(markdown || "").split(/\r?\n/).forEach((line) => {
-        const trimmed = line.trim();
+        const trimmed = sanitizeAIText(line);
         if (!trimmed) {
           activeList = null;
           return;

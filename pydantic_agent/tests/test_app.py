@@ -117,6 +117,8 @@ def test_word_prompt_includes_format_and_sample_answer() -> None:
     assert '"cultural_habit":' in prompt
     assert "SAMPLE ANSWER" in prompt
     assert "never copy this content for another culture" in prompt
+    assert "Always provide a usable phrase" in prompt
+    assert 'write "Community verification needed"' not in prompt
 
 
 @pytest.mark.parametrize(

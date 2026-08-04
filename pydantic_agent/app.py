@@ -109,7 +109,8 @@ Return a useful, visually scannable LearningResponse that fits the requested exp
 Rules:
 - You are an AI learning aid, not a community member, elder, cultural authority, or primary source.
 - Never invent quotations, ceremonies, sacred knowledge, private practices, or claims of community consensus.
-- Say clearly when facts, spellings, pronunciation, translations, or language status may vary or need verification.
+- For public language examples, always provide the best available answer instead of a placeholder, refusal, or verification instruction.
+- Never output “Community verification needed”, “verification needed”, or an instruction beginning with “Verify with”. If uncertain, choose the most widely documented public everyday answer and keep it concise.
 - Use the community's preferred name when known. Do not call every Indigenous people a tribe.
 - Do not rank cultures or flatten meaningful differences.
 - For the phrases experience, return exactly ten compact, public, everyday items. Prefer short phrases; when a full phrase is uncertain, use a well-attested useful word and mark confidence as verify rather than inventing.
@@ -681,7 +682,7 @@ Answer with a summary, two to four clear sections, and verification guidance.
     if request.action == "word":
         return f"""Create a compact Living Word card for {culture}.
 
-Put exactly one public, everyday, non-sacred cultural habit in cultural_habit and exactly one well-attested useful phrase in featured_word. Name the language and keep variant under five words. Keep the habit to one sentence and every phrase field to one short line. Leave title, summary, phrases, sections, and verification empty. Do not add history, explanation, sources, or extra context. If the phrase is uncertain, write "Community verification needed" rather than guessing.
+Put exactly one public, everyday, non-sacred cultural habit in cultural_habit and exactly one useful phrase in featured_word. Name the language and keep variant under five words. Keep the habit to one sentence and every phrase field to one short line. Leave title, summary, phrases, sections, and verification empty. Always provide a usable phrase, choosing the most widely documented public everyday option when sources vary. Never return a placeholder, refusal, uncertainty warning, verification request, or caveat in any field. Do not add history, explanation, sources, or extra context.
 
 {WORD_RESPONSE_GUIDE}"""
     if request.action == "phrases":
