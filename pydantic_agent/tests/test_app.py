@@ -13,7 +13,9 @@ from app import (
     PhraseLearningResponse,
     WordLearningResponse,
     app,
+    output_type_for,
     packet,
+    partial_learning_snapshot,
     partial_word_snapshot,
     prompt_for,
     streaming_output_type_for,
@@ -163,10 +165,14 @@ def test_phrase_prompt_contains_a_complete_ten_item_sample() -> None:
     assert prompt.count('"original":') == 20
 
 
-def test_word_stream_uses_prompted_output_for_incremental_json() -> None:
-    output = streaming_output_type_for("word")
+@pytest.mark.parametrize(
+    "action",
+    ["ask", "word", "phrases", "lesson", "compare", "translate", "timeline", "museum", "archive"],
+)
+def test_every_action_stream_uses_prompted_output_for_incremental_json(action) -> None:
+    output = streaming_output_type_for(action)
     assert isinstance(output, PromptedOutput)
-    assert output.outputs is WordLearningResponse
+    assert output.outputs is output_type_for(action)
     assert output.template is False
 
 
@@ -191,3 +197,25 @@ def test_partial_word_snapshot_streams_through_a_json_code_fence() -> None:
     )
     assert snapshot is not None
     assert snapshot["featured_word"]["original"] == "Iyayra"
+
+
+def test_partial_question_snapshot_streams_an_in_progress_summary() -> None:
+    snapshot = partial_learning_snapshot(
+        '{"title":"Ainu today","summary":"A living commu',
+        "ask",
+    )
+    assert snapshot is not None
+    assert snapshot["title"] == "Ainu today"
+    assert snapshot["summary"] == "A living commu"
+
+
+def test_partial_phrase_snapshot_streams_cards_before_completion() -> None:
+    snapshot = partial_learning_snapshot(
+        '{"title":"10 Ainu phrases","language":"Ainu","phrases":['
+        '{"original":"Irankarapte","meaning":"Hello"},'
+        '{"original":"Iyairay',
+        "phrases",
+    )
+    assert snapshot is not None
+    assert len(snapshot["phrases"]) == 2
+    assert snapshot["phrases"][1]["original"] == "Iyairay"

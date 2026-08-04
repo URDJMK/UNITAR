@@ -486,15 +486,13 @@ def output_type_for(action: Action) -> type[LearningResponse]:
 
 
 def streaming_output_type_for(action: Action):
-    if action == "word":
-        # PromptedOutput makes Claude stream JSON text instead of waiting for a
-        # completed Anthropic output-tool call. The text is parsed into display
-        # snapshots below and PydanticAI performs full validation at completion.
-        return PromptedOutput(WordLearningResponse, template=False)
-    return output_type_for(action)
+    # PromptedOutput makes Claude stream JSON text instead of waiting for a
+    # completed Anthropic output-tool call. The text is parsed into display
+    # snapshots below and PydanticAI performs full validation at completion.
+    return PromptedOutput(output_type_for(action), template=False)
 
 
-def partial_word_snapshot(text: str) -> dict[str, object] | None:
+def partial_json_object(text: str) -> dict[str, object] | None:
     json_text = text.lstrip()
     if json_text.startswith("```"):
         first_line_end = json_text.find("\n")
@@ -508,32 +506,59 @@ def partial_word_snapshot(text: str) -> dict[str, object] | None:
         data = from_json(json_text, allow_partial="trailing-strings")
     except ValueError:
         return None
-    if not isinstance(data, dict):
+    return data if isinstance(data, dict) else None
+
+
+def partial_text(value: object, max_length: int) -> str:
+    return value[:max_length] if isinstance(value, str) else ""
+
+
+def partial_phrase(value: object) -> dict[str, str] | None:
+    if not isinstance(value, dict):
+        return None
+    confidence = partial_text(value.get("confidence"), 12)
+    if confidence not in {"high", "medium", "verify"}:
+        confidence = "verify"
+    phrase = {
+        "original": partial_text(value.get("original"), 120),
+        "pronunciation": partial_text(value.get("pronunciation"), 140),
+        "meaning": partial_text(value.get("meaning"), 180),
+        "usage": partial_text(value.get("usage"), 240),
+        "confidence": confidence,
+    }
+    return phrase if any(phrase[key] for key in ("original", "pronunciation", "meaning", "usage")) else None
+
+
+def partial_section(value: object) -> dict[str, object] | None:
+    if not isinstance(value, dict):
+        return None
+    bullets = value.get("bullets")
+    section = {
+        "heading": partial_text(value.get("heading"), 160),
+        "body": partial_text(value.get("body"), 2000),
+        "bullets": [partial_text(item, 500) for item in bullets[:20] if isinstance(item, str)]
+        if isinstance(bullets, list)
+        else [],
+    }
+    return section if section["heading"] or section["body"] or section["bullets"] else None
+
+
+def partial_word_snapshot(text: str) -> dict[str, object] | None:
+    data = partial_json_object(text)
+    if data is None:
         return None
 
-    featured = data.get("featured_word")
-    featured_data: dict[str, str] | None = None
-    if isinstance(featured, dict) and str(featured.get("original", "")):
-        confidence = str(featured.get("confidence", "verify"))
-        if confidence not in {"high", "medium", "verify"}:
-            confidence = "verify"
-        featured_data = {
-            "original": str(featured.get("original", ""))[:80],
-            "pronunciation": str(featured.get("pronunciation", ""))[:100],
-            "meaning": str(featured.get("meaning", ""))[:120],
-            "usage": str(featured.get("usage", ""))[:160],
-            "confidence": confidence,
-        }
+    featured_data = partial_phrase(data.get("featured_word"))
 
-    cultural_habit = str(data.get("cultural_habit", ""))[:180]
+    cultural_habit = partial_text(data.get("cultural_habit"), 180)
     if featured_data is None and not cultural_habit:
         return None
 
     return {
         "title": "",
         "summary": "",
-        "language": str(data.get("language", ""))[:80],
-        "variant": str(data.get("variant", ""))[:60],
+        "language": partial_text(data.get("language"), 80),
+        "variant": partial_text(data.get("variant"), 60),
         "featured_word": featured_data,
         "phrases": [],
         "sections": [],
@@ -543,14 +568,66 @@ def partial_word_snapshot(text: str) -> dict[str, object] | None:
     }
 
 
-async def stream_word_response(prompt: str) -> AsyncIterator[bytes]:
+def partial_learning_snapshot(text: str, action: Action) -> dict[str, object] | None:
+    if action == "word":
+        return partial_word_snapshot(text)
+
+    data = partial_json_object(text)
+    if data is None:
+        return None
+
+    phrases_value = data.get("phrases")
+    phrases = (
+        [phrase for item in phrases_value[:10] if (phrase := partial_phrase(item)) is not None]
+        if isinstance(phrases_value, list)
+        else []
+    )
+    sections_value = data.get("sections")
+    sections = (
+        [section for item in sections_value[:10] if (section := partial_section(item)) is not None]
+        if isinstance(sections_value, list)
+        else []
+    )
+    verification_value = data.get("verification")
+    verification = (
+        [partial_text(item, 500) for item in verification_value[:6] if isinstance(item, str)]
+        if isinstance(verification_value, list)
+        else []
+    )
+    snapshot: dict[str, object] = {
+        "title": partial_text(data.get("title"), 200),
+        "summary": partial_text(data.get("summary"), 2400),
+        "language": partial_text(data.get("language"), 80),
+        "variant": partial_text(data.get("variant"), 100),
+        "featured_word": partial_phrase(data.get("featured_word")),
+        "phrases": phrases,
+        "sections": sections,
+        "verification": verification,
+        "disclaimer": partial_text(data.get("disclaimer"), 240) or DISCLAIMER,
+    }
+    visible = any(
+        (
+            snapshot["title"],
+            snapshot["summary"],
+            snapshot["language"],
+            snapshot["variant"],
+            snapshot["featured_word"],
+            phrases,
+            sections,
+            verification,
+        )
+    )
+    return snapshot if visible else None
+
+
+async def stream_learning_response(prompt: str, action: Action) -> AsyncIterator[bytes]:
     text_buffer = ""
     last_snapshot = ""
     completed = False
 
     async with agent.run_stream_events(
         prompt,
-        output_type=streaming_output_type_for("word"),
+        output_type=streaming_output_type_for(action),
         usage_limits=UsageLimits(request_limit=3),
     ) as stream_events:
         async for event in stream_events:
@@ -565,7 +642,7 @@ async def stream_word_response(prompt: str) -> AsyncIterator[bytes]:
                 text_changed = True
 
             if text_changed:
-                snapshot = partial_word_snapshot(text_buffer)
+                snapshot = partial_learning_snapshot(text_buffer, action)
                 if snapshot is not None:
                     serialized = json.dumps(snapshot, ensure_ascii=False, sort_keys=True)
                     if serialized != last_snapshot:
@@ -574,8 +651,9 @@ async def stream_word_response(prompt: str) -> AsyncIterator[bytes]:
 
             if isinstance(event, AgentRunResultEvent):
                 output = event.result.output
-                if not isinstance(output, WordLearningResponse):
-                    output = WordLearningResponse.model_validate(output)
+                expected_output = output_type_for(action)
+                if not isinstance(output, expected_output):
+                    output = expected_output.model_validate(output)
                 final_data = output.model_dump(mode="json")
                 yield packet(
                     "done",
@@ -673,29 +751,8 @@ async def stream(
     async def events() -> AsyncIterator[bytes]:
         yield packet("meta", action=request.action, runtime="pydantic-ai", model=model_name)
         try:
-            if request.action == "word":
-                async for event in stream_word_response(prompt):
-                    yield event
-                return
-
-            async with agent.run_stream(
-                prompt,
-                output_type=streaming_output_type_for(request.action),
-                usage_limits=UsageLimits(request_limit=3),
-            ) as result:
-                latest: LearningResponse | None = None
-                async for snapshot in result.stream_output(debounce_by=0.06):
-                    latest = snapshot
-                    yield packet("snapshot", data=snapshot.model_dump(mode="json"))
-
-                if latest is not None:
-                    yield packet(
-                        "done",
-                        data=latest.model_dump(mode="json"),
-                        usage=asdict(result.usage),
-                    )
-                else:
-                    yield packet("error", error="The agent returned no validated output.")
+            async for event in stream_learning_response(prompt, request.action):
+                yield event
         except Exception as error:
             yield packet("error", error=str(error))
 

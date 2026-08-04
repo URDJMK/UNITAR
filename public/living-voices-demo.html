@@ -1389,13 +1389,21 @@
 
       function renderPhraseSetResponse(target, markdown, streaming = false) {
         const data = parsePhraseSet(markdown);
-        if (!data.phrases.length) return false;
+        const hasContent = data.phrases.length || data.language || data.variant || data.summary || /^TITLE:\s*.+/im.test(markdown);
+        if (!hasContent) return false;
         renderLearningResponse(target, data, { streaming });
         return true;
       }
 
-      function pauseForLivePaint() {
-        return new Promise((resolve) => setTimeout(resolve, 18));
+      function renderTextStream(payload, target, markdown, streaming, options = {}) {
+        if (options.compact) return renderCompactWordResponse(target, markdown, streaming);
+        if (payload.action === "phrases") return renderPhraseSetResponse(target, markdown, streaming);
+        renderMarkdownResponse(target, markdown, streaming);
+        return true;
+      }
+
+      function pauseForLivePaint(delay = 18) {
+        return new Promise((resolve) => setTimeout(resolve, delay));
       }
 
       function liveTextPieces(value, size = 8) {
@@ -1533,11 +1541,16 @@
       function hasRenderableStructuredContent(data, action) {
         if (!data) return false;
         if (action === "word") return Boolean(data.featured_word);
-        if (action === "phrases") return Boolean(data.phrases?.length);
-        if (action === "lesson" || action === "compare" || action === "timeline" || action === "museum" || action === "archive") {
-          return Boolean(data.sections?.length || data.summary);
-        }
-        return Boolean(data.summary || data.sections?.length || data.featured_word);
+        return Boolean(
+          data.title ||
+          data.summary ||
+          data.language ||
+          data.variant ||
+          data.featured_word ||
+          data.phrases?.length ||
+          data.sections?.length ||
+          data.verification?.length
+        );
       }
 
       async function streamClaude(payload, target, options = {}) {
@@ -1575,30 +1588,26 @@
               latestStructured = event.data;
               if (hasRenderableStructuredContent(event.data, payload.action)) {
                 renderLearningResponse(target, event.data, { ...options, streaming: true });
-                if (options.compact) await pauseForLivePaint();
+                await pauseForLivePaint(options.compact ? 18 : 12);
               }
             } else if (event.type === "delta") {
-              if (options.compact) {
-                for (const piece of liveTextPieces(event.text)) {
-                  markdown += piece;
-                  if (renderCompactWordResponse(target, markdown, true)) await pauseForLivePaint();
+              const pieceSize = options.compact ? 8 : 14;
+              for (const piece of liveTextPieces(event.text, pieceSize)) {
+                if (options.isCurrent && !options.isCurrent()) {
+                  await reader.cancel();
+                  return;
                 }
-              } else if (payload.action === "phrases") {
-                markdown += event.text || "";
-                if (!renderPhraseSetResponse(target, markdown, true)) {
-                  renderMarkdownResponse(target, markdown, true);
+                markdown += piece;
+                if (renderTextStream(payload, target, markdown, true, options)) {
+                  await pauseForLivePaint(options.compact ? 18 : 12);
                 }
-              } else {
-                markdown += event.text || "";
-                renderMarkdownResponse(target, markdown, true);
               }
             } else if (event.type === "done") {
               if (event.data) {
                 latestStructured = event.data;
                 renderLearningResponse(target, event.data, options);
               } else if (markdown) {
-                if (options.compact) renderCompactWordResponse(target, markdown, false);
-                else if (payload.action !== "phrases" || !renderPhraseSetResponse(target, markdown, false)) {
+                if (!renderTextStream(payload, target, markdown, false, options)) {
                   renderMarkdownResponse(target, markdown, false);
                 }
               }
@@ -1611,14 +1620,13 @@
         if (streamError) throw new Error(streamError);
         if (!response.ok) throw new Error("The live guide could not answer this request.");
         if (latestStructured) renderLearningResponse(target, latestStructured, options);
-        else if (markdown && options.compact) {
-          if (!renderCompactWordResponse(target, markdown, false)) {
-            throw new Error("The Living Word response could not be formatted.");
+        else if (markdown) {
+          const rendered = renderTextStream(payload, target, markdown, false, options);
+          if (!rendered && options.compact) throw new Error("The Living Word response could not be formatted.");
+          if (!rendered && !options.compact) {
+            renderMarkdownResponse(target, markdown, false);
           }
-        } else if (markdown && payload.action === "phrases") {
-          if (!renderPhraseSetResponse(target, markdown, false)) renderMarkdownResponse(target, markdown, false);
-        } else if (markdown) renderMarkdownResponse(target, markdown, false);
-        else throw new Error("The live guide returned an empty response.");
+        } else throw new Error("The live guide returned an empty response.");
       }
 
       async function loadFeaturedWord() {

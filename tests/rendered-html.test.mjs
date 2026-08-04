@@ -96,6 +96,7 @@ test("standalone demo includes live AI learning tools and the film demo", async 
   assert.match(html, /renderLivingWordCards\(/);
   assert.match(html, /pauseForLivePaint\(/);
   assert.match(html, /liveTextPieces\(/);
+  assert.match(html, /renderTextStream\(/);
   assert.doesNotMatch(html, />Generate (?:phrases|lesson|comparison|documentary)</i);
   assert.match(html, /Community archive/);
   assert.match(html, /Compare cultures/);
@@ -127,6 +128,23 @@ test("AI route is implemented as an NDJSON stream", async () => {
   assert.match(source, /PYDANTIC_AGENT_URL/);
   assert.match(source, /stream:\s*true/);
   assert.match(source, /async function proxyPydanticAgent[\s\S]*response\.body\.getReader\(\)/);
+});
+
+test("every frontend AI action paints streamed chunks live", async () => {
+  const html = await readFile(
+    new URL("../public/living-voices-demo.html", import.meta.url),
+    "utf8",
+  );
+  assert.match(
+    html,
+    /event\.type === "delta"[\s\S]*for \(const piece of liveTextPieces\(event\.text, pieceSize\)\)[\s\S]*renderTextStream\([\s\S]*await pauseForLivePaint/,
+  );
+  assert.match(
+    html,
+    /event\.type === "snapshot"[\s\S]*renderLearningResponse\([\s\S]*await pauseForLivePaint/,
+  );
+  assert.match(html, /streamClaude\(\{ action: "ask", question \}, answer\)/);
+  assert.match(html, /streamClaude\(currentToolPayload\(\), aiResult/);
 });
 
 test("every direct Claude experience has an explicit format and sample answer", async () => {
