@@ -346,7 +346,7 @@
 
       .feature-grid {
         display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
+        grid-template-columns: repeat(3, minmax(0, 1fr));
         gap: 12px;
       }
 
@@ -467,6 +467,43 @@
       .ai-result.visible { display: block; }
       .ai-result.loading { display: block; color: var(--muted); }
       .ai-meta { margin-top: 14px; color: var(--muted); font-size: .78rem; }
+
+      .voice-dialog { width: min(680px, calc(100% - 28px)); }
+      .voice-attribution {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: 7px;
+        margin: 6px 0 22px;
+        color: var(--muted);
+      }
+      .voice-attribution strong { color: var(--ink); }
+      .voice-quote {
+        margin: 0;
+        padding: clamp(22px, 5vw, 34px);
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        background: #f7f4ec;
+      }
+      .voice-original {
+        margin: 9px 0 24px;
+        font-family: Georgia, serif;
+        font-size: clamp(1.65rem, 4vw, 2.45rem);
+        line-height: 1.2;
+      }
+      .voice-translation {
+        padding-top: 20px;
+        border-top: 1px solid var(--line);
+      }
+      .voice-translation p { margin: 8px 0 0; font-size: 1.08rem; line-height: 1.6; }
+      .voice-context { margin: 20px 0 0; color: var(--muted); line-height: 1.65; }
+      .voice-source {
+        display: inline-flex;
+        margin-top: 18px;
+        color: var(--green);
+        font-weight: 850;
+        text-underline-offset: 4px;
+      }
 
       .ai-loading-shell {
         display: grid;
@@ -932,12 +969,9 @@
 
           <div id="features" class="feature-grid">
             <button class="feature-button" type="button" data-go="documentary"><span class="feature-icon">▶</span><strong>Watch Story</strong><small>Auto-start film demo</small></button>
-            <button class="feature-button" type="button" data-ai-action="phrases"><span class="feature-icon">◉</span><strong>See Pronunciation</strong><small>Live language examples</small></button>
             <button class="feature-button" type="button" data-ai-action="phrases"><span class="feature-icon">Aa</span><strong>Learn 10 Phrases</strong><small>Generated live by Claude</small></button>
-            <button class="feature-button" type="button" data-go="story" data-auto-question="Give me a short, respectful introduction to this community and its living culture."><span class="feature-icon">✦</span><strong>Story Companion</strong><small>Live introduction</small></button>
+            <button class="feature-button" type="button" data-real-voice><span class="feature-icon">“</span><strong>Quote from a Real Voice</strong><small>Curated archival excerpt</small></button>
             <button class="feature-button" type="button" data-ai-action="translate"><span class="feature-icon">文</span><strong>Translate Text</strong><small>Claude + review notes</small></button>
-            <button class="feature-button" type="button" data-ai-action="museum"><span class="feature-icon">⌂</span><strong>Museum Guide</strong><small>Generate an introduction</small></button>
-            <button class="feature-button" type="button" data-go="documentary"><span class="feature-icon">▣</span><strong>Documentary</strong><small>Generate a short film</small></button>
             <button class="feature-button" type="button" data-go="story" data-auto-question="What should a first-time learner understand about this community?"><span class="feature-icon">◌</span><strong>Ask a Question</strong><small>Starts with an answer</small></button>
           </div>
 
@@ -1056,7 +1090,7 @@
               <button type="button" data-question="Where should I verify this information?">Where should I verify?</button>
             </div>
             <form class="chat-row" id="chat-form">
-              <input class="chat-input" id="chat-input" type="text" placeholder="Ask a simple question…" aria-label="Ask the story companion" />
+              <input class="chat-input" id="chat-input" type="text" placeholder="Ask a simple question…" aria-label="Ask the cultural learning guide" />
               <button class="primary" type="submit">Ask</button>
             </form>
           </div>
@@ -1100,6 +1134,27 @@
       </div>
     </dialog>
 
+    <dialog class="ai-dialog voice-dialog" id="voice-dialog" aria-labelledby="voice-dialog-title">
+      <div class="ai-dialog-inner">
+        <div class="dialog-top">
+          <span class="pill">Curated community-source excerpt</span>
+          <form method="dialog"><button class="dialog-close" type="submit" aria-label="Close real voice">×</button></form>
+        </div>
+        <h2 id="voice-dialog-title">A real voice</h2>
+        <div class="voice-attribution"><strong id="voice-speaker"></strong><span id="voice-place"></span></div>
+        <blockquote class="voice-quote" id="voice-quote">
+          <div class="eyebrow" id="voice-language">Original words</div>
+          <p class="voice-original" id="voice-original"></p>
+          <div class="voice-translation">
+            <div class="eyebrow">English translation</div>
+            <p id="voice-translation"></p>
+          </div>
+        </blockquote>
+        <p class="voice-context" id="voice-context"></p>
+        <a class="voice-source" id="voice-source" target="_blank" rel="noopener noreferrer">Open the source archive ↗</a>
+      </div>
+    </dialog>
+
     <script>
       const views = {
         home: document.getElementById("home-view"),
@@ -1114,6 +1169,66 @@
         region: "Hokkaido and northern Japan",
         focus: "Ainu language, stories, and living heritage"
       };
+
+      const realVoices = Object.freeze({
+        Ainu: {
+          speaker: "Kimi Kimura",
+          place: "Penakori Village · Saru Ainu · recorded oral narrative",
+          lang: "ain",
+          language: "Original Ainu words",
+          original: "kotan kor utar aep uwekarpare pa.",
+          translation: "The villagers gathered food.",
+          context: "Kimura (1900–1988) was an Ainu speaker and storyteller born in Penakori Village. This short line is preserved in NINJAL’s permissioned, transcribed oral archive; it is not generated by AI.",
+          sourceLabel: "Open the NINJAL Ainu oral archive ↗",
+          sourceUrl: "https://ainu.ninjal.ac.jp/folklore/en/"
+        },
+        Māori: {
+          speaker: "Sir James Hēnare",
+          place: "Ngāpuhi leader · Waitangi Tribunal hearing, 1985",
+          lang: "mi",
+          language: "Original te reo Māori",
+          original: "Ko te reo te mauri o te mana Māori.",
+          translation: "The language is the life force of mana Māori.",
+          context: "Hēnare spoke these words during the Māori-language claim hearings. Te Ara preserves the excerpt and its translation; it is presented here as a short attributed quotation, not AI testimony.",
+          sourceLabel: "Open the Te Ara source record ↗",
+          sourceUrl: "https://teara.govt.nz/en/video/41077/ko-te-reo-te-mauri-o-te-mana-maori"
+        }
+      });
+
+      function voiceForSelectedCulture() {
+        const voice = realVoices[selectedCulture.name];
+        if (voice) return voice;
+        return {
+          speaker: `${selectedCulture.name} voice archive`,
+          place: "Translation-verified excerpt not yet curated",
+          lang: "en",
+          language: "Curation note",
+          original: "A verified original-language excerpt is not yet available in this prototype.",
+          translation: "Living Voices will not invent testimony or attribute AI-written words to a real person.",
+          context: "Choose Ainu or Māori to view a short, attributable example while more rights-cleared community sources are reviewed.",
+          sourceLabel: "",
+          sourceUrl: ""
+        };
+      }
+
+      function openRealVoice() {
+        const voice = voiceForSelectedCulture();
+        document.getElementById("voice-dialog-title").textContent = `A real voice: ${selectedCulture.name}`;
+        document.getElementById("voice-speaker").textContent = voice.speaker;
+        document.getElementById("voice-place").textContent = voice.place;
+        document.getElementById("voice-language").textContent = voice.language;
+        const original = document.getElementById("voice-original");
+        original.textContent = voice.original;
+        original.lang = voice.lang;
+        document.getElementById("voice-translation").textContent = voice.translation;
+        document.getElementById("voice-context").textContent = voice.context;
+        const source = document.getElementById("voice-source");
+        source.textContent = voice.sourceLabel;
+        source.href = voice.sourceUrl || "#";
+        source.hidden = !voice.sourceUrl;
+        document.getElementById("voice-quote").cite = voice.sourceUrl;
+        document.getElementById("voice-dialog").showModal();
+      }
 
       function showView(name) {
         Object.values(views).forEach((view) => view.classList.remove("active"));
@@ -1150,6 +1265,10 @@
             askQuestion(button.dataset.autoQuestion);
           }
         });
+      });
+
+      document.querySelectorAll("[data-real-voice]").forEach((button) => {
+        button.addEventListener("click", openRealVoice);
       });
 
       cultureCards.forEach((card) => card.addEventListener("click", () => selectCulture(card)));
