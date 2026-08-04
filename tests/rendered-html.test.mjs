@@ -102,12 +102,21 @@ test("standalone demo includes live AI learning tools and the film demo", async 
     "Ainu", "Sámi", "Māori", "Jeju", "Nüshu", "Quechua", "Amazigh", "Diné", "Mapuche",
     "Inuit", "Yolŋu", "Hmong", "Haida", "Cherokee", "Garifuna", "Sápara", "Nenets", "Basque",
   ]) {
-    assert.match(html, new RegExp(`\\b${culture}: \\{`), `${culture} should have an AI vignette`);
+    assert.match(html, new RegExp(`"${culture}": \\{`), `${culture} should have a testimony`);
   }
   const testimonyDialog = html.slice(html.indexOf('<dialog class="ai-dialog voice-dialog"'), html.indexOf("<script>"));
   assert.doesNotMatch(testimonyDialog, />AI</);
-  assert.match(html, /speaker: "Emi"/);
-  assert.match(html, /speaker: "Ane"/);
+  assert.match(html, /"speaker": "Emi"/);
+  assert.match(html, /"speaker": "Ane"/);
+  assert.match(html, /"language": "Ainu"/);
+  assert.match(html, /"language": "Euskara"/);
+  assert.equal((html.match(/"localFirst":/g) || []).length, 18);
+  assert.equal((html.match(/"localSecond":/g) || []).length, 18);
+  assert.match(html, /id="voice-local-first"/);
+  assert.match(html, /id="voice-local-second"/);
+  assert.match(html, /id="voice-english-first"/);
+  assert.match(html, /id="voice-english-second"/);
+  assert.match(html, /English translation/);
   assert.doesNotMatch(html, /A verified original-language excerpt is not yet available/i);
   assert.doesNotMatch(html, /Claude|Sonnet/i);
   assert.doesNotMatch(html, /class="confidence"|verification-card|rich-disclaimer/);
