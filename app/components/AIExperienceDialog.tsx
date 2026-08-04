@@ -87,7 +87,10 @@ export const AIExperienceDialog = forwardRef<AIExperienceHandle, { community: Co
       abortRef.current?.abort();
       const controller = new AbortController();
       abortRef.current = controller;
-      streamAI(pendingRequest.payload, community.name, setStreamState, { signal: controller.signal }).catch((error: unknown) => {
+      streamAI(pendingRequest.payload, community.name, setStreamState, {
+        cacheScope: community.slug,
+        signal: controller.signal,
+      }).catch((error: unknown) => {
         if (controller.signal.aborted) return;
         setStreamState({
           ...emptyAIStream,
@@ -95,7 +98,7 @@ export const AIExperienceDialog = forwardRef<AIExperienceHandle, { community: Co
         });
       });
       return () => controller.abort();
-    }, [community.name, pendingRequest]);
+    }, [community.name, community.slug, pendingRequest]);
 
     useEffect(() => () => {
       abortRef.current?.abort();

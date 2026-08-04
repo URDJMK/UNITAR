@@ -1,6 +1,11 @@
 "use client";
 
 import { Fragment, ReactNode } from "react";
+import {
+  getAIResponseCacheGeneration,
+  readCachedAIResponse,
+  writeCachedAIResponse,
+} from "../lib/ai-cache";
 
 export type AIAction =
   | "ask"
@@ -157,14 +162,23 @@ export async function streamAI(
   payload: AIPayload,
   culture: string,
   onUpdate: (state: AIStreamState) => void,
-  options: { endpoint?: string; signal?: AbortSignal } = {},
+  options: { endpoint?: string; signal?: AbortSignal; cacheScope?: string } = {},
 ) {
+  const endpoint = options.endpoint || "/api/ai";
+  const cacheRequest = { scope: options.cacheScope || culture, endpoint, payload };
+  const cacheGeneration = getAIResponseCacheGeneration();
+  const cached = readCachedAIResponse(cacheRequest) as AIStreamState | null;
+  if (cached) {
+    onUpdate(cached);
+    return;
+  }
+
   let markdown = "";
   let latestStructured: LearningResponse | null = null;
   let streamError = "";
   onUpdate({ ...emptyAIStream, loading: true, streaming: true });
 
-  const response = await fetch(options.endpoint || "/api/ai", {
+  const response = await fetch(endpoint, {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({ culture, ...payload }),
@@ -210,7 +224,9 @@ export async function streamAI(
   if (streamError) throw new Error(streamError);
   if (!response.ok) throw new Error("The live guide could not answer this request.");
   if (!latestStructured && !markdown) throw new Error("The live guide returned an empty response.");
-  onUpdate({ loading: false, streaming: false, markdown, data: latestStructured, error: "" });
+  const finalState = { loading: false, streaming: false, markdown, data: latestStructured, error: "" };
+  writeCachedAIResponse(cacheRequest, finalState, cacheGeneration);
+  onUpdate(finalState);
 }
 
 function LoadingState({ title, detail }: { title: string; detail: string }) {

@@ -2,12 +2,18 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import { communities } from "../data/communities";
+import { clearAIResponseCache } from "../lib/ai-cache";
 
 export function DiscoverPage() {
   const router = useRouter();
   const [query, setQuery] = useState("");
+
+  useEffect(() => {
+    clearAIResponseCache();
+  }, []);
+
   const visibleCommunities = useMemo(() => {
     const normalized = query.trim().toLowerCase();
     if (!normalized) return communities;

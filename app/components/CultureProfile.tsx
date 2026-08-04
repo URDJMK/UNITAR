@@ -86,6 +86,7 @@ export function CultureProfile({ community }: { community: Community }) {
   useEffect(() => {
     const controller = new AbortController();
     streamAI({ action: "word" }, community.name, setWordState, {
+      cacheScope: community.slug,
       endpoint: "/api/living-word",
       signal: controller.signal,
     }).catch((error: unknown) => {
@@ -96,7 +97,7 @@ export function CultureProfile({ community }: { community: Community }) {
       });
     });
     return () => controller.abort();
-  }, [community.name]);
+  }, [community.name, community.slug]);
 
   const openTool = (action: Parameters<AIExperienceHandle["open"]>[0]) => aiDialogRef.current?.open(action);
 

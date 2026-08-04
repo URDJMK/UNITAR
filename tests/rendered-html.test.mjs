@@ -1,6 +1,16 @@
 import assert from "node:assert/strict";
 import { access, readFile } from "node:fs/promises";
 import test from "node:test";
+import { createAIResponseCache, createAIResponseCacheKey } from "../app/lib/ai-cache.js";
+
+function createMemoryStorage() {
+  const values = new Map();
+  return {
+    getItem(key) { return values.has(key) ? values.get(key) : null; },
+    removeItem(key) { values.delete(key); },
+    setItem(key, value) { values.set(key, String(value)); },
+  };
+}
 
 async function fetchWorker(path = "/", init) {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
@@ -94,7 +104,102 @@ test("all frontend AI experiences consume NDJSON updates live", async () => {
   assert.match(renderer, /function parsePhraseSet/);
   assert.match(profile, /streamAI\(\{ action: "word" \}/);
   assert.match(dialog, /streamAI\(pendingRequest\.payload, community\.name/);
-  assert.match(ask, /streamAI\(\{ action: "ask", question: cleanQuestion \}/);
+  assert.match(ask, /streamAI\(\s*\{ action: "ask", question: cleanQuestion \}/);
+  assert.ok(
+    renderer.indexOf("readCachedAIResponse(cacheRequest)") < renderer.indexOf("const response = await fetch(endpoint"),
+    "cached results should be returned before the API request starts",
+  );
+});
+
+test("AI result cache isolates every community and request variant", () => {
+  const base = { scope: "ainu", endpoint: "/api/ai", payload: { action: "timeline", year: "1900" } };
+  const keys = [
+    createAIResponseCacheKey(base),
+    createAIResponseCacheKey({ ...base, scope: "maori" }),
+    createAIResponseCacheKey({ ...base, payload: { action: "timeline", year: "1950" } }),
+    createAIResponseCacheKey({ ...base, payload: { action: "translate", text: "Hello", targetLanguage: "Korean" } }),
+    createAIResponseCacheKey({ ...base, payload: { action: "translate", text: "Hello", targetLanguage: "Japanese" } }),
+    createAIResponseCacheKey({ ...base, payload: { action: "lesson", grade: "Elementary school" } }),
+    createAIResponseCacheKey({ ...base, payload: { action: "compare", compareCulture: "Sámi" } }),
+    createAIResponseCacheKey({ ...base, payload: { action: "ask", question: "What language is spoken?" } }),
+  ];
+  assert.equal(new Set(keys).size, keys.length);
+  assert.equal(
+    createAIResponseCacheKey({ ...base, payload: { year: "1900", action: "timeline" } }),
+    createAIResponseCacheKey(base),
+    "payload property order should not affect the cache key",
+  );
+});
+
+test("AI result cache restores structured formatting and ignores incomplete responses", () => {
+  const storage = createMemoryStorage();
+  let timestamp = 100;
+  const cache = createAIResponseCache(storage, () => timestamp++);
+  const request = { scope: "ainu", endpoint: "/api/ai", payload: { action: "phrases" } };
+  const complete = {
+    loading: false,
+    streaming: false,
+    markdown: "",
+    data: {
+      title: "10 useful phrases",
+      featured_word: { original: "Irankarapte", meaning: "Hello" },
+      phrases: [{ original: "Iyairaykere", meaning: "Thank you" }],
+      cultural_habit: "Guests are welcomed with care.",
+    },
+    error: "",
+  };
+  const generation = cache.getGeneration();
+  assert.equal(cache.writeResponse(request, complete, generation), true);
+  assert.deepEqual(cache.readResponse(request), complete);
+  assert.equal(cache.writeResponse(
+    { ...request, payload: { action: "timeline", year: "1800" } },
+    { ...complete, streaming: true },
+    generation,
+  ), false);
+  assert.equal(cache.writeResponse(
+    { ...request, payload: { action: "ask", question: "test" } },
+    { ...complete, data: null, error: "Stopped" },
+    generation,
+  ), false);
+});
+
+test("main-page reset clears only Living Voices AI results and blocks stale writes", () => {
+  const storage = createMemoryStorage();
+  storage.setItem("unrelated-preference", "keep-me");
+  const cache = createAIResponseCache(storage, () => 500);
+  const generation = cache.getGeneration();
+  const state = {
+    loading: false,
+    streaming: false,
+    markdown: "A complete answer",
+    data: null,
+    error: "",
+  };
+  const wordRequest = { scope: "ainu", endpoint: "/api/living-word", payload: { action: "word" } };
+  assert.equal(cache.writeResponse(wordRequest, state, generation), true);
+  assert.equal(cache.writeChat("ainu", [
+    { id: 1, role: "user", text: "What should I know?" },
+    { id: 2, role: "ai", state },
+  ], generation), true);
+  cache.clear();
+  assert.equal(cache.readResponse(wordRequest), null);
+  assert.deepEqual(cache.readChat("ainu"), []);
+  assert.equal(cache.writeResponse(wordRequest, state, generation), false, "a cleared in-flight request must not repopulate the cache");
+  assert.equal(storage.getItem("unrelated-preference"), "keep-me");
+});
+
+test("React routes wire response restoration, chat history, and home reset", async () => {
+  const renderer = await readFile(new URL("../app/components/AIRenderer.tsx", import.meta.url), "utf8");
+  const profile = await readFile(new URL("../app/components/CultureProfile.tsx", import.meta.url), "utf8");
+  const dialog = await readFile(new URL("../app/components/AIExperienceDialog.tsx", import.meta.url), "utf8");
+  const ask = await readFile(new URL("../app/components/AskGuide.tsx", import.meta.url), "utf8");
+  const discover = await readFile(new URL("../app/components/DiscoverPage.tsx", import.meta.url), "utf8");
+  assert.match(renderer, /writeCachedAIResponse\(cacheRequest, finalState, cacheGeneration\)/);
+  assert.match(profile, /cacheScope: community\.slug/);
+  assert.match(dialog, /cacheScope: community\.slug/);
+  assert.match(ask, /readCachedAIChat\(community\.slug\)/);
+  assert.match(ask, /writeCachedAIChat\(community\.slug, messages/);
+  assert.match(discover, /useEffect\(\(\) => \{\s*clearAIResponseCache\(\);\s*\}, \[\]\)/);
 });
 
 test("mobile safeguards remain active for routed components", async () => {
