@@ -14,7 +14,7 @@ uv run uvicorn app:app --host 127.0.0.1 --port 8100
 Required environment variables:
 
 - `ANTHROPIC_API_KEY`
-- `ANTHROPIC_MODEL` (defaults to `claude-sonnet-5`)
+- `ANTHROPIC_MODEL` (defaults to `claude-haiku-4-5-20251001`)
 - `PYDANTIC_AGENT_SECRET` for a hosted service
 
 The Next.js app proxies `/api/ai` to this service when
