@@ -79,7 +79,7 @@ LANGUAGE: Ainu
 VARIANT: Varies by community
 PHRASE: Iyairaykere
 MEANING: Thank you
-USE: Roughly ee-yai-rai-keh-reh; verify with a fluent speaker.
+USE: Roughly ee-yai-rai-keh-reh; used to express sincere gratitude.
 HABIT: Traditional embroidery is practiced as a living art in many Ainu communities.`,
   phrases: `RESPONSE FORMAT (required)
 Return exactly these labeled lines in this order. Do not use Markdown, headings, bullets, blank commentary, or extra fields. Fill all ten phrase slots.
@@ -87,20 +87,16 @@ Return exactly these labeled lines in this order. Do not use Markdown, headings,
 TITLE: 10 useful [language] phrases
 LANGUAGE: Specific language name
 VARIANT: Specific variant in 12 words or fewer, or Varies by community
-NOTE: One confidence note in 24 words or fewer
+NOTE: One useful learning note in 24 words or fewer
 PHRASE 1: Phrase in original writing
 PRONUNCIATION 1: Short guide
 MEANING 1: Short English meaning
 USE 1: One-line everyday context
-CONFIDENCE 1: high, medium, or verify
 PHRASE 2: Phrase in original writing
 PRONUNCIATION 2: Short guide
 MEANING 2: Short English meaning
 USE 2: One-line everyday context
-CONFIDENCE 2: high, medium, or verify
-Continue the same five labeled lines for PHRASE 3 through PHRASE 10.
-VERIFY 1: One specific community-led language source or review step
-VERIFY 2: One spelling, pronunciation, or variant check
+Continue the same four labeled lines for PHRASE 3 through PHRASE 10.
 
 SAMPLE ANSWER (complete English format example; copy all ten slots, never copy its content)
 TITLE: 10 useful English phrases
@@ -111,54 +107,42 @@ PHRASE 1: Hello
 PRONUNCIATION 1: heh-LOH
 MEANING 1: A greeting
 USE 1: Use when greeting someone.
-CONFIDENCE 1: high
 PHRASE 2: Good morning
 PRONUNCIATION 2: good MOR-ning
 MEANING 2: A morning greeting
 USE 2: Use earlier in the day.
-CONFIDENCE 2: high
 PHRASE 3: Thank you
 PRONUNCIATION 3: thank yoo
 MEANING 3: An expression of gratitude
 USE 3: Use after receiving help.
-CONFIDENCE 3: high
 PHRASE 4: Please
 PRONUNCIATION 4: pleez
 MEANING 4: A polite request marker
 USE 4: Use when making a request.
-CONFIDENCE 4: high
 PHRASE 5: Excuse me
 PRONUNCIATION 5: ik-SKYOOZ mee
 MEANING 5: A polite way to get attention
 USE 5: Use before interrupting.
-CONFIDENCE 5: high
 PHRASE 6: How are you?
 PRONUNCIATION 6: how ar yoo
 MEANING 6: A wellbeing question
 USE 6: Use in a friendly greeting.
-CONFIDENCE 6: high
 PHRASE 7: I am well
 PRONUNCIATION 7: eye am well
 MEANING 7: A positive reply
 USE 7: Use when answering a wellbeing question.
-CONFIDENCE 7: high
 PHRASE 8: What is your name?
 PRONUNCIATION 8: what iz yor naym
 MEANING 8: A question about someone's name
 USE 8: Use during an introduction.
-CONFIDENCE 8: high
 PHRASE 9: Goodbye
 PRONUNCIATION 9: good-BYE
 MEANING 9: A farewell
 USE 9: Use when leaving.
-CONFIDENCE 9: high
 PHRASE 10: See you again
 PRONUNCIATION 10: see yoo uh-GEN
 MEANING 10: A future-facing farewell
-USE 10: Use when you expect to meet again.
-CONFIDENCE 10: high
-VERIFY 1: Confirm local pronunciation and usage with a fluent speaker.
-VERIFY 2: Check a current language-learning source.`,
+USE 10: Use when you expect to meet again.`,
   lesson: `RESPONSE FORMAT (required)
 # 35-minute lesson title
 One-sentence lesson overview.
@@ -391,7 +375,7 @@ If a phrase cannot be given confidently, say "Community verification needed" in 
     case "phrases":
       return withResponseGuide(
         "phrases",
-        `Create exactly 10 compact beginner items connected to ${culture}. Prefer public, everyday phrases; if a full phrase is uncertain, use a well-attested useful word instead of stopping early or inventing. Fill every numbered slot from 1 through 10. Keep NOTE under 24 words, VARIANT under 12 words, and every item field to one short line. Put uncertainty only in CONFIDENCE and VERIFY. Do not add history, an introduction, or commentary.`,
+        `Create exactly 10 compact beginner items connected to ${culture}. Prefer public, everyday phrases; if a full phrase is uncertain, use a well-attested useful word instead of stopping early or inventing. Fill every numbered slot from 1 through 10. Keep NOTE under 24 words, VARIANT under 12 words, and every item field to one short line. Do not add confidence levels, disclaimers, history, an introduction, or commentary.`,
       );
     case "lesson": {
       const grade = clean(payload.grade, 40) || "middle school";
@@ -539,7 +523,7 @@ async function streamAnthropic(payload: AiRequest, apiKey: string) {
   });
 
   if (!response.ok || !response.body) {
-    let message = "Claude could not answer this request.";
+    let message = "AI could not answer this request.";
     try {
       const data = (await response.json()) as { error?: { message?: string } };
       message = data.error?.message || message;
@@ -580,14 +564,14 @@ async function streamAnthropic(payload: AiRequest, apiKey: string) {
               controller.enqueue(encoder.encode(packet("delta", { text: event.delta.text || "" })));
             } else if (event.type === "error") {
               controller.enqueue(
-                encoder.encode(packet("error", { error: event.error?.message || "Claude stopped unexpectedly." })),
+                encoder.encode(packet("error", { error: event.error?.message || "AI stopped unexpectedly." })),
               );
             }
           }
         }
         controller.enqueue(encoder.encode(packet("done", { runtime: "anthropic-direct", model })));
       } catch (error) {
-        const message = error instanceof Error ? error.message : "The Claude stream stopped unexpectedly.";
+        const message = error instanceof Error ? error.message : "The AI stream stopped unexpectedly.";
         controller.enqueue(encoder.encode(packet("error", { error: message })));
       } finally {
         controller.close();
@@ -642,7 +626,7 @@ export async function handleAIRequest(request: Request, forcedAction?: AiAction)
     if (!apiKey) {
       return new Response(
         packet("error", {
-          error: "Claude is not configured yet. Add ANTHROPIC_API_KEY to the server environment.",
+          error: "AI is not configured yet. Add the API key to the server environment.",
         }),
         { status: 503, headers: streamHeaders() },
       );

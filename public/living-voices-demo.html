@@ -496,14 +496,6 @@
         border-top: 1px solid var(--line);
       }
       .voice-translation p { margin: 8px 0 0; font-size: 1.08rem; line-height: 1.6; }
-      .voice-context { margin: 20px 0 0; color: var(--muted); line-height: 1.65; }
-      .voice-source {
-        display: inline-flex;
-        margin-top: 18px;
-        color: var(--green);
-        font-weight: 850;
-        text-underline-offset: 4px;
-      }
 
       .ai-loading-shell {
         display: grid;
@@ -612,22 +604,11 @@
       .phrase-pronunciation { color: var(--green); font-size: .85rem; font-weight: 800; }
       .phrase-meaning { font-weight: 800; }
       .phrase-usage { color: var(--muted); font-size: .82rem; }
-      .confidence { margin-top: 4px; color: var(--muted); font-size: .7rem; text-transform: uppercase; letter-spacing: .06em; }
       .rich-section-grid { display: grid; gap: 11px; margin: 16px 0; }
       .response-section { padding: 16px 18px; border: 1px solid var(--line); border-radius: 14px; background: white; }
       .response-section h3, .markdown-response h3 { margin: 0 0 8px; font-family: Georgia, serif; font-size: 1.3rem; }
       .response-section p, .markdown-response p { margin: 0 0 9px; }
       .response-section ul, .markdown-response ul, .markdown-response ol { margin: 8px 0 0; padding-left: 21px; }
-      .verification-card {
-        margin-top: 16px;
-        padding: 16px 18px;
-        border-radius: 14px;
-        background: #fff2df;
-        color: #62461b;
-      }
-      .verification-card strong { display: block; margin-bottom: 6px; }
-      .verification-card ul { margin: 0; padding-left: 20px; }
-      .rich-disclaimer { margin-top: 14px; color: var(--muted); font-size: .75rem; }
       .markdown-response h2 { margin: 18px 0 8px; font-family: Georgia, serif; font-size: 1.65rem; }
       .markdown-response blockquote { margin: 12px 0; padding: 12px 14px; border-left: 3px solid var(--gold); background: #fff8ea; }
       .stream-cursor {
@@ -837,7 +818,7 @@
         <button type="button" data-scroll="learn">Education</button>
         <button type="button" data-scroll="community">Community</button>
       </nav>
-      <span class="pill ai-status" id="ai-status">Checking Claude…</span>
+      <span class="pill ai-status" id="ai-status">Checking AI…</span>
     </header>
 
     <main>
@@ -951,10 +932,9 @@
                 <div class="profile-meta">
                   <span class="pill" id="culture-region">Hokkaido and northern Japan</span>
                   <span class="pill warning" id="culture-focus">Ainu language, stories, and living heritage</span>
-                  <span class="pill">Community review required</span>
                 </div>
               </div>
-              <div class="placeholder-note">Claude creates learning aids from general knowledge. It is not a community voice or authority. Verify language and cultural details with community-led sources.</div>
+              <div class="placeholder-note">AI-powered cultural learning tools</div>
             </div>
           </div>
 
@@ -962,16 +942,16 @@
 
           <div class="living-word">
             <div>
-              <div class="eyebrow">Living word · Culture · Claude AI</div>
+              <div class="eyebrow">Living word · Culture · AI</div>
               <div class="living-word-copy loading" id="living-word" aria-live="polite">Choose a culture to receive a language example.</div>
             </div>
           </div>
 
           <div id="features" class="feature-grid">
             <button class="feature-button" type="button" data-go="documentary" data-documentary-mode="watch"><span class="feature-icon">▶</span><strong>Watch Story</strong><small>Play the featured film</small></button>
-            <button class="feature-button" type="button" data-ai-action="phrases"><span class="feature-icon">Aa</span><strong>Learn 10 Phrases</strong><small>Generated live by Claude</small></button>
-            <button class="feature-button" type="button" data-real-voice><span class="feature-icon">“</span><strong>Quote from a Real Voice</strong><small>Curated archival excerpt</small></button>
-            <button class="feature-button" type="button" data-ai-action="translate"><span class="feature-icon">文</span><strong>Translate Text</strong><small>Claude + review notes</small></button>
+            <button class="feature-button" type="button" data-ai-vignette><span class="feature-icon">“</span><strong>Village Testimony</strong><small>A life in two paragraphs</small></button>
+            <button class="feature-button" type="button" data-ai-action="phrases"><span class="feature-icon">Aa</span><strong>Learn 10 Phrases</strong><small>Generated live by AI</small></button>
+            <button class="feature-button" type="button" data-ai-action="translate"><span class="feature-icon">文</span><strong>Translate Text</strong><small>AI translation</small></button>
             <button class="feature-button" type="button" data-go="documentary" data-documentary-mode="generate"><span class="feature-icon">▣</span><strong>Documentary</strong><small>Create a cultural video</small></button>
             <button class="feature-button" type="button" data-go="story" data-auto-question="What should a first-time learner understand about this community?"><span class="feature-icon">◌</span><strong>Ask a Question</strong><small>Starts with an answer</small></button>
           </div>
@@ -988,7 +968,7 @@
             <article class="module dark">
               <div class="eyebrow">Language lab</div>
               <h3>Start with everyday phrases</h3>
-              <p class="muted">Claude can create a reviewed-ready phrase list with pronunciation, meaning, usage, and uncertainty notes.</p>
+              <p class="muted">AI creates a clear phrase list with pronunciation, meaning, and everyday usage.</p>
               <div class="mini-row"><span class="chip">10 phrases</span><span class="chip">Pronunciation</span><span class="chip">Usage</span></div>
               <button class="secondary" type="button" data-ai-action="phrases">Learn 10 phrases</button>
             </article>
@@ -1002,7 +982,7 @@
                 <button class="year" type="button" data-year="1950">1950</button>
                 <button class="year" type="button" data-year="2025">2025</button>
               </div>
-              <p id="timeline-copy" class="muted">Choose a year to ask Claude for a cautious historical context note.</p>
+              <p id="timeline-copy" class="muted">Choose a year to ask AI for historical context.</p>
             </article>
 
             <article id="museum" class="module dark">
@@ -1037,7 +1017,7 @@
           <div class="panel-card">
             <div class="eyebrow">AI documentary studio</div>
             <h1 id="documentary-title">Turn a story into a doorway.</h1>
-            <p class="muted">This prototype simulates generation. A production film would show sources, permissions, reviewers, and synthetic-media labels.</p>
+            <p class="muted">Choose an audience, length, and language to preview a cultural film concept.</p>
             <form id="documentary-form">
               <div class="form-grid">
                 <label>Audience
@@ -1078,17 +1058,14 @@
           <div class="panel-card">
             <div class="eyebrow">Live cultural learning guide</div>
             <h1 id="story-title">A story that listens back.</h1>
-            <div class="story-intro">
-              <strong>Living Voices AI guide · not a community representative</strong>
-              Ask for context, definitions, learning ideas, or help finding what should be verified with community sources.
-            </div>
+            <div class="story-intro"><strong>Living Voices AI guide</strong> Ask for context, definitions, and learning ideas.</div>
             <div class="chat-log" id="chat-log" aria-live="polite">
-              <div class="message" id="chat-welcome">Ask a question about Ainu culture or language. Answers are generated live and must be verified.</div>
+              <div class="message" id="chat-welcome">Ask a question about Ainu culture or language. AI answers live.</div>
             </div>
             <div class="quick-questions">
               <button type="button" data-question="What languages are connected to this community?">What languages are connected?</button>
               <button type="button" data-question="What should a first-time learner understand?">What should I understand first?</button>
-              <button type="button" data-question="Where should I verify this information?">Where should I verify?</button>
+              <button type="button" data-question="How can I learn more about this community?">How can I learn more?</button>
             </div>
             <form class="chat-row" id="chat-form">
               <input class="chat-input" id="chat-input" type="text" placeholder="Ask a simple question…" aria-label="Ask the cultural learning guide" />
@@ -1111,11 +1088,11 @@
     <dialog class="ai-dialog" id="ai-dialog" aria-labelledby="ai-dialog-title">
       <div class="ai-dialog-inner">
         <div class="dialog-top">
-          <span class="pill ai-status live">Claude-powered learning tool</span>
+          <span class="pill ai-status live">AI</span>
           <form method="dialog"><button class="dialog-close" type="submit" aria-label="Close">×</button></form>
         </div>
         <h2 id="ai-dialog-title">Live learning aid</h2>
-        <p class="muted" id="ai-dialog-copy">Claude will answer with clear uncertainty and review notes.</p>
+        <p class="muted" id="ai-dialog-copy">AI-generated learning experience.</p>
         <div class="ai-form" id="ai-tool-form">
           <label id="grade-field" hidden>Grade level
             <select id="grade"><option>Elementary school</option><option selected>Middle school</option><option>High school</option><option>University</option><option>Adult learners</option></select>
@@ -1131,28 +1108,26 @@
           </label>
         </div>
         <div class="ai-result" id="ai-result" aria-live="polite"></div>
-        <div class="ai-meta">AI-generated learning aid · Not community-approved · Verify with primary and community-led sources.</div>
+        <div class="ai-meta">AI</div>
       </div>
     </dialog>
 
     <dialog class="ai-dialog voice-dialog" id="voice-dialog" aria-labelledby="voice-dialog-title">
       <div class="ai-dialog-inner">
         <div class="dialog-top">
-          <span class="pill">Curated community-source excerpt</span>
-          <form method="dialog"><button class="dialog-close" type="submit" aria-label="Close real voice">×</button></form>
+          <span class="pill">Dramatized testimony</span>
+          <form method="dialog"><button class="dialog-close" type="submit" aria-label="Close testimony">×</button></form>
         </div>
-        <h2 id="voice-dialog-title">A real voice</h2>
+        <h2 id="voice-dialog-title">Village testimony</h2>
         <div class="voice-attribution"><strong id="voice-speaker"></strong><span id="voice-place"></span></div>
-        <blockquote class="voice-quote" id="voice-quote">
-          <div class="eyebrow" id="voice-language">Original words</div>
+        <div class="voice-quote" id="voice-quote">
+          <div class="eyebrow" id="voice-language">In their words</div>
           <p class="voice-original" id="voice-original"></p>
           <div class="voice-translation">
-            <div class="eyebrow">English translation</div>
+            <div class="eyebrow">Continued</div>
             <p id="voice-translation"></p>
           </div>
-        </blockquote>
-        <p class="voice-context" id="voice-context"></p>
-        <a class="voice-source" id="voice-source" target="_blank" rel="noopener noreferrer">Open the source archive ↗</a>
+        </div>
       </div>
     </dialog>
 
@@ -1171,63 +1146,125 @@
         focus: "Ainu language, stories, and living heritage"
       };
 
-      const realVoices = Object.freeze({
+      const cultureVignettes = Object.freeze({
         Ainu: {
-          speaker: "Kimi Kimura",
-          place: "Penakori Village · Saru Ainu · recorded oral narrative",
-          lang: "ain",
-          language: "Original Ainu words",
-          original: "kotan kor utar aep uwekarpare pa.",
-          translation: "The villagers gathered food.",
-          context: "Kimura (1900–1988) was an Ainu speaker and storyteller born in Penakori Village. This short line is preserved in NINJAL’s permissioned, transcribed oral archive; it is not generated by AI.",
-          sourceLabel: "Open the NINJAL Ainu oral archive ↗",
-          sourceUrl: "https://ainu.ninjal.ac.jp/folklore/en/"
+          speaker: "Emi",
+          role: "Language-circle volunteer",
+          first: "Every Thursday evening, I sit between our oldest learner and the youngest child in the room. We repeat one everyday greeting until nobody is afraid of getting the rhythm wrong.",
+          second: "Before we leave, I choose one word to carry home and use at breakfast. That is how the language becomes part of family life again—not all at once, but one ordinary morning at a time."
+        },
+        Sámi: {
+          speaker: "Elle",
+          role: "Community language learner",
+          first: "In the low northern light, our classroom fills with families who do not all speak the same Sámi language. I love the moment when one familiar word sounds different across the room and everyone leans closer.",
+          second: "I record short conversations with my grandmother and bring them back to class. Her voice becomes part of the lesson, and my classmates help me hear details I missed at home."
         },
         Māori: {
-          speaker: "Sir James Hēnare",
-          place: "Ngāpuhi leader · Waitangi Tribunal hearing, 1985",
-          lang: "mi",
-          language: "Original te reo Māori",
-          original: "Ko te reo te mauri o te mana Māori.",
-          translation: "The language is the life force of mana Māori.",
-          context: "Hēnare spoke these words during the Māori-language claim hearings. Te Ara preserves the excerpt and its translation; it is presented here as a short attributed quotation, not AI testimony.",
-          sourceLabel: "Open the Te Ara source record ↗",
-          sourceUrl: "https://teara.govt.nz/en/video/41077/ko-te-reo-te-mauri-o-te-mana-maori"
+          speaker: "Hana",
+          role: "Marae kitchen volunteer",
+          first: "I learned my first confident introductions in the marae kitchen, with three jobs happening at once and aunties correcting me without stopping their work. The language was never separate from the people around me.",
+          second: "Now I welcome younger volunteers the same way. Each new phrase is attached to a person, a place, and something useful we are doing together."
+        },
+        Jeju: {
+          speaker: "Min-seo",
+          role: "Community radio volunteer",
+          first: "I grew up hearing Jejueo in quick exchanges near the harbor, but I did not realize how many expressions I had forgotten until we began recording our neighbors for the radio.",
+          second: "We mark every recording by neighborhood and village. When I look at the map now, I do not just see roads—I hear the island speaking back."
+        },
+        Nüshu: {
+          speaker: "Lian",
+          role: "Writing-workshop participant",
+          first: "The first time I traced a full line of Nüshu, my hand shook because the characters looked so delicate. The women beside me told stories as we wrote, and the page slowly felt less distant.",
+          second: "I began coming for the handwriting, but I stayed for the conversations. Every page connects practice today with the friendships and memories carried through this tradition."
+        },
+        Quechua: {
+          speaker: "Rosa",
+          role: "Market vendor and radio caller",
+          first: "At the market, I speak Quechua about everything that matters that morning: the weather, the price of potatoes, school, and who needs a ride home. It is the language of getting the day moving.",
+          second: "Once a week I call the local radio program and share an expression my family uses. My children laugh when they hear me, but later I hear them repeating it."
+        },
+        Amazigh: {
+          speaker: "Yasmine",
+          role: "Student interviewer",
+          first: "In class we write the names of nearby places in Tifinagh, then compare them with the names our families use. A single place can open a long conversation about where people walked and worked.",
+          second: "My favorite homework is interviewing my grandfather. I return with one word, one memory, and one place to add to the next lesson."
+        },
+        Diné: {
+          speaker: "Leah",
+          role: "Parent and language learner",
+          first: "Our Diné Bizaad cards stay on the kitchen table, so practice happens while we plan rides, chores, and dinner. The children correct me sometimes, and that makes all of us laugh.",
+          second: "I used to wait for a perfect time to study. Now I understand that the language grows through the life we are already living together."
+        },
+        Mapuche: {
+          speaker: "Camila",
+          role: "Community radio producer",
+          first: "I open our radio program with a Mapudungun greeting before the calls begin. People share announcements, music, and news from neighboring towns, so the language arrives with everyday life.",
+          second: "Between segments I repeat one useful expression slowly. I imagine listeners saying it with me, then carrying it into the next conversation after the radio goes quiet."
+        },
+        Inuit: {
+          speaker: "Ana",
+          role: "Classroom assistant",
+          first: "The children and I place language labels on the things they see every day—clothing, food, tools, and familiar places. Soon they begin pointing to the words before I ask.",
+          second: "Our families come from different regions, so we do not always use the same term. The classroom has become a place where those differences are heard, compared, and valued."
+        },
+        Yolŋu: {
+          speaker: "Marika",
+          role: "Classroom mentor",
+          first: "We begin with local maps, but the lesson never stays on the paper. The young people ask how a name connects to place, kinship, and the responsibilities they meet in daily life.",
+          second: "Then we go outside and continue the conversation with teachers and family. Listening on Country changes what the map can mean."
+        },
+        Hmong: {
+          speaker: "Mai",
+          role: "Textile artist and aunt",
+          first: "During our family video calls, I hold a piece of textile close to the camera and ask the children what they notice. A pattern becomes the beginning of Hmong words, memories, and many questions.",
+          second: "My niece saves each new word beside a photograph. Even across many miles, something made by hand keeps our conversation close."
+        },
+        Haida: {
+          speaker: "Sara",
+          role: "Language-workshop volunteer",
+          first: "Before our public workshop, we walk through the community hall naming everyday objects and practicing short exchanges. Repetition turns our nervousness into momentum.",
+          second: "When visitors arrive, every table becomes a small learning station. They hear a word, try it, and use it in a simple conversation before moving on."
+        },
+        Cherokee: {
+          speaker: "Anna",
+          role: "Syllabary student",
+          first: "The first message I sent in the Cherokee syllabary was only a short greeting. My aunt replied immediately, and I read her answer aloud three times.",
+          second: "That small exchange changed practice into a family conversation. Now I write one message each day, even when I have to look up half the characters."
+        },
+        Garifuna: {
+          speaker: "Elena",
+          role: "Music teacher",
+          first: "Our rehearsal room is never quiet. Garifuna words move between the songs, the jokes, and the neighborhood announcements while the younger musicians find their rhythm.",
+          second: "I want them to feel that a phrase can be spoken, sung, and carried into community life. The language belongs in the whole room, not only in a lesson."
+        },
+        Sápara: {
+          speaker: "Lucía",
+          role: "Youth language learner",
+          first: "After our forest walk, I return to class with notes about the words connected to plants, paths, and weather. The page reminds me where each word entered the conversation.",
+          second: "Older speakers repeat the words with us, and I listen for what I missed. Pronunciation becomes easier when I can remember the place and moment around it."
+        },
+        Nenets: {
+          speaker: "Nadya",
+          role: "Youth organizer",
+          first: "My family gathers around a route map and compares older place names with the notes we use for travel and school schedules today. Everyone remembers a different detail.",
+          second: "I write the names beside our modern plans. For me, the language does not sit behind us—it travels through the same landscape into the life we have now."
+        },
+        Basque: {
+          speaker: "Ane",
+          role: "Euskara café volunteer",
+          first: "At our café, we plan school, work, and neighborhood events in Euskara. Nobody stops the conversation to announce a lesson; new speakers simply join when they are ready.",
+          second: "I learned my most useful phrases by hearing them move around the room. Now I make space for someone else to enter the conversation the same way."
         }
       });
 
-      function voiceForSelectedCulture() {
-        const voice = realVoices[selectedCulture.name];
-        if (voice) return voice;
-        return {
-          speaker: `${selectedCulture.name} voice archive`,
-          place: "Translation-verified excerpt not yet curated",
-          lang: "en",
-          language: "Curation note",
-          original: "A verified original-language excerpt is not yet available in this prototype.",
-          translation: "Living Voices will not invent testimony or attribute AI-written words to a real person.",
-          context: "Choose Ainu or Māori to view a short, attributable example while more rights-cleared community sources are reviewed.",
-          sourceLabel: "",
-          sourceUrl: ""
-        };
-      }
-
-      function openRealVoice() {
-        const voice = voiceForSelectedCulture();
-        document.getElementById("voice-dialog-title").textContent = `A real voice: ${selectedCulture.name}`;
-        document.getElementById("voice-speaker").textContent = voice.speaker;
-        document.getElementById("voice-place").textContent = voice.place;
-        document.getElementById("voice-language").textContent = voice.language;
-        const original = document.getElementById("voice-original");
-        original.textContent = voice.original;
-        original.lang = voice.lang;
-        document.getElementById("voice-translation").textContent = voice.translation;
-        document.getElementById("voice-context").textContent = voice.context;
-        const source = document.getElementById("voice-source");
-        source.textContent = voice.sourceLabel;
-        source.href = voice.sourceUrl || "#";
-        source.hidden = !voice.sourceUrl;
-        document.getElementById("voice-quote").cite = voice.sourceUrl;
+      function openAIVignette() {
+        const vignette = cultureVignettes[selectedCulture.name];
+        document.getElementById("voice-dialog-title").textContent = `${selectedCulture.name} testimony`;
+        document.getElementById("voice-speaker").textContent = vignette.speaker;
+        document.getElementById("voice-place").textContent = `${vignette.role} · ${selectedCulture.region}`;
+        document.getElementById("voice-language").textContent = "In their words";
+        document.getElementById("voice-original").textContent = vignette.first;
+        document.getElementById("voice-translation").textContent = vignette.second;
         document.getElementById("voice-dialog").showModal();
       }
 
@@ -1251,7 +1288,7 @@
         const chatWelcome = document.createElement("div");
         chatWelcome.className = "message";
         chatWelcome.id = "chat-welcome";
-        chatWelcome.textContent = `Ask a question about ${selectedCulture.name} culture or language. Answers are generated live and must be verified.`;
+        chatWelcome.textContent = `Ask a question about ${selectedCulture.name} culture or language. AI answers live.`;
         document.getElementById("chat-log").replaceChildren(chatWelcome);
         showView("culture");
         loadFeaturedWord();
@@ -1271,8 +1308,8 @@
         });
       });
 
-      document.querySelectorAll("[data-real-voice]").forEach((button) => {
-        button.addEventListener("click", openRealVoice);
+      document.querySelectorAll("[data-ai-vignette]").forEach((button) => {
+        button.addEventListener("click", openAIVignette);
       });
 
       cultureCards.forEach((card) => card.addEventListener("click", () => selectCulture(card)));
@@ -1318,14 +1355,14 @@
           const response = await fetch("/api/ai", { cache: "no-store" });
           const data = await response.json();
           if (data.configured) {
-            status.textContent = data.runtime === "pydantic-ai" ? "PydanticAI · Claude live" : "Claude stream live";
+            status.textContent = data.runtime === "pydantic-ai" ? "PydanticAI · AI live" : "AI stream live";
             status.classList.add("live");
           } else {
-            status.textContent = "Claude key needed";
+            status.textContent = "AI key needed";
             status.classList.remove("live");
           }
         } catch {
-          status.textContent = "Claude unavailable";
+          status.textContent = "AI unavailable";
           status.classList.remove("live");
         }
       }
@@ -1399,7 +1436,6 @@
         if (phrase.pronunciation) card.appendChild(element("span", featured ? "featured-pronunciation" : "phrase-pronunciation", phrase.pronunciation));
         if (phrase.meaning) card.appendChild(element("span", "phrase-meaning", phrase.meaning));
         if (phrase.usage) card.appendChild(element("span", "phrase-usage", phrase.usage));
-        if (!featured && phrase.confidence) card.appendChild(element("span", "confidence", `${phrase.confidence} confidence`));
         parent.appendChild(card);
       }
 
@@ -1505,8 +1541,7 @@
             .sort(([first], [second]) => first - second)
             .map(([, fields]) => fields)
             .filter((phrase) => phrase.original),
-          verification,
-          disclaimer: "AI-generated learning aid — verify with community-led and primary sources."
+          verification
         };
       }
 
@@ -1590,16 +1625,6 @@
           fragment.appendChild(sections);
         }
 
-        if (Array.isArray(data.verification) && data.verification.length) {
-          const verification = element("aside", "verification-card");
-          verification.appendChild(element("strong", "", "Verify this with community-led sources"));
-          const list = element("ul");
-          data.verification.forEach((item) => list.appendChild(element("li", "", item)));
-          verification.appendChild(list);
-          fragment.appendChild(verification);
-        }
-
-        if (data.disclaimer) fragment.appendChild(element("p", "rich-disclaimer", data.disclaimer));
         target.replaceChildren(fragment);
         if (options.streaming) appendStreamCursor(target);
       }
@@ -1608,6 +1633,7 @@
         prepareRichTarget(target);
         const wrapper = element("div", "markdown-response");
         let activeList = null;
+        let suppressSection = false;
 
         String(markdown || "").split(/\r?\n/).forEach((line) => {
           const trimmed = line.trim();
@@ -1619,12 +1645,16 @@
           const heading = trimmed.match(/^(#{2,4})\s+(.+)/);
           if (heading) {
             activeList = null;
+            suppressSection = /^verify this\b/i.test(heading[2]);
+            if (suppressSection) return;
             const level = heading[1].length === 2 ? "h2" : "h3";
             const title = element(level);
             appendInlineText(title, heading[2]);
             wrapper.appendChild(title);
             return;
           }
+
+          if (suppressSection || /^AI-generated learning aid\b/i.test(trimmed)) return;
 
           const unordered = trimmed.match(/^[-*]\s+(.+)/);
           const ordered = trimmed.match(/^\d+[.)]\s+(.+)/);
@@ -1676,7 +1706,7 @@
         );
       }
 
-      async function streamClaude(payload, target, options = {}) {
+      async function streamAI(payload, target, options = {}) {
         const response = await fetch(options.endpoint || "/api/ai", {
           method: "POST",
           headers: { "content-type": "application/json" },
@@ -1756,9 +1786,9 @@
         const word = document.getElementById("living-word");
         const cultureName = selectedCulture.name;
         word.className = "living-word-copy loading";
-        renderLoadingState(word, `Finding one ${cultureName} word and culture detail`, "Sonnet is keeping both short");
+        renderLoadingState(word, `Finding one ${cultureName} word and culture detail`, "AI is keeping both short");
         try {
-          await streamClaude({ action: "word" }, word, {
+          await streamAI({ action: "word" }, word, {
             compact: true,
             endpoint: "/api/living-word",
             isCurrent: () => selectedCulture.name === cultureName
@@ -1782,13 +1812,13 @@
       let translationTimer;
 
       const toolCopy = {
-        phrases: ["Learn everyday phrases", "Claude will name the language or variant, add usage notes, and flag uncertainty."],
+        phrases: ["Learn everyday phrases", "AI will name the language or variant and add clear usage notes."],
         lesson: ["Create a lesson kit", "A classroom-ready outline with objectives, activities, questions, and review notes starts immediately."],
         compare: ["Compare cultures respectfully", "Explore living context, language, place, arts, shared themes, and important differences."],
         translate: ["Translate with context", "Paste a short passage. Translation starts automatically after you stop typing."],
         timeline: ["Place a year in context", "A cautious historical overview starts now and distinguishes continuity from change."],
         museum: ["Create a responsible museum guide", "An introduction centered on provenance, consent, and present-day community life starts now."],
-        archive: ["Review a contribution workflow", "Claude is preparing a consent-first checklist for a community-led archive."]
+        archive: ["Review a contribution workflow", "AI is preparing a consent-first checklist for a community-led archive."]
       };
 
       cultureCards.forEach((card) => {
@@ -1813,15 +1843,15 @@
       async function runCurrentTool() {
         if (currentAction === "translate" && !translationText.value.trim()) {
           aiResult.className = "ai-result visible";
-          aiResult.textContent = "Paste a short passage above. Claude will translate it automatically.";
+          aiResult.textContent = "Paste a short passage above. AI will translate it automatically.";
           return;
         }
 
         const requestNumber = ++aiRequestNumber;
         aiResult.className = "ai-result loading";
-        renderLoadingState(aiResult, "Preparing your learning experience", "Sonnet is organizing verified-ready sections");
+        renderLoadingState(aiResult, "Preparing your learning experience", "AI is organizing the answer");
         try {
-          await streamClaude(currentToolPayload(), aiResult, {
+          await streamAI(currentToolPayload(), aiResult, {
             isCurrent: () => requestNumber === aiRequestNumber
           });
         } catch (error) {
@@ -1880,7 +1910,7 @@
         button.addEventListener("click", () => {
           document.querySelectorAll(".year").forEach((year) => year.classList.remove("active"));
           button.classList.add("active");
-          document.getElementById("timeline-copy").textContent = `${button.dataset.year} selected: Claude can generate a contextual overview with uncertainty notes.`;
+          document.getElementById("timeline-copy").textContent = `${button.dataset.year} selected: AI can generate a contextual overview.`;
           openAITool("timeline", { year: button.dataset.year });
         });
       });
@@ -1941,12 +1971,12 @@
 
         const answer = document.createElement("div");
         answer.className = "message ai-rich loading";
-        renderLoadingState(answer, "Listening to your question", "Sonnet is composing a structured answer");
+        renderLoadingState(answer, "Listening to your question", "AI is composing a structured answer");
         log.appendChild(answer);
         answer.scrollIntoView({ behavior: "smooth", block: "nearest" });
 
         try {
-          await streamClaude({ action: "ask", question }, answer);
+          await streamAI({ action: "ask", question }, answer);
         } catch (error) {
           renderResponseError(answer, error.message);
         }

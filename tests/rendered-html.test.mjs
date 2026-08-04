@@ -67,7 +67,7 @@ test("standalone demo includes live AI learning tools and the film demo", async 
   assert.match(html, /data-open-ainu/);
   assert.match(html, /Replay film demo/);
   assert.match(html, /Live cultural learning guide/);
-  assert.match(html, /Claude stream live/);
+  assert.match(html, /AI stream live/);
   assert.match(html, /data-name="Sámi"/);
   assert.match(html, /data-name="Diné"/);
   assert.match(html, /data-ai-action="phrases"/);
@@ -77,7 +77,7 @@ test("standalone demo includes live AI learning tools and the film demo", async 
   assert.match(html, /data-auto-question=/);
   assert.match(html, /loadFeaturedWord\(\)/);
   assert.match(html, /runCurrentTool\(\)/);
-  assert.match(html, /streamClaude\(/);
+  assert.match(html, /streamAI\(/);
   assert.match(html, /renderLearningResponse\(/);
   assert.match(html, /parsePhraseSet\(/);
   assert.match(html, /renderPhraseSetResponse\(/);
@@ -85,23 +85,32 @@ test("standalone demo includes live AI learning tools and the film demo", async 
   assert.match(html, /renderLoadingState\(/);
   assert.match(html, /ai-loading-orbit/);
   assert.match(html, /hasRenderableStructuredContent\(/);
-  assert.match(html, /Living word · Culture · Claude AI/);
+  assert.match(html, /Living word · Culture · AI/);
   assert.match(html, /"Living word"/);
   assert.match(html, /"Culture"/);
   assert.match(html, /"Explore 10 phrases"/);
   assert.match(html, /"Ask more"/);
   assert.match(html, /living-mini-action/);
-  assert.match(html, /data-real-voice/);
+  assert.match(html, /data-ai-vignette/);
   assert.match(html, /id="voice-dialog"/);
-  assert.match(html, /Quote from a Real Voice/);
-  assert.match(html, /Kimi Kimura/);
-  assert.match(html, /kotan kor utar aep uwekarpare pa\./);
-  assert.match(html, /The villagers gathered food\./);
-  assert.match(html, /Sir James Hēnare/);
-  assert.match(html, /Ko te reo te mauri o te mana Māori\./);
-  assert.match(html, /will not invent testimony/);
-  assert.match(html, /ainu\.ninjal\.ac\.jp\/folklore\/en/);
-  assert.match(html, /teara\.govt\.nz\/en\/video\/41077/);
+  assert.match(html, /Village Testimony/);
+  assert.match(html, /A life in two paragraphs/);
+  assert.match(html, /Dramatized testimony/);
+  assert.match(html, /const cultureVignettes = Object\.freeze/);
+  assert.match(html, /openAIVignette\(\)/);
+  for (const culture of [
+    "Ainu", "Sámi", "Māori", "Jeju", "Nüshu", "Quechua", "Amazigh", "Diné", "Mapuche",
+    "Inuit", "Yolŋu", "Hmong", "Haida", "Cherokee", "Garifuna", "Sápara", "Nenets", "Basque",
+  ]) {
+    assert.match(html, new RegExp(`\\b${culture}: \\{`), `${culture} should have an AI vignette`);
+  }
+  const testimonyDialog = html.slice(html.indexOf('<dialog class="ai-dialog voice-dialog"'), html.indexOf("<script>"));
+  assert.doesNotMatch(testimonyDialog, />AI</);
+  assert.match(html, /speaker: "Emi"/);
+  assert.match(html, /speaker: "Ane"/);
+  assert.doesNotMatch(html, /A verified original-language excerpt is not yet available/i);
+  assert.doesNotMatch(html, /Claude|Sonnet/i);
+  assert.doesNotMatch(html, /class="confidence"|verification-card|rich-disclaimer/);
   assert.doesNotMatch(html, /<strong>See Pronunciation<\/strong>/);
   assert.doesNotMatch(html, /<strong>Museum Guide<\/strong>/);
   assert.doesNotMatch(html, /<strong>Story Companion<\/strong>/);
@@ -161,11 +170,11 @@ test("every frontend AI action paints streamed chunks live", async () => {
     html,
     /event\.type === "snapshot"[\s\S]*renderLearningResponse\([\s\S]*await pauseForLivePaint/,
   );
-  assert.match(html, /streamClaude\(\{ action: "ask", question \}, answer\)/);
-  assert.match(html, /streamClaude\(currentToolPayload\(\), aiResult/);
+  assert.match(html, /streamAI\(\{ action: "ask", question \}, answer\)/);
+  assert.match(html, /streamAI\(currentToolPayload\(\), aiResult/);
 });
 
-test("every direct Claude experience has an explicit format and sample answer", async () => {
+test("every direct AI experience has an explicit format and sample answer", async () => {
   const source = await readFile(new URL("../app/api/ai/route.ts", import.meta.url), "utf8");
   const actions = [
     "ask",
@@ -197,7 +206,8 @@ test("the direct phrase prompt requires ten parseable cards", async () => {
   const source = await readFile(new URL("../app/api/ai/route.ts", import.meta.url), "utf8");
   assert.match(source, /Create exactly 10 compact beginner items/);
   assert.match(source, /PHRASE 10: See you again/);
-  assert.match(source, /VERIFY 2: Check a current language-learning source/);
+  assert.match(source, /Continue the same four labeled lines for PHRASE 3 through PHRASE 10/);
+  assert.doesNotMatch(source, /CONFIDENCE 10:|VERIFY 2:/);
   assert.doesNotMatch(source, /provide fewer items if you cannot give ten/);
 });
 
@@ -217,15 +227,14 @@ test("the live phrase parser turns all ten streamed slots into cards", async () 
       `PRONUNCIATION ${number}: pronunciation ${number}`,
       `MEANING ${number}: meaning ${number}`,
       `USE ${number}: use ${number}`,
-      `CONFIDENCE ${number}: verify`,
     ].join("\n");
   }).join("\n");
   const context = {
-    markdown: `TITLE: 10 useful phrases\nLANGUAGE: Test language\nVARIANT: Test variant\nNOTE: Compact note\n${slots}\nVERIFY 1: Check a speaker.`,
+    markdown: `TITLE: 10 useful phrases\nLANGUAGE: Test language\nVARIANT: Test variant\nNOTE: Compact note\n${slots}`,
   };
 
   runInNewContext(`${html.slice(parserStart, parserEnd)}\nparsed = parsePhraseSet(markdown);`, context);
   assert.equal(context.parsed.phrases.length, 10);
   assert.equal(context.parsed.phrases[9].original, "Phrase 10");
-  assert.equal(context.parsed.verification[0], "Check a speaker.");
+  assert.equal(context.parsed.verification.length, 0);
 });

@@ -256,7 +256,7 @@ ACTION_RESPONSE_GUIDES: dict[Action, str] = {
     "phrases": response_guide(
         {
             "title": "10 useful phrases",
-            "summary": "One confidence note of no more than 24 words",
+            "summary": "One useful learning note of no more than 24 words",
             "language": "Specific language name",
             "variant": "Specific variant in no more than 12 words, or Varies by community",
             "phrases": PHRASE_RESPONSE_SHAPE,
@@ -685,7 +685,7 @@ Put exactly one public, everyday, non-sacred cultural habit in cultural_habit an
 
 {WORD_RESPONSE_GUIDE}"""
     if request.action == "phrases":
-        return f"""Create exactly 10 compact beginner items connected to {culture}. Prefer public, everyday phrases; if a full phrase is uncertain, use a well-attested useful word instead of stopping early or inventing. Put exactly ten objects in phrases, numbered by array order. Keep summary under 24 words, variant under 12 words, and each phrase field to one short line. Put uncertainty only in each item's confidence field and the single verification note. Do not add a history lesson or a long introduction.
+        return f"""Create exactly 10 compact beginner items connected to {culture}. Prefer public, everyday phrases; if a full phrase is uncertain, use a well-attested useful word instead of stopping early or inventing. Put exactly ten objects in phrases, numbered by array order. Keep summary under 24 words, variant under 12 words, and each phrase field to one short line. Do not put confidence levels or disclaimers in the title, summary, or phrase text. Do not add a history lesson or a long introduction.
 
 {ACTION_RESPONSE_GUIDES["phrases"]}"""
     if request.action == "lesson":
