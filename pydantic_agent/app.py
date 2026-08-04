@@ -7,8 +7,17 @@ from typing import Literal
 from fastapi import FastAPI, Header, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
-from pydantic_ai import Agent
+from pydantic_ai import (
+    Agent,
+    AgentRunResultEvent,
+    PartDeltaEvent,
+    PartStartEvent,
+    PromptedOutput,
+    TextPart,
+    TextPartDelta,
+)
 from pydantic_ai.usage import UsageLimits
+from pydantic_core import from_json
 
 
 Action = Literal[
@@ -111,7 +120,7 @@ Rules:
 
 
 WORD_RESPONSE_GUIDE = """RESPONSE FORMAT (required)
-Populate exactly one structured response with this shape. Use empty arrays and empty strings exactly where shown; do not add fields or prose outside the response.
+Populate exactly one structured response with this shape. Return raw JSON, not Markdown or a code fence. Use empty arrays and empty strings exactly where shown; do not add fields or prose outside the response.
 
 {
   "title": "",
@@ -172,6 +181,109 @@ def output_type_for(action: Action) -> type[LearningResponse]:
     if action in {"lesson", "compare", "timeline", "museum", "archive"}:
         return SectionLearningResponse
     return NarrativeLearningResponse
+
+
+def streaming_output_type_for(action: Action):
+    if action == "word":
+        # PromptedOutput makes Claude stream JSON text instead of waiting for a
+        # completed Anthropic output-tool call. The text is parsed into display
+        # snapshots below and PydanticAI performs full validation at completion.
+        return PromptedOutput(WordLearningResponse, template=False)
+    return output_type_for(action)
+
+
+def partial_word_snapshot(text: str) -> dict[str, object] | None:
+    json_text = text.lstrip()
+    if json_text.startswith("```"):
+        first_line_end = json_text.find("\n")
+        if first_line_end < 0:
+            return None
+        json_text = json_text[first_line_end + 1 :]
+    if "\n```" in json_text:
+        json_text = json_text.split("\n```", 1)[0]
+
+    try:
+        data = from_json(json_text, allow_partial="trailing-strings")
+    except ValueError:
+        return None
+    if not isinstance(data, dict):
+        return None
+
+    featured = data.get("featured_word")
+    featured_data: dict[str, str] | None = None
+    if isinstance(featured, dict) and str(featured.get("original", "")):
+        confidence = str(featured.get("confidence", "verify"))
+        if confidence not in {"high", "medium", "verify"}:
+            confidence = "verify"
+        featured_data = {
+            "original": str(featured.get("original", ""))[:80],
+            "pronunciation": str(featured.get("pronunciation", ""))[:100],
+            "meaning": str(featured.get("meaning", ""))[:120],
+            "usage": str(featured.get("usage", ""))[:160],
+            "confidence": confidence,
+        }
+
+    cultural_habit = str(data.get("cultural_habit", ""))[:180]
+    if featured_data is None and not cultural_habit:
+        return None
+
+    return {
+        "title": "",
+        "summary": "",
+        "language": str(data.get("language", ""))[:80],
+        "variant": str(data.get("variant", ""))[:60],
+        "featured_word": featured_data,
+        "phrases": [],
+        "sections": [],
+        "verification": [],
+        "disclaimer": "AI-generated learning aid — verify with community-led and primary sources.",
+        "cultural_habit": cultural_habit,
+    }
+
+
+async def stream_word_response(prompt: str) -> AsyncIterator[bytes]:
+    text_buffer = ""
+    last_snapshot = ""
+    completed = False
+
+    async with agent.run_stream_events(
+        prompt,
+        output_type=streaming_output_type_for("word"),
+        usage_limits=UsageLimits(request_limit=3),
+    ) as stream_events:
+        async for event in stream_events:
+            text_changed = False
+            if isinstance(event, PartStartEvent) and isinstance(event.part, TextPart):
+                text_buffer = event.part.content
+                text_changed = True
+            elif isinstance(event, PartDeltaEvent) and isinstance(
+                event.delta, TextPartDelta
+            ):
+                text_buffer += event.delta.content_delta
+                text_changed = True
+
+            if text_changed:
+                snapshot = partial_word_snapshot(text_buffer)
+                if snapshot is not None:
+                    serialized = json.dumps(snapshot, ensure_ascii=False, sort_keys=True)
+                    if serialized != last_snapshot:
+                        last_snapshot = serialized
+                        yield packet("snapshot", data=snapshot)
+
+            if isinstance(event, AgentRunResultEvent):
+                output = event.result.output
+                if not isinstance(output, WordLearningResponse):
+                    output = WordLearningResponse.model_validate(output)
+                final_data = output.model_dump(mode="json")
+                yield packet(
+                    "done",
+                    data=final_data,
+                    usage=asdict(event.result.usage),
+                )
+                completed = True
+
+    if not completed:
+        yield packet("error", error="The agent returned no validated output.")
 
 app = FastAPI(title="Living Voices PydanticAI Agent", version="0.1.0")
 
@@ -237,9 +349,14 @@ async def stream(
     async def events() -> AsyncIterator[bytes]:
         yield packet("meta", action=request.action, runtime="pydantic-ai", model=model_name)
         try:
+            if request.action == "word":
+                async for event in stream_word_response(prompt):
+                    yield event
+                return
+
             async with agent.run_stream(
                 prompt,
-                output_type=output_type_for(request.action),
+                output_type=streaming_output_type_for(request.action),
                 usage_limits=UsageLimits(request_limit=3),
             ) as result:
                 latest: LearningResponse | None = None

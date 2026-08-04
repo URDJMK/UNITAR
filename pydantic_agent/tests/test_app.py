@@ -4,6 +4,7 @@ import json
 
 from fastapi.testclient import TestClient
 from pydantic import ValidationError
+from pydantic_ai import PromptedOutput
 from pydantic_ai.usage import RunUsage
 import pytest
 
@@ -13,7 +14,9 @@ from app import (
     WordLearningResponse,
     app,
     packet,
+    partial_word_snapshot,
     prompt_for,
+    streaming_output_type_for,
 )
 
 
@@ -83,3 +86,33 @@ def test_word_prompt_includes_format_and_sample_answer() -> None:
     assert '"cultural_habit":' in prompt
     assert "SAMPLE ANSWER" in prompt
     assert "never copy this content for another culture" in prompt
+
+
+def test_word_stream_uses_prompted_output_for_incremental_json() -> None:
+    output = streaming_output_type_for("word")
+    assert isinstance(output, PromptedOutput)
+    assert output.outputs is WordLearningResponse
+    assert output.template is False
+
+
+def test_partial_word_snapshot_keeps_in_progress_text() -> None:
+    snapshot = partial_word_snapshot(
+        '{"title":"","summary":"","language":"Māori","variant":"Northern",'
+        '"featured_word":{"original":"Kia o'
+    )
+    assert snapshot is not None
+    assert snapshot["language"] == "Māori"
+    assert snapshot["featured_word"]["original"] == "Kia o"
+    assert snapshot["cultural_habit"] == ""
+
+
+def test_partial_word_snapshot_ignores_non_json_text() -> None:
+    assert partial_word_snapshot("Here is the response:") is None
+
+
+def test_partial_word_snapshot_streams_through_a_json_code_fence() -> None:
+    snapshot = partial_word_snapshot(
+        '```json\n{"language":"Ainu","featured_word":{"original":"Iyayra'
+    )
+    assert snapshot is not None
+    assert snapshot["featured_word"]["original"] == "Iyayra"

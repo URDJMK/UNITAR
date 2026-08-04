@@ -1345,6 +1345,10 @@
         return true;
       }
 
+      function pauseForLivePaint() {
+        return new Promise((resolve) => setTimeout(resolve, 18));
+      }
+
       function renderLearningResponse(target, data, options = {}) {
         if (options.compact) {
           renderLivingWordCards(target, data, options.streaming);
@@ -1513,11 +1517,13 @@
               latestStructured = event.data;
               if (hasRenderableStructuredContent(event.data, payload.action)) {
                 renderLearningResponse(target, event.data, { ...options, streaming: true });
+                if (options.compact) await pauseForLivePaint();
               }
             } else if (event.type === "delta") {
               markdown += event.text || "";
-              if (options.compact) renderCompactWordResponse(target, markdown, true);
-              else renderMarkdownResponse(target, markdown, true);
+              if (options.compact) {
+                if (renderCompactWordResponse(target, markdown, true)) await pauseForLivePaint();
+              } else renderMarkdownResponse(target, markdown, true);
             } else if (event.type === "done") {
               if (event.data) {
                 latestStructured = event.data;

@@ -45,8 +45,10 @@ Open `http://localhost:3000`.
 
 - PydanticAI uses action-specific Pydantic output types so phrase, word, lesson,
   and narrative requests cannot finish with the wrong response shape.
-- `Agent.run_stream()` and `stream_output()` emit accumulated, partially
-  validated snapshots as NDJSON.
+- Living Word uses `Agent.run_stream_events()` so model deltas become partial
+  frontend snapshots immediately, followed by a fully validated Pydantic result.
+- The other structured tools use `Agent.run_stream()` and `stream_output()` to
+  emit accumulated, partially validated snapshots as NDJSON.
 - `/api/ai` proxies the Python stream without exposing credentials or the
   service URL to the browser.
 - `/api/living-word` is a separate compact experience that returns one everyday

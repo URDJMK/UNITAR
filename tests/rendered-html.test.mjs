@@ -91,6 +91,7 @@ test("standalone demo includes live AI learning tools and the film demo", async 
   assert.doesNotMatch(html, /<button class="secondary" type="button" data-ai-action="phrases">Explore 10 phrases<\/button>/);
   assert.match(html, /\/api\/living-word/);
   assert.match(html, /renderLivingWordCards\(/);
+  assert.match(html, /pauseForLivePaint\(/);
   assert.doesNotMatch(html, />Generate (?:phrases|lesson|comparison|documentary)</i);
   assert.match(html, /Community archive/);
   assert.match(html, /Compare cultures/);
@@ -121,4 +122,5 @@ test("AI route is implemented as an NDJSON stream", async () => {
   assert.match(source, /application\/x-ndjson/);
   assert.match(source, /PYDANTIC_AGENT_URL/);
   assert.match(source, /stream:\s*true/);
+  assert.match(source, /async function proxyPydanticAgent[\s\S]*response\.body\.getReader\(\)/);
 });

@@ -86,12 +86,12 @@ function buildPrompt(payload: AiRequest) {
     }
     case "word":
       return `Create the compact Living Word card for ${culture}. Return exactly these six labeled lines and nothing else:
-HABIT: One public, everyday cultural habit or custom in one short sentence. Never use a sacred, private, ceremonial, or stereotyped example.
 LANGUAGE: The specific language name.
 VARIANT: The specific regional variant in five words or fewer, or "Varies by community".
 PHRASE: One well-attested, useful everyday phrase in the original writing.
 MEANING: Its short English meaning.
 USE: A pronunciation hint or usage note in twelve words or fewer.
+HABIT: One public, everyday cultural habit or custom in one short sentence. Never use a sacred, private, ceremonial, or stereotyped example.
 
 If a phrase cannot be given confidently, say "Community verification needed" in PHRASE rather than guessing. Do not add an introduction, history, sources, caveats, headings, bullets, or explanation.`;
     case "phrases":
@@ -173,7 +173,29 @@ async function proxyPydanticAgent(payload: AiRequest, agentUrl: string) {
     });
   }
 
-  return new Response(response.body, { headers: streamHeaders() });
+  const reader = response.body.getReader();
+  const body = new ReadableStream<Uint8Array>({
+    async start(controller) {
+      try {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          controller.enqueue(value);
+        }
+      } catch (error) {
+        const message = error instanceof Error ? error.message : "The PydanticAI stream stopped unexpectedly.";
+        controller.enqueue(new TextEncoder().encode(packet("error", { error: message })));
+      } finally {
+        controller.close();
+        reader.releaseLock();
+      }
+    },
+    cancel() {
+      void reader.cancel();
+    },
+  });
+
+  return new Response(body, { headers: streamHeaders() });
 }
 
 async function streamAnthropic(payload: AiRequest, apiKey: string) {
