@@ -64,7 +64,7 @@ test("standalone demo includes live AI learning tools and the film demo", async 
 
   assert.match(html, /Not a museum of the past\. A conversation with humanity\./);
   assert.match(html, /data-open-ainu/);
-  assert.match(html, /Generate documentary/);
+  assert.match(html, /Replay film demo/);
   assert.match(html, /Live cultural learning guide/);
   assert.match(html, /Claude AI live/);
   assert.match(html, /data-name="Sámi"/);
@@ -72,6 +72,11 @@ test("standalone demo includes live AI learning tools and the film demo", async 
   assert.match(html, /data-ai-action="phrases"/);
   assert.match(html, /data-ai-action="lesson"/);
   assert.match(html, /data-ai-action="compare"/);
+  assert.match(html, /data-ai-action="archive"/);
+  assert.match(html, /data-auto-question=/);
+  assert.match(html, /loadFeaturedWord\(\)/);
+  assert.match(html, /runCurrentTool\(\)/);
+  assert.doesNotMatch(html, />Generate (?:phrases|lesson|comparison|documentary)</i);
   assert.match(html, /Community archive/);
   assert.match(html, /Compare cultures/);
   assert.match(html, /fake|simulat/i);

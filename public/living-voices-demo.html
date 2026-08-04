@@ -272,6 +272,20 @@
         line-height: 1.06;
       }
 
+      .living-word {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 24px;
+        margin: -14px 0 34px;
+        padding: 22px 24px;
+        border: 1px solid rgba(23, 108, 86, .25);
+        border-radius: var(--radius);
+        background: var(--green-soft);
+      }
+      .living-word-copy { margin: 7px 0 0; white-space: pre-wrap; line-height: 1.6; }
+      .living-word-copy.loading { color: var(--muted); }
+
       .feature-grid {
         display: grid;
         grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -559,7 +573,7 @@
       @media (max-width: 800px) {
         nav { display: none; }
         .culture-grid, .feature-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-        .module-grid, .profile-title, .form-grid { grid-template-columns: 1fr; }
+        .module-grid, .profile-title, .form-grid, .living-word { grid-template-columns: 1fr; }
         .placeholder-note { max-width: none; }
       }
 
@@ -712,15 +726,23 @@
 
           <p class="quote" id="culture-quote">Language carries memory, place, and ways of understanding the world.</p>
 
+          <div class="living-word">
+            <div>
+              <div class="eyebrow">A living word · Claude AI</div>
+              <p class="living-word-copy loading" id="living-word" aria-live="polite">Choose a culture to receive a language example.</p>
+            </div>
+            <button class="secondary" type="button" data-ai-action="phrases">Explore 10 phrases</button>
+          </div>
+
           <div id="features" class="feature-grid">
-            <button class="feature-button" type="button" data-toast="Short films remain a clearly labeled demo in this version."><span class="feature-icon">▶</span><strong>Watch Story</strong><small>Demo film experience</small></button>
-            <button class="feature-button" type="button" data-toast="Pronunciation player is simulated in this demo."><span class="feature-icon">◉</span><strong>Hear Pronunciation</strong><small>Native speaker recordings</small></button>
+            <button class="feature-button" type="button" data-go="documentary"><span class="feature-icon">▶</span><strong>Watch Story</strong><small>Auto-start film demo</small></button>
+            <button class="feature-button" type="button" data-ai-action="phrases"><span class="feature-icon">◉</span><strong>See Pronunciation</strong><small>Live language examples</small></button>
             <button class="feature-button" type="button" data-ai-action="phrases"><span class="feature-icon">Aa</span><strong>Learn 10 Phrases</strong><small>Generated live by Claude</small></button>
-            <button class="feature-button" type="button" data-go="story"><span class="feature-icon">✦</span><strong>Story Companion</strong><small>Ask about a story</small></button>
+            <button class="feature-button" type="button" data-go="story" data-auto-question="Give me a short, respectful introduction to this community and its living culture."><span class="feature-icon">✦</span><strong>Story Companion</strong><small>Live introduction</small></button>
             <button class="feature-button" type="button" data-ai-action="translate"><span class="feature-icon">文</span><strong>Translate Text</strong><small>Claude + review notes</small></button>
             <button class="feature-button" type="button" data-ai-action="museum"><span class="feature-icon">⌂</span><strong>Museum Guide</strong><small>Generate an introduction</small></button>
             <button class="feature-button" type="button" data-go="documentary"><span class="feature-icon">▣</span><strong>Documentary</strong><small>Generate a short film</small></button>
-            <button class="feature-button" type="button" data-go="story"><span class="feature-icon">◌</span><strong>Ask a Question</strong><small>Live Claude response</small></button>
+            <button class="feature-button" type="button" data-go="story" data-auto-question="What should a first-time learner understand about this community?"><span class="feature-icon">◌</span><strong>Ask a Question</strong><small>Starts with an answer</small></button>
           </div>
 
           <div id="learn" class="module-grid">
@@ -729,7 +751,7 @@
               <h3>Create a lesson kit</h3>
               <p class="muted">Choose a grade level and create a reviewable classroom bundle.</p>
               <div class="mini-row"><span class="chip">Slides</span><span class="chip">Quiz</span><span class="chip">Worksheet</span><span class="chip">Discussion</span></div>
-              <button class="secondary" type="button" data-ai-action="lesson">Generate lesson kit</button>
+              <button class="secondary" type="button" data-ai-action="lesson">Open lesson kit</button>
             </article>
 
             <article class="module dark">
@@ -737,7 +759,7 @@
               <h3>Start with everyday phrases</h3>
               <p class="muted">Claude can create a reviewed-ready phrase list with pronunciation, meaning, usage, and uncertainty notes.</p>
               <div class="mini-row"><span class="chip">10 phrases</span><span class="chip">Pronunciation</span><span class="chip">Usage</span></div>
-              <button class="secondary" type="button" data-ai-action="phrases">Generate phrase lesson</button>
+              <button class="secondary" type="button" data-ai-action="phrases">Learn 10 phrases</button>
             </article>
 
             <article class="module">
@@ -756,7 +778,7 @@
               <div class="eyebrow">Museum mode</div>
               <h3>Walk through a reconstruction</h3>
               <p class="muted">An AI guide explains objects and spaces using approved museum and community sources.</p>
-              <button class="secondary" type="button" data-ai-action="museum">Generate visitor guide</button>
+              <button class="secondary" type="button" data-ai-action="museum">Open visitor guide</button>
             </article>
 
             <article id="community" class="module">
@@ -764,7 +786,7 @@
               <h3>Contribute on your terms</h3>
               <p class="muted">Communities choose what is public, what AI may use, and what must remain restricted.</p>
               <div class="mini-row"><span class="chip">Story</span><span class="chip">Song</span><span class="chip">Recipe</span><span class="chip">Photo</span><span class="chip">Dance</span><span class="chip">Oral history</span></div>
-              <button class="secondary" type="button" data-toast="Upload is intentionally disabled in this no-backend demo.">Review contribution flow</button>
+              <button class="secondary" type="button" data-ai-action="archive">Review contribution flow</button>
             </article>
 
             <article class="module">
@@ -772,7 +794,7 @@
               <h3><span id="compare-from">Ainu</span> + another culture</h3>
               <p class="muted">Explore shared themes and distinct traditions without ranking or flattening either culture.</p>
               <div class="mini-row"><span class="chip">Language</span><span class="chip">Food</span><span class="chip">Music</span><span class="chip">Worldviews</span></div>
-              <button class="secondary" type="button" data-ai-action="compare">Generate comparison</button>
+              <button class="secondary" type="button" data-ai-action="compare">Compare now</button>
             </article>
           </div>
         </div>
@@ -797,7 +819,7 @@
                   <select id="language"><option>English</option><option>Chinese</option><option>Korean</option><option>Spanish</option><option>Arabic</option></select>
                 </label>
               </div>
-              <button class="primary" id="generate-button" type="submit">Generate documentary</button>
+              <button class="primary" id="generate-button" type="submit">Replay film demo</button>
             </form>
 
             <div class="generator-status" id="generator-status" aria-live="polite">
@@ -861,9 +883,9 @@
           <span class="pill ai-status live">Claude-powered learning tool</span>
           <form method="dialog"><button class="dialog-close" type="submit" aria-label="Close">×</button></form>
         </div>
-        <h2 id="ai-dialog-title">Generate a learning aid</h2>
+        <h2 id="ai-dialog-title">Live learning aid</h2>
         <p class="muted" id="ai-dialog-copy">Claude will answer with clear uncertainty and review notes.</p>
-        <form class="ai-form" id="ai-tool-form">
+        <div class="ai-form" id="ai-tool-form">
           <label id="grade-field" hidden>Grade level
             <select id="grade"><option>Elementary school</option><option selected>Middle school</option><option>High school</option><option>University</option><option>Adult learners</option></select>
           </label>
@@ -876,8 +898,7 @@
           <label id="language-field" hidden>Target language
             <select id="target-language"><option>English</option><option>Korean</option><option>Japanese</option><option>Spanish</option><option>French</option><option>Arabic</option></select>
           </label>
-          <button class="primary" id="ai-submit" type="submit">Ask Claude</button>
-        </form>
+        </div>
         <div class="ai-result" id="ai-result" aria-live="polite"></div>
         <div class="ai-meta">AI-generated learning aid · Not community-approved · Verify with primary and community-led sources.</div>
       </div>
@@ -915,12 +936,24 @@
         document.getElementById("culture-focus").textContent = selectedCulture.focus;
         document.getElementById("culture-quote").textContent = `${selectedCulture.name} knowledge is living, diverse, and best understood through community voices.`;
         document.getElementById("compare-from").textContent = selectedCulture.name;
-        document.getElementById("chat-welcome").textContent = `Ask a question about ${selectedCulture.name} culture or language. Answers are generated live and must be verified.`;
+        const chatWelcome = document.createElement("div");
+        chatWelcome.className = "message";
+        chatWelcome.id = "chat-welcome";
+        chatWelcome.textContent = `Ask a question about ${selectedCulture.name} culture or language. Answers are generated live and must be verified.`;
+        document.getElementById("chat-log").replaceChildren(chatWelcome);
         showView("culture");
+        loadFeaturedWord();
       }
 
       document.querySelectorAll("[data-go]").forEach((button) => {
-        button.addEventListener("click", () => showView(button.dataset.go));
+        button.addEventListener("click", () => {
+          const destination = button.dataset.go;
+          showView(destination);
+          if (destination === "documentary") runDocumentaryDemo();
+          if (destination === "story" && button.dataset.autoQuestion) {
+            askQuestion(button.dataset.autoQuestion);
+          }
+        });
       });
 
       cultureCards.forEach((card) => card.addEventListener("click", () => selectCulture(card)));
@@ -990,21 +1023,42 @@
         return data;
       }
 
+      async function loadFeaturedWord() {
+        const word = document.getElementById("living-word");
+        const cultureName = selectedCulture.name;
+        word.className = "living-word-copy loading";
+        word.textContent = `Claude is finding a well-attested ${cultureName} language example…`;
+        try {
+          const data = await callClaude({ action: "word" });
+          if (selectedCulture.name !== cultureName) return;
+          word.textContent = data.answer;
+          word.className = "living-word-copy";
+        } catch (error) {
+          if (selectedCulture.name !== cultureName) return;
+          word.textContent = error.message;
+          word.className = "living-word-copy";
+        }
+      }
+
       const aiDialog = document.getElementById("ai-dialog");
-      const aiForm = document.getElementById("ai-tool-form");
       const aiResult = document.getElementById("ai-result");
-      const aiSubmit = document.getElementById("ai-submit");
       const compareSelect = document.getElementById("compare-culture");
+      const gradeSelect = document.getElementById("grade");
+      const translationText = document.getElementById("translation-text");
+      const targetLanguage = document.getElementById("target-language");
       let currentAction = "phrases";
       let currentYear = "1900";
+      let aiRequestNumber = 0;
+      let translationTimer;
 
       const toolCopy = {
         phrases: ["Learn everyday phrases", "Claude will name the language or variant, add usage notes, and flag uncertainty."],
-        lesson: ["Create a lesson kit", "Generate a classroom-ready outline with objectives, activities, questions, and review notes."],
+        lesson: ["Create a lesson kit", "A classroom-ready outline with objectives, activities, questions, and review notes starts immediately."],
         compare: ["Compare cultures respectfully", "Explore living context, language, place, arts, shared themes, and important differences."],
-        translate: ["Translate with context", "Translate a short passage and surface ambiguity instead of hiding it."],
-        timeline: ["Place a year in context", "Generate a cautious historical overview that distinguishes continuity from change."],
-        museum: ["Create a responsible museum guide", "Prepare an introduction centered on provenance, consent, and present-day community life."]
+        translate: ["Translate with context", "Paste a short passage. Translation starts automatically after you stop typing."],
+        timeline: ["Place a year in context", "A cautious historical overview starts now and distinguishes continuity from change."],
+        museum: ["Create a responsible museum guide", "An introduction centered on provenance, consent, and present-day community life starts now."],
+        archive: ["Review a contribution workflow", "Claude is preparing a consent-first checklist for a community-led archive."]
       };
 
       cultureCards.forEach((card) => {
@@ -1013,6 +1067,40 @@
         option.textContent = card.dataset.name;
         compareSelect.appendChild(option);
       });
+
+      function currentToolPayload() {
+        const payload = { action: currentAction };
+        if (currentAction === "lesson") payload.grade = gradeSelect.value;
+        if (currentAction === "compare") payload.compareCulture = compareSelect.value;
+        if (currentAction === "translate") {
+          payload.text = translationText.value;
+          payload.targetLanguage = targetLanguage.value;
+        }
+        if (currentAction === "timeline") payload.year = currentYear;
+        return payload;
+      }
+
+      async function runCurrentTool() {
+        if (currentAction === "translate" && !translationText.value.trim()) {
+          aiResult.className = "ai-result visible";
+          aiResult.textContent = "Paste a short passage above. Claude will translate it automatically.";
+          return;
+        }
+
+        const requestNumber = ++aiRequestNumber;
+        aiResult.className = "ai-result loading";
+        aiResult.textContent = "Claude is preparing a careful answer…";
+        try {
+          const data = await callClaude(currentToolPayload());
+          if (requestNumber !== aiRequestNumber) return;
+          aiResult.textContent = data.answer;
+          aiResult.className = "ai-result visible";
+        } catch (error) {
+          if (requestNumber !== aiRequestNumber) return;
+          aiResult.textContent = error.message;
+          aiResult.className = "ai-result visible";
+        }
+      }
 
       function openAITool(action, options = {}) {
         currentAction = action;
@@ -1032,41 +1120,32 @@
         }
         aiResult.className = "ai-result";
         aiResult.textContent = "";
-        aiSubmit.textContent = action === "phrases" ? "Generate phrases" : action === "lesson" ? "Generate lesson" : "Ask Claude";
         aiDialog.showModal();
+        if (action === "translate") {
+          runCurrentTool();
+          setTimeout(() => translationText.focus(), 50);
+        } else {
+          runCurrentTool();
+        }
       }
 
       document.querySelectorAll("[data-ai-action]").forEach((button) => {
         button.addEventListener("click", () => openAITool(button.dataset.aiAction));
       });
 
-      aiForm.addEventListener("submit", async (event) => {
-        event.preventDefault();
-        const payload = { action: currentAction };
-        if (currentAction === "lesson") payload.grade = document.getElementById("grade").value;
-        if (currentAction === "compare") payload.compareCulture = compareSelect.value;
-        if (currentAction === "translate") {
-          payload.text = document.getElementById("translation-text").value;
-          payload.targetLanguage = document.getElementById("target-language").value;
-        }
-        if (currentAction === "timeline") payload.year = currentYear;
-
-        aiSubmit.disabled = true;
-        aiSubmit.textContent = "Claude is thinking…";
-        aiResult.className = "ai-result loading";
-        aiResult.textContent = "Creating a careful learning aid…";
-
-        try {
-          const data = await callClaude(payload);
-          aiResult.textContent = data.answer;
-          aiResult.className = "ai-result visible";
-        } catch (error) {
-          aiResult.textContent = error.message;
-          aiResult.className = "ai-result visible";
-        } finally {
-          aiSubmit.disabled = false;
-          aiSubmit.textContent = "Generate again";
-        }
+      gradeSelect.addEventListener("change", () => {
+        if (currentAction === "lesson" && aiDialog.open) runCurrentTool();
+      });
+      compareSelect.addEventListener("change", () => {
+        if (currentAction === "compare" && aiDialog.open) runCurrentTool();
+      });
+      targetLanguage.addEventListener("change", () => {
+        if (currentAction === "translate" && aiDialog.open) runCurrentTool();
+      });
+      translationText.addEventListener("input", () => {
+        if (currentAction !== "translate" || !aiDialog.open) return;
+        clearTimeout(translationTimer);
+        translationTimer = setTimeout(runCurrentTool, 700);
       });
 
       document.querySelectorAll(".year").forEach((button) => {
@@ -1078,8 +1157,7 @@
         });
       });
 
-      document.getElementById("documentary-form").addEventListener("submit", (event) => {
-        event.preventDefault();
+      function runDocumentaryDemo() {
         const status = document.getElementById("generator-status");
         const bar = document.getElementById("progress-bar");
         const checks = [...document.querySelectorAll("[data-check]")];
@@ -1089,7 +1167,7 @@
         status.classList.add("visible");
         video.classList.remove("visible");
         button.disabled = true;
-        button.textContent = "Generating demo…";
+        button.textContent = "Preparing film demo…";
         bar.style.width = "0%";
         checks.forEach((check) => {
           check.classList.remove("done");
@@ -1104,10 +1182,15 @@
             if (index === checks.length - 1) {
               video.classList.add("visible");
               button.disabled = false;
-              button.textContent = "Generate demo again";
+              button.textContent = "Replay film demo";
             }
           }, 520 * (index + 1));
         });
+      }
+
+      document.getElementById("documentary-form").addEventListener("submit", (event) => {
+        event.preventDefault();
+        runDocumentaryDemo();
       });
 
       async function askQuestion(question) {

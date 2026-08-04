@@ -1,11 +1,13 @@
 type AiAction =
   | "ask"
+  | "word"
   | "phrases"
   | "lesson"
   | "compare"
   | "translate"
   | "timeline"
-  | "museum";
+  | "museum"
+  | "archive";
 
 type AiRequest = {
   action?: AiAction;
@@ -20,17 +22,19 @@ type AiRequest = {
 
 const allowedActions = new Set<AiAction>([
   "ask",
+  "word",
   "phrases",
   "lesson",
   "compare",
   "translate",
   "timeline",
   "museum",
+  "archive",
 ]);
 
 const rateLimits = new Map<string, { count: number; resetAt: number }>();
 const requestWindowMs = 10 * 60 * 1000;
-const requestsPerWindow = 12;
+const requestsPerWindow = 24;
 
 const systemPrompt = `You are the Living Voices learning guide. You help people approach living cultures and languages with curiosity, humility, and respect.
 
@@ -79,6 +83,8 @@ function buildPrompt(payload: AiRequest) {
       if (!question) throw new Error("Please enter a question.");
       return `Culture or community: ${culture}\nLearner question: ${question}\n\nAnswer in two to four short paragraphs. Separate well-established context from anything uncertain. End with a one-sentence verification note.`;
     }
+    case "word":
+      return `Offer one well-attested everyday word or short expression connected to ${culture}. Name the specific language and variant. Use exactly four labeled lines: Original, Pronunciation, Meaning, and Use & verification. If no single language represents the whole community or you cannot choose confidently, explain that instead of guessing.`;
     case "phrases":
       return `Create a beginner learning set of up to 10 everyday phrases connected to ${culture}. Identify the specific language and variant first. For each item provide: original writing, a careful romanization or pronunciation guide when appropriate, an English meaning, and a one-line usage note. Do not fabricate to reach ten; explain when fewer can be given confidently. End with a short verification note.`;
     case "lesson": {
@@ -103,6 +109,8 @@ function buildPrompt(payload: AiRequest) {
     }
     case "museum":
       return `Write a short, responsible museum-audio-guide introduction to ${culture}. Explain how visitors should approach objects, archives, and reconstructions; distinguish community knowledge from museum interpretation; and name three questions a visitor should ask about provenance, consent, and present-day community life.`;
+    case "archive":
+      return `Create a concise, practical contribution and consent checklist for a community archive connected to ${culture}. Cover contributor authority, attribution, public visibility, culturally restricted access, AI-training permission as a separate choice, permitted reuse, review, withdrawal, and ongoing community governance. Make clear that this is a draft for community and legal review.`;
     default:
       throw new Error("Choose a supported AI experience.");
   }

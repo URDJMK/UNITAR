@@ -97,6 +97,8 @@ Create an emotionally compelling, interactive front door to living heritage that
 - Use a neutral, clearly labeled AI guide—not a replica of a real person or a synthetic community representative.
 - Accept free-form questions and offer example learning prompts.
 - Return live Claude responses from a server-side API route.
+- Start the selected AI experience immediately on click; do not require a second generate action.
+- Load one cautious, well-attested language example automatically whenever a culture profile opens.
 - Mark every answer as AI-generated and require verification with community-led and primary sources.
 - Refuse to invent sacred, private, restricted, or community-consensus claims.
 
@@ -205,6 +207,7 @@ The whole P0 flow should be understandable in under three minutes and work witho
 - Documentary generation accepts selections, shows progress, and ends in a mock video state.
 - The live guide accepts suggested and free-form questions, shows a clear loading state, and returns Claude answers or an actionable configuration/error state.
 - Phrase, lesson, translation, timeline, museum, and comparison tools call Claude and render safe plain-text results.
+- Phrase, lesson, timeline, museum, archive, comparison, and story-introduction tools begin automatically when opened; translation begins after the learner pauses typing.
 - Every featured culture card opens a working profile.
 - Education, Language, Timeline, Museum, Community, and Compare concepts are visible.
 - All simulated or unverified content is labeled clearly.
