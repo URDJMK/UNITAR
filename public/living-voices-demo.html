@@ -968,10 +968,11 @@
           </div>
 
           <div id="features" class="feature-grid">
-            <button class="feature-button" type="button" data-go="documentary"><span class="feature-icon">▶</span><strong>Watch Story</strong><small>Auto-start film demo</small></button>
+            <button class="feature-button" type="button" data-go="documentary" data-documentary-mode="watch"><span class="feature-icon">▶</span><strong>Watch Story</strong><small>Play the featured film</small></button>
             <button class="feature-button" type="button" data-ai-action="phrases"><span class="feature-icon">Aa</span><strong>Learn 10 Phrases</strong><small>Generated live by Claude</small></button>
             <button class="feature-button" type="button" data-real-voice><span class="feature-icon">“</span><strong>Quote from a Real Voice</strong><small>Curated archival excerpt</small></button>
             <button class="feature-button" type="button" data-ai-action="translate"><span class="feature-icon">文</span><strong>Translate Text</strong><small>Claude + review notes</small></button>
+            <button class="feature-button" type="button" data-go="documentary" data-documentary-mode="generate"><span class="feature-icon">▣</span><strong>Documentary</strong><small>Create a cultural video</small></button>
             <button class="feature-button" type="button" data-go="story" data-auto-question="What should a first-time learner understand about this community?"><span class="feature-icon">◌</span><strong>Ask a Question</strong><small>Starts with an answer</small></button>
           </div>
 
@@ -1260,7 +1261,10 @@
         button.addEventListener("click", () => {
           const destination = button.dataset.go;
           showView(destination);
-          if (destination === "documentary") runDocumentaryDemo();
+          if (destination === "documentary") {
+            if (button.dataset.documentaryMode === "watch") showDocumentaryPreview();
+            else runDocumentaryDemo();
+          }
           if (destination === "story" && button.dataset.autoQuestion) {
             askQuestion(button.dataset.autoQuestion);
           }
@@ -1910,6 +1914,16 @@
             }
           }, 520 * (index + 1));
         });
+      }
+
+      function showDocumentaryPreview() {
+        const status = document.getElementById("generator-status");
+        const video = document.getElementById("video-mock");
+        const button = document.getElementById("generate-button");
+        status.classList.remove("visible");
+        video.classList.add("visible");
+        button.disabled = false;
+        button.textContent = "Create another cultural video";
       }
 
       document.getElementById("documentary-form").addEventListener("submit", (event) => {

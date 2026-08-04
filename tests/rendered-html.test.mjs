@@ -105,7 +105,10 @@ test("standalone demo includes live AI learning tools and the film demo", async 
   assert.doesNotMatch(html, /<strong>See Pronunciation<\/strong>/);
   assert.doesNotMatch(html, /<strong>Museum Guide<\/strong>/);
   assert.doesNotMatch(html, /<strong>Story Companion<\/strong>/);
-  assert.doesNotMatch(html, /<strong>Documentary<\/strong>/);
+  assert.match(html, /data-documentary-mode="watch"[\s\S]*<strong>Watch Story<\/strong>/);
+  assert.match(html, /data-documentary-mode="generate"[\s\S]*<strong>Documentary<\/strong>/);
+  assert.match(html, /Create a cultural video/);
+  assert.match(html, /showDocumentaryPreview\(\)/);
   assert.doesNotMatch(html, /<button class="secondary" type="button" data-ai-action="phrases">Explore 10 phrases<\/button>/);
   assert.match(html, /\/api\/living-word/);
   assert.match(html, /renderLivingWordCards\(/);
