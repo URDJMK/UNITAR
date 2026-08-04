@@ -82,7 +82,9 @@ test("standalone demo includes live AI learning tools and the film demo", async 
   assert.match(html, /renderLoadingState\(/);
   assert.match(html, /ai-loading-orbit/);
   assert.match(html, /hasRenderableStructuredContent\(/);
-  assert.match(html, /One habit · One phrase · Claude AI/);
+  assert.match(html, /Living word · Culture · Claude AI/);
+  assert.match(html, /"Living word"/);
+  assert.match(html, /"Culture"/);
   assert.match(html, /\/api\/living-word/);
   assert.match(html, /renderLivingWordCards\(/);
   assert.doesNotMatch(html, />Generate (?:phrases|lesson|comparison|documentary)</i);

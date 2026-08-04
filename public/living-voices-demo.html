@@ -287,7 +287,7 @@
       .living-word-copy.loading { color: var(--muted); }
       .living-mini-grid {
         display: grid;
-        grid-template-columns: minmax(150px, .8fr) minmax(220px, 1.2fr);
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 10px;
         margin-top: 12px;
       }
@@ -907,7 +907,7 @@
 
           <div class="living-word">
             <div>
-              <div class="eyebrow">One habit · One phrase · Claude AI</div>
+              <div class="eyebrow">Living word · Culture · Claude AI</div>
               <div class="living-word-copy loading" id="living-word" aria-live="polite">Choose a culture to receive a language example.</div>
             </div>
             <button class="secondary" type="button" data-ai-action="phrases">Explore 10 phrases</button>
@@ -1267,16 +1267,9 @@
         prepareRichTarget(target);
         const grid = element("div", "living-mini-grid");
 
-        if (data.cultural_habit) {
-          const habit = element("article", "living-mini-card");
-          habit.appendChild(element("span", "living-mini-label", "Everyday habit"));
-          habit.appendChild(element("p", "living-habit", data.cultural_habit));
-          grid.appendChild(habit);
-        }
-
         if (data.featured_word?.original) {
           const phrase = element("article", "living-mini-card");
-          phrase.appendChild(element("span", "living-mini-label", "One useful phrase"));
+          phrase.appendChild(element("span", "living-mini-label", "Living word"));
           const top = element("div", "living-phrase-top");
           top.appendChild(element("strong", "living-phrase", data.featured_word.original));
           const language = [data.language, data.variant].filter(Boolean).join(" · ");
@@ -1286,6 +1279,13 @@
           const shortNote = data.featured_word.pronunciation || data.featured_word.usage;
           if (shortNote) phrase.appendChild(element("span", "living-use", shortNote));
           grid.appendChild(phrase);
+        }
+
+        if (data.cultural_habit) {
+          const culture = element("article", "living-mini-card");
+          culture.appendChild(element("span", "living-mini-label", "Culture"));
+          culture.appendChild(element("p", "living-habit", data.cultural_habit));
+          grid.appendChild(culture);
         }
 
         target.replaceChildren(grid);
@@ -1519,7 +1519,7 @@
         const word = document.getElementById("living-word");
         const cultureName = selectedCulture.name;
         word.className = "living-word-copy loading";
-        renderLoadingState(word, `Finding one ${cultureName} habit and phrase`, "Sonnet is keeping this short");
+        renderLoadingState(word, `Finding one ${cultureName} word and culture detail`, "Sonnet is keeping both short");
         try {
           await streamClaude({ action: "word" }, word, {
             compact: true,
