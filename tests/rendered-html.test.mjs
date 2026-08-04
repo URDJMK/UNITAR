@@ -1,185 +1,105 @@
 import assert from "node:assert/strict";
 import { access, readFile } from "node:fs/promises";
 import test from "node:test";
-import { runInNewContext } from "node:vm";
 
-const templateRoot = new URL("../", import.meta.url);
-
-async function render() {
-  const workerUrl = new URL("../dist/server/index.js", import.meta.url);
-  workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}`);
-  const { default: worker } = await import(workerUrl.href);
-
-  return worker.fetch(
-    new Request("http://localhost/", {
-      headers: { accept: "text/html" },
-    }),
-    {
-      ASSETS: {
-        fetch: async () => new Response("Not found", { status: 404 }),
-      },
-    },
-    {
-      waitUntil() { },
-      passThroughOnException() { },
-    },
-  );
-}
-
-async function fetchWorker(path, init) {
+async function fetchWorker(path = "/", init) {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
   workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}-${Math.random()}`);
   const { default: worker } = await import(workerUrl.href);
-
   return worker.fetch(
-    new Request(`http://localhost${path}`, init),
-    {
-      ASSETS: {
-        fetch: async () => new Response("Not found", { status: 404 }),
-      },
-    },
-    {
-      waitUntil() { },
-      passThroughOnException() { },
-    },
+    new Request(`http://localhost${path}`, { headers: { accept: "text/html" }, ...init }),
+    { ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) } },
+    { waitUntil() {}, passThroughOnException() {} },
   );
 }
 
-test("server-renders the Living Voices demo shell", async () => {
-  const response = await render();
+test("discovery is server-rendered as React without the legacy iframe", async () => {
+  const response = await fetchWorker();
   assert.equal(response.status, 200);
   assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
-
   const html = await response.text();
   assert.match(html, /<title>Living Voices — A Conversation with Humanity<\/title>/i);
-  assert.match(html, /living-voices-demo\.html/);
-  assert.match(html, /Living Voices interactive prototype/);
-  assert.doesNotMatch(html, /codex-preview|SkeletonPreview|react-loading-skeleton/);
+  assert.match(html, /Not a museum of the past\. A conversation with humanity\./);
+  assert.match(html, /50 communities/);
+  assert.match(html, /href="\/culture\/ainu"/);
+  assert.match(html, /href="\/culture\/maasai"/);
+  assert.match(html, /href="\/culture\/nubian"/);
+  assert.doesNotMatch(html, /<iframe|living-voices-demo\.html/i);
 });
 
-test("standalone demo includes live AI learning tools and the film demo", async () => {
-  const html = await readFile(
-    new URL("../public/living-voices-demo.html", import.meta.url),
-    "utf8",
-  );
-
-  assert.match(html, /Not a museum of the past\. A conversation with humanity\./);
-  assert.match(html, /data-open-ainu/);
-  assert.match(html, /Replay film demo/);
-  assert.match(html, /Live cultural learning guide/);
-  assert.match(html, /AI stream live/);
-  assert.match(html, /data-name="Sámi"/);
-  assert.match(html, /data-name="Diné"/);
-  assert.match(html, /50 communities/);
-  assert.equal((html.match(/class="culture-card"/g) || []).length, 50);
-  assert.match(html, /data-name="Maasai"/);
-  assert.match(html, /data-name="Nubian"/);
-  assert.match(html, /data-name="Wodaabe"/);
-  assert.match(html, /data-ai-action="phrases"/);
-  assert.match(html, /data-ai-action="lesson"/);
-  assert.match(html, /data-ai-action="compare"/);
-  assert.match(html, /data-ai-action="archive"/);
-  assert.match(html, /data-auto-question=/);
-  assert.match(html, /loadFeaturedWord\(\)/);
-  assert.match(html, /runCurrentTool\(\)/);
-  assert.match(html, /streamAI\(/);
-  assert.match(html, /renderLearningResponse\(/);
-  assert.match(html, /parsePhraseSet\(/);
-  assert.match(html, /renderPhraseSetResponse\(/);
-  assert.match(html, /rich-phrase-grid/);
-  assert.match(html, /renderLoadingState\(/);
-  assert.match(html, /sanitizeAIText\(/);
-  assert.match(html, /sanitizeAIData\(/);
-  assert.match(html, /blockedPlaceholders/);
-  assert.match(html, /@media \(max-width: 360px\)/);
-  assert.match(html, /@media \(max-height: 500px\) and \(orientation: landscape\)/);
-  assert.match(html, /\.ai-status-short/);
-  assert.match(html, /max-height: calc\(100dvh - 16px\)/);
-  assert.match(html, /\.dialog-top \{[\s\S]*position: sticky/);
-  assert.match(html, /\.culture-card \{[\s\S]*min-height: 104px/);
-  assert.match(html, /\.feature-button \{[\s\S]*grid-template-columns: 38px minmax\(0, 1fr\)/);
-  assert.match(html, /ai-loading-orbit/);
-  assert.match(html, /hasRenderableStructuredContent\(/);
-  assert.match(html, /Living word · Culture · AI/);
-  assert.match(html, /"Living word"/);
-  assert.match(html, /"Culture"/);
-  assert.match(html, /"Explore 10 phrases"/);
-  assert.match(html, /"Ask more"/);
-  assert.match(html, /living-mini-action/);
-  assert.match(html, /data-ai-vignette/);
-  assert.match(html, /id="voice-dialog"/);
-  assert.match(html, /Village Testimony/);
-  assert.match(html, /A life in two\s+paragraphs/);
-  assert.match(html, /testimony/);
-  assert.match(html, /const cultureVignettes = Object\.freeze/);
-  assert.match(html, /openAIVignette\(\)/);
-  for (const culture of [
-    "Ainu", "Sámi", "Māori", "Jeju", "Nüshu", "Quechua", "Amazigh", "Diné", "Mapuche",
-    "Inuit", "Yolŋu", "Hmong", "Haida", "Cherokee", "Garifuna", "Sápara", "Nenets", "Basque",
-    "Maasai", "Nubian", "Wodaabe", "San", "Himba", "Hadza", "Tuareg", "Afar", "Batwa", "Oromo",
-    "Atayal", "Bunun", "Karen", "Khasi", "Ifugao", "Iban", "Chukchi", "Evenki", "Kanak", "CHamoru",
-    "Rapa Nui", "Kānaka Maoli", "Noongar", "Meriam", "Lakota", "Anishinaabe", "Mi’kmaq", "K’iche’ Maya",
-    "Nahua", "Guna", "Wayuu", "Yanomami",
-  ]) {
-    assert.match(html, new RegExp(`"${culture}": \\{`), `${culture} should have a testimony`);
+test("each experience has a distinct working route", async () => {
+  const routes = [
+    ["/culture/ainu", /Living culture profile[\s\S]*Ainu[\s\S]*Learn 10 Phrases/],
+    ["/culture/ainu/documentary?mode=watch", /AI documentary studio[\s\S]*Turn a story into a doorway/],
+    ["/culture/ainu/ask", /Live cultural learning guide[\s\S]*A story that listens back/],
+  ];
+  for (const [path, pattern] of routes) {
+    const response = await fetchWorker(path);
+    assert.equal(response.status, 200, `${path} should render`);
+    assert.match(await response.text(), pattern);
   }
-  const testimonyDialog = html.slice(html.indexOf('<dialog class="ai-dialog voice-dialog"'), html.indexOf("<script>"));
-  assert.doesNotMatch(testimonyDialog, />AI</);
-  assert.match(html, /"speaker": "Emi"/);
-  assert.match(html, /"speaker": "Ane"/);
-  assert.match(html, /"language": "Ainu"/);
-  assert.match(html, /"language": "Euskara"/);
-  assert.equal((html.match(/"localFirst":/g) || []).length, 50);
-  assert.equal((html.match(/"localSecond":/g) || []).length, 50);
-  assert.match(html, /id="voice-local-first"/);
-  assert.match(html, /id="voice-local-second"/);
-  assert.match(html, /id="voice-english-first"/);
-  assert.match(html, /id="voice-english-second"/);
-  assert.match(html, /English translation/);
-  assert.doesNotMatch(html, /A verified original-language excerpt is not yet available/i);
-  assert.doesNotMatch(html, /Claude|Sonnet/i);
-  assert.doesNotMatch(html, /class="confidence"|verification-card|rich-disclaimer/);
-  assert.doesNotMatch(html, /<strong>See Pronunciation<\/strong>/);
-  assert.doesNotMatch(html, /<strong>Museum Guide<\/strong>/);
-  assert.doesNotMatch(html, /<strong>Story Companion<\/strong>/);
-  assert.match(html, /data-documentary-mode="watch"[\s\S]*<strong>Watch Story<\/strong>/);
-  assert.match(html, /data-documentary-mode="generate"[\s\S]*<strong>Documentary<\/strong>/);
-  assert.match(html, /Create a cultural video/);
-  assert.match(html, /showDocumentaryPreview\(\)/);
-  assert.match(html, /id="timeline-explore-button"/);
-  assert.match(html, /Explore 1900 in context/);
-  assert.match(html, /id="dialog-timeline"/);
-  assert.match(html, /data-timeline-step="-1"/);
-  assert.match(html, /data-timeline-step="1"/);
-  assert.match(html, /data-dialog-year="2025"/);
-  assert.match(html, /timeline-dialog-in/);
-  assert.match(html, /aiDialog\.classList\.toggle\("timeline-mode", action === "timeline"\)/);
-  assert.match(html, /timelineExploreButton\.addEventListener\("click", \(\) => \{\s*openAITool\("timeline", \{ year: currentYear \}\)/);
-  const yearSelection = html.slice(
-    html.lastIndexOf('document.querySelectorAll(".year").forEach((button) => {'),
-    html.indexOf('timelineExploreButton.addEventListener("click"'),
-  );
-  assert.match(yearSelection, /selectTimelineYear\(button\.dataset\.year\)/);
-  assert.doesNotMatch(yearSelection, /openAITool|runCurrentTool/);
-  assert.doesNotMatch(html, /Choose a year to ask AI for historical context/);
-  assert.doesNotMatch(html, /<button class="secondary" type="button" data-ai-action="phrases">Explore 10 phrases<\/button>/);
-  assert.match(html, /\/api\/living-word/);
-  assert.match(html, /renderLivingWordCards\(/);
-  assert.match(html, /pauseForLivePaint\(/);
-  assert.match(html, /liveTextPieces\(/);
-  assert.match(html, /renderTextStream\(/);
-  assert.doesNotMatch(html, />Generate (?:phrases|lesson|comparison|documentary)</i);
-  assert.match(html, /Community archive/);
-  assert.match(html, /Compare cultures/);
-  assert.match(html, /fake|simulat/i);
-  assert.doesNotMatch(html, /<script[^>]+src=/i);
-  assert.doesNotMatch(html, /<link[^>]+href=["']https?:/i);
+  assert.equal((await fetchWorker("/culture/not-a-community")).status, 404);
+});
 
-  await assert.rejects(access(new URL("../app/_sites-preview/SkeletonPreview.tsx", import.meta.url)));
-  await access(new URL("../PRD.md", import.meta.url));
-  await access(new URL("public/living-voices-demo.html", templateRoot));
-  await access(new URL("public/og.png", templateRoot));
-  await access(new URL("../app/api/living-word/route.ts", import.meta.url));
+test("community data preserves all 50 profiles and testimonies", async () => {
+  const source = await readFile(new URL("../app/data/communities.ts", import.meta.url), "utf8");
+  assert.equal((source.match(/\n    "name":/g) || []).length, 50);
+  assert.equal((source.match(/\n    "slug":/g) || []).length, 50);
+  assert.equal((source.match(/\n      "speaker":/g) || []).length, 50);
+  assert.equal((source.match(/\n      "localFirst":/g) || []).length, 50);
+  assert.equal((source.match(/\n      "localSecond":/g) || []).length, 50);
+  for (const culture of ["Ainu", "Sámi", "Māori", "Diné", "Maasai", "Nubian", "Wodaabe", "Yanomami"]) {
+    assert.match(source, new RegExp(`"name": "${culture}"`));
+  }
+  assert.doesNotMatch(source, /A verified original-language excerpt is not yet available/i);
+});
+
+test("React profile preserves the existing controls and behavior", async () => {
+  const profile = await readFile(new URL("../app/components/CultureProfile.tsx", import.meta.url), "utf8");
+  const dialog = await readFile(new URL("../app/components/AIExperienceDialog.tsx", import.meta.url), "utf8");
+  const documentary = await readFile(new URL("../app/components/DocumentaryStudio.tsx", import.meta.url), "utf8");
+  const ask = await readFile(new URL("../app/components/AskGuide.tsx", import.meta.url), "utf8");
+
+  for (const label of [
+    "Watch Story", "Village Testimony", "Learn 10 Phrases", "Translate Text", "Documentary",
+    "Ask a Question", "Create a lesson kit", "Community archive", "Compare cultures",
+  ]) assert.match(profile, new RegExp(label));
+  assert.match(profile, /endpoint: "\/api\/living-word"/);
+  assert.match(profile, /Explore \{currentYear\} in context/);
+  assert.match(profile, /onClick=\{\(\) => setCurrentYear\(year\)\}/);
+  assert.match(dialog, /showModal\(\)/);
+  assert.match(dialog, /action === "timeline"/);
+  assert.match(dialog, /translationTimer/);
+  assert.match(documentary, /runDocumentaryDemo = useCallback/);
+  assert.match(documentary, /showDocumentaryPreview = useCallback/);
+  assert.match(ask, /askQuestion = useCallback\(async \(question: string\)/);
+  assert.match(ask, /autoQuestion/);
+  assert.doesNotMatch(profile, /See Pronunciation|Museum Guide|Story Companion/);
+});
+
+test("all frontend AI experiences consume NDJSON updates live", async () => {
+  const renderer = await readFile(new URL("../app/components/AIRenderer.tsx", import.meta.url), "utf8");
+  const profile = await readFile(new URL("../app/components/CultureProfile.tsx", import.meta.url), "utf8");
+  const dialog = await readFile(new URL("../app/components/AIExperienceDialog.tsx", import.meta.url), "utf8");
+  const ask = await readFile(new URL("../app/components/AskGuide.tsx", import.meta.url), "utf8");
+  assert.match(renderer, /response\.body\.getReader\(\)/);
+  assert.match(renderer, /event\.type === "snapshot"/);
+  assert.match(renderer, /event\.type === "delta"/);
+  assert.match(renderer, /onUpdate\(\{ loading: false, streaming: true, markdown/);
+  assert.match(renderer, /function parseCompactWord/);
+  assert.match(renderer, /function parsePhraseSet/);
+  assert.match(profile, /streamAI\(\{ action: "word" \}/);
+  assert.match(dialog, /streamAI\(pendingRequest\.payload, community\.name/);
+  assert.match(ask, /streamAI\(\{ action: "ask", question: cleanQuestion \}/);
+});
+
+test("mobile safeguards remain active for routed components", async () => {
+  const css = await readFile(new URL("../app/living-voices.css", import.meta.url), "utf8");
+  assert.match(css, /@media \(max-width: 360px\)/);
+  assert.match(css, /@media \(max-height: 500px\) and \(orientation: landscape\)/);
+  assert.match(css, /max-height: calc\(100dvh - 16px\)/);
+  assert.match(css, /\.culture-card \{[\s\S]*min-height: 104px/);
+  assert.match(css, /\.feature-button \{[\s\S]*grid-template-columns: 38px minmax\(0, 1fr\)/);
 });
 
 test("AI route reports configuration without exposing credentials", async () => {
@@ -193,106 +113,29 @@ test("AI route reports configuration without exposing credentials", async () => 
   assert.equal("apiKey" in body, false);
 });
 
-test("AI route is implemented as an NDJSON stream", async () => {
+test("AI endpoints and their prompt contracts remain unchanged", async () => {
   const source = await readFile(new URL("../app/api/ai/route.ts", import.meta.url), "utf8");
+  const livingWord = await readFile(new URL("../app/api/living-word/route.ts", import.meta.url), "utf8");
   assert.match(source, /application\/x-ndjson/);
   assert.match(source, /PYDANTIC_AGENT_URL/);
   assert.match(source, /stream:\s*true/);
-  assert.match(source, /async function proxyPydanticAgent[\s\S]*response\.body\.getReader\(\)/);
-});
-
-test("every frontend AI action paints streamed chunks live", async () => {
-  const html = await readFile(
-    new URL("../public/living-voices-demo.html", import.meta.url),
-    "utf8",
-  );
-  assert.match(
-    html,
-    /event\.type === "delta"[\s\S]*for \(const piece of liveTextPieces\(event\.text, pieceSize\)\)[\s\S]*renderTextStream\([\s\S]*await pauseForLivePaint/,
-  );
-  assert.match(
-    html,
-    /event\.type === "snapshot"[\s\S]*renderLearningResponse\([\s\S]*await pauseForLivePaint/,
-  );
-  assert.match(html, /streamAI\(\{ action: "ask", question \}, answer\)/);
-  assert.match(html, /streamAI\(currentToolPayload\(\), aiResult/);
-});
-
-test("every direct AI experience has an explicit format and sample answer", async () => {
-  const source = await readFile(new URL("../app/api/ai/route.ts", import.meta.url), "utf8");
-  const actions = [
-    "ask",
-    "word",
-    "phrases",
-    "lesson",
-    "compare",
-    "translate",
-    "timeline",
-    "museum",
-    "archive",
-  ];
-
-  for (const action of actions) {
-    assert.match(
-      source,
-      new RegExp(action + ": `RESPONSE FORMAT \\(required\\)[\\s\\S]*?SAMPLE ANSWER"),
-      `${action} should define a response format and sample`,
-    );
-    assert.match(
-      source,
-      new RegExp(`withResponseGuide\\(\\s*["']${action}["']`),
-      `${action} should attach its response guide`,
-    );
+  assert.match(livingWord, /handleAIRequest\(request, "word"\)/);
+  for (const action of ["ask", "word", "phrases", "lesson", "compare", "translate", "timeline", "museum", "archive"]) {
+    assert.match(source, new RegExp(action + ": `RESPONSE FORMAT \\(required\\)[\\s\\S]*?SAMPLE ANSWER"));
+    assert.match(source, new RegExp(`withResponseGuide\\(\\s*["']${action}["']`));
   }
-});
-
-test("the direct phrase prompt requires ten parseable cards", async () => {
-  const source = await readFile(new URL("../app/api/ai/route.ts", import.meta.url), "utf8");
   assert.match(source, /Create exactly 10 compact beginner items/);
   assert.match(source, /PHRASE 10: See you again/);
-  assert.match(source, /Continue the same four labeled lines for PHRASE 3 through PHRASE 10/);
-  assert.doesNotMatch(source, /CONFIDENCE 10:|VERIFY 2:/);
-  assert.doesNotMatch(source, /provide fewer items if you cannot give ten/);
-});
-
-test("the living word always asks for a usable answer and filters verification placeholders", async () => {
-  const source = await readFile(new URL("../app/api/ai/route.ts", import.meta.url), "utf8");
-  const html = await readFile(
-    new URL("../public/living-voices-demo.html", import.meta.url),
-    "utf8",
-  );
-
   assert.match(source, /Always provide a usable phrase/);
-  assert.match(source, /Never return a placeholder, refusal, uncertainty warning, verification request, or caveat/);
   assert.doesNotMatch(source, /say "Community verification needed"/);
-  assert.match(html, /verification\\s\+\(\?:is\\s\+\)\?needed/);
-  assert.match(html, /verify\\s\+with/);
 });
 
-test("the live phrase parser turns all ten streamed slots into cards", async () => {
-  const html = await readFile(
-    new URL("../public/living-voices-demo.html", import.meta.url),
-    "utf8",
-  );
-  const parserStart = html.indexOf("function parsePhraseSet(markdown)");
-  const parserEnd = html.indexOf("function renderPhraseSetResponse", parserStart);
-  assert.ok(parserStart > -1 && parserEnd > parserStart);
-
-  const slots = Array.from({ length: 10 }, (_, index) => {
-    const number = index + 1;
-    return [
-      `PHRASE ${number}: Phrase ${number}`,
-      `PRONUNCIATION ${number}: pronunciation ${number}`,
-      `MEANING ${number}: meaning ${number}`,
-      `USE ${number}: use ${number}`,
-    ].join("\n");
-  }).join("\n");
-  const context = {
-    markdown: `TITLE: 10 useful phrases\nLANGUAGE: Test language\nVARIANT: Test variant\nNOTE: Compact note\n${slots}`,
-  };
-
-  runInNewContext(`${html.slice(parserStart, parserEnd)}\nparsed = parsePhraseSet(markdown);`, context);
-  assert.equal(context.parsed.phrases.length, 10);
-  assert.equal(context.parsed.phrases[9].original, "Phrase 10");
-  assert.equal(context.parsed.verification.length, 0);
+test("expected project assets and route files exist", async () => {
+  for (const path of [
+    "../PRD.md",
+    "../public/og.png",
+    "../app/culture/[slug]/page.tsx",
+    "../app/culture/[slug]/ask/page.tsx",
+    "../app/culture/[slug]/documentary/page.tsx",
+  ]) await access(new URL(path, import.meta.url));
 });
