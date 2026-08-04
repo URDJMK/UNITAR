@@ -584,8 +584,11 @@
     }
 
     .ai-dialog {
+      position: fixed;
+      inset: 0;
       width: min(720px, calc(100% - 28px));
       max-height: min(86vh, 820px);
+      margin: auto;
       padding: 0;
       overflow: auto;
       border: 0;
@@ -689,6 +692,65 @@
 
     .voice-dialog {
       width: min(680px, calc(100% - 28px));
+    }
+
+    .story-video-dialog {
+      position: fixed;
+      inset: 0;
+      width: min(960px, calc(100% - 32px));
+      max-width: none;
+      max-height: calc(100dvh - 32px);
+      margin: auto;
+      padding: 0;
+      overflow: hidden;
+      border: 0;
+      border-radius: 22px;
+      background: #07110d;
+      color: white;
+      box-shadow: 0 32px 90px rgba(9, 24, 18, .42);
+    }
+
+    .story-video-dialog::backdrop {
+      background: rgba(10, 24, 19, .72);
+      backdrop-filter: blur(6px);
+    }
+
+    .story-video-frame {
+      position: relative;
+      aspect-ratio: 16 / 9;
+      width: 100%;
+      overflow: hidden;
+      background: #07110d;
+    }
+
+    .story-video-frame video {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      background: #07110d;
+    }
+
+    .story-video-close-form {
+      position: absolute;
+      z-index: 3;
+      top: 12px;
+      right: 12px;
+    }
+
+    .story-video-close {
+      display: grid;
+      width: 42px;
+      height: 42px;
+      padding: 0;
+      place-items: center;
+      border: 1px solid rgba(255, 255, 255, .48);
+      border-radius: 50%;
+      background: rgba(7, 17, 13, .64);
+      color: white;
+      font-size: 1.3rem;
+      line-height: 1;
+      backdrop-filter: blur(8px);
     }
 
     .voice-attribution {
@@ -1681,7 +1743,8 @@
       }
 
       .ai-dialog,
-      .voice-dialog {
+      .voice-dialog,
+      .story-video-dialog {
         width: calc(100% - 16px);
         max-height: calc(100dvh - 16px);
         border-radius: 18px;
@@ -1887,7 +1950,8 @@
 
     @media (max-height: 500px) and (orientation: landscape) {
       .ai-dialog,
-      .voice-dialog {
+      .voice-dialog,
+      .story-video-dialog {
         max-height: calc(100dvh - 10px);
       }
 

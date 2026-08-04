@@ -65,6 +65,10 @@ test("React profile preserves the existing controls and behavior", async () => {
     "Ask a Question", "Create a lesson kit", "Community archive", "Compare cultures",
   ]) assert.match(profile, new RegExp(label));
   assert.match(profile, /endpoint: "\/api\/living-word"/);
+  assert.match(profile, /className="story-video-dialog"/);
+  assert.match(profile, /<video/);
+  assert.match(profile, /onClick=\{openStoryVideo\}/);
+  assert.doesNotMatch(profile, /href=\{`\/culture\/\$\{community\.slug\}\/documentary\?mode=watch`\}/);
   assert.match(profile, /Explore \{currentYear\} in context/);
   assert.match(profile, /onClick=\{\(\) => setCurrentYear\(year\)\}/);
   assert.match(dialog, /showModal\(\)/);
@@ -100,6 +104,8 @@ test("mobile safeguards remain active for routed components", async () => {
   assert.match(css, /max-height: calc\(100dvh - 16px\)/);
   assert.match(css, /\.culture-card \{[\s\S]*min-height: 104px/);
   assert.match(css, /\.feature-button \{[\s\S]*grid-template-columns: 38px minmax\(0, 1fr\)/);
+  assert.match(css, /\.ai-dialog \{[\s\S]*position: fixed;[\s\S]*inset: 0;[\s\S]*margin: auto;/);
+  assert.match(css, /\.story-video-dialog \{[\s\S]*position: fixed;[\s\S]*margin: auto;/);
 });
 
 test("AI route reports configuration without exposing credentials", async () => {

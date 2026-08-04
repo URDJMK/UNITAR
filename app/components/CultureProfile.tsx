@@ -33,10 +33,53 @@ function VillageTestimonyDialog({ community, dialogRef }: { community: Community
   );
 }
 
+function StoryVideoDialog({
+  community,
+  dialogRef,
+  videoRef,
+}: {
+  community: Community;
+  dialogRef: React.RefObject<HTMLDialogElement | null>;
+  videoRef: React.RefObject<HTMLVideoElement | null>;
+}) {
+  return (
+    <dialog
+      className="story-video-dialog"
+      ref={dialogRef}
+      aria-label={`${community.name} featured story`}
+      onClose={() => {
+        videoRef.current?.pause();
+        if (videoRef.current) videoRef.current.currentTime = 0;
+      }}
+    >
+      <div className="story-video-frame">
+        <form method="dialog" className="story-video-close-form">
+          <button className="story-video-close" type="submit" aria-label="Close featured story">×</button>
+        </form>
+        <video
+          ref={videoRef}
+          controls
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          poster="/og.png"
+          aria-label={`${community.name} featured film demo`}
+        >
+          <source src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4" type="video/mp4" />
+          Your browser does not support embedded video.
+        </video>
+      </div>
+    </dialog>
+  );
+}
+
 export function CultureProfile({ community }: { community: Community }) {
   const router = useRouter();
   const aiDialogRef = useRef<AIExperienceHandle>(null);
   const voiceDialogRef = useRef<HTMLDialogElement>(null);
+  const storyVideoDialogRef = useRef<HTMLDialogElement>(null);
+  const storyVideoRef = useRef<HTMLVideoElement>(null);
   const [currentYear, setCurrentYear] = useState("1900");
   const [wordState, setWordState] = useState<AIStreamState>({ ...emptyAIStream, loading: true, streaming: true });
 
@@ -56,6 +99,11 @@ export function CultureProfile({ community }: { community: Community }) {
   }, [community.name]);
 
   const openTool = (action: Parameters<AIExperienceHandle["open"]>[0]) => aiDialogRef.current?.open(action);
+
+  function openStoryVideo() {
+    storyVideoDialogRef.current?.showModal();
+    if (storyVideoRef.current) void storyVideoRef.current.play().catch(() => undefined);
+  }
 
   return (
     <main className="route-main page-enter">
@@ -95,7 +143,7 @@ export function CultureProfile({ community }: { community: Community }) {
         </div>
 
         <div id="features" className="feature-grid">
-          <Link className="feature-button" href={`/culture/${community.slug}/documentary?mode=watch`}><span className="feature-icon">▶</span><strong>Watch Story</strong><small>Play the featured film</small></Link>
+          <button className="feature-button" type="button" onClick={openStoryVideo}><span className="feature-icon">▶</span><strong>Watch Story</strong><small>Play the featured film</small></button>
           <button className="feature-button" type="button" onClick={() => voiceDialogRef.current?.showModal()}><span className="feature-icon">“</span><strong>Village Testimony</strong><small>A life in two paragraphs</small></button>
           <button className="feature-button" type="button" onClick={() => openTool("phrases")}><span className="feature-icon">Aa</span><strong>Learn 10 Phrases</strong><small>Generated live by AI</small></button>
           <button className="feature-button" type="button" onClick={() => openTool("translate")}><span className="feature-icon">文</span><strong>Translate Text</strong><small>AI translation</small></button>
@@ -156,6 +204,7 @@ export function CultureProfile({ community }: { community: Community }) {
 
       <AIExperienceDialog ref={aiDialogRef} community={community} />
       <VillageTestimonyDialog community={community} dialogRef={voiceDialogRef} />
+      <StoryVideoDialog community={community} dialogRef={storyVideoDialogRef} videoRef={storyVideoRef} />
     </main>
   );
 }
