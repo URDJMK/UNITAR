@@ -70,6 +70,11 @@ test("standalone demo includes live AI learning tools and the film demo", async 
   assert.match(html, /AI stream live/);
   assert.match(html, /data-name="Sámi"/);
   assert.match(html, /data-name="Diné"/);
+  assert.match(html, /50 communities/);
+  assert.equal((html.match(/class="culture-card"/g) || []).length, 50);
+  assert.match(html, /data-name="Maasai"/);
+  assert.match(html, /data-name="Nubian"/);
+  assert.match(html, /data-name="Wodaabe"/);
   assert.match(html, /data-ai-action="phrases"/);
   assert.match(html, /data-ai-action="lesson"/);
   assert.match(html, /data-ai-action="compare"/);
@@ -101,6 +106,10 @@ test("standalone demo includes live AI learning tools and the film demo", async 
   for (const culture of [
     "Ainu", "Sámi", "Māori", "Jeju", "Nüshu", "Quechua", "Amazigh", "Diné", "Mapuche",
     "Inuit", "Yolŋu", "Hmong", "Haida", "Cherokee", "Garifuna", "Sápara", "Nenets", "Basque",
+    "Maasai", "Nubian", "Wodaabe", "San", "Himba", "Hadza", "Tuareg", "Afar", "Batwa", "Oromo",
+    "Atayal", "Bunun", "Karen", "Khasi", "Ifugao", "Iban", "Chukchi", "Evenki", "Kanak", "CHamoru",
+    "Rapa Nui", "Kānaka Maoli", "Noongar", "Meriam", "Lakota", "Anishinaabe", "Mi’kmaq", "K’iche’ Maya",
+    "Nahua", "Guna", "Wayuu", "Yanomami",
   ]) {
     assert.match(html, new RegExp(`"${culture}": \\{`), `${culture} should have a testimony`);
   }
@@ -110,8 +119,8 @@ test("standalone demo includes live AI learning tools and the film demo", async 
   assert.match(html, /"speaker": "Ane"/);
   assert.match(html, /"language": "Ainu"/);
   assert.match(html, /"language": "Euskara"/);
-  assert.equal((html.match(/"localFirst":/g) || []).length, 18);
-  assert.equal((html.match(/"localSecond":/g) || []).length, 18);
+  assert.equal((html.match(/"localFirst":/g) || []).length, 50);
+  assert.equal((html.match(/"localSecond":/g) || []).length, 50);
   assert.match(html, /id="voice-local-first"/);
   assert.match(html, /id="voice-local-second"/);
   assert.match(html, /id="voice-english-first"/);
