@@ -91,6 +91,13 @@ test("standalone demo includes live AI learning tools and the film demo", async 
   assert.match(html, /sanitizeAIText\(/);
   assert.match(html, /sanitizeAIData\(/);
   assert.match(html, /blockedPlaceholders/);
+  assert.match(html, /@media \(max-width: 360px\)/);
+  assert.match(html, /@media \(max-height: 500px\) and \(orientation: landscape\)/);
+  assert.match(html, /\.ai-status-short/);
+  assert.match(html, /max-height: calc\(100dvh - 16px\)/);
+  assert.match(html, /\.dialog-top \{[\s\S]*position: sticky/);
+  assert.match(html, /\.culture-card \{[\s\S]*min-height: 104px/);
+  assert.match(html, /\.feature-button \{[\s\S]*grid-template-columns: 38px minmax\(0, 1fr\)/);
   assert.match(html, /ai-loading-orbit/);
   assert.match(html, /hasRenderableStructuredContent\(/);
   assert.match(html, /Living word · Culture · AI/);

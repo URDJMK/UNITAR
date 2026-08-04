@@ -21,12 +21,15 @@ body {
 }
 
 .demo-shell {
-  min-height: 100vh;
+  height: 100dvh;
+  min-height: 100svh;
+  overflow: hidden;
 }
 
 .demo-frame {
   display: block;
   width: 100%;
-  min-height: 100vh;
+  height: 100dvh;
+  min-height: 100svh;
   border: 0;
 }

@@ -567,6 +567,12 @@
       display: inline-flex;
       align-items: center;
       gap: 7px;
+      min-width: 0;
+      white-space: nowrap;
+    }
+
+    .ai-status-short {
+      display: none;
     }
 
     .ai-status::before {
@@ -1054,6 +1060,16 @@
       padding: 16px;
     }
 
+    .rich-response,
+    .markdown-response,
+    .message,
+    .voice-quote,
+    .profile-meta,
+    .panel-card {
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+
     @keyframes stream-pulse {
       to {
         opacity: .2;
@@ -1446,20 +1462,210 @@
       .placeholder-note {
         max-width: none;
       }
+
+      .module {
+        min-height: 0;
+      }
+
+      .demo-panel {
+        width: min(760px, calc(100% - 32px));
+      }
     }
 
     @media (max-width: 520px) {
       .site-header {
-        padding: 13px 16px;
+        gap: 8px;
+        padding: 11px 12px;
+      }
+
+      .brand {
+        min-width: 0;
+        gap: 8px;
+        font-size: .88rem;
+        white-space: nowrap;
+      }
+
+      .brand-mark {
+        width: 30px;
+        height: 30px;
+        flex: 0 0 30px;
+      }
+
+      .ai-status {
+        flex: 0 0 auto;
+        padding: 6px 9px;
+        font-size: .72rem;
+      }
+
+      .ai-status-full {
+        display: none;
+      }
+
+      .ai-status-short {
+        display: inline;
       }
 
       .hero {
+        min-height: 64svh;
         padding-top: 58px;
+        padding-bottom: 42px;
+      }
+
+      .hero h1 {
+        font-size: clamp(2.8rem, 14.5vw, 3.55rem);
+        line-height: .96;
+      }
+
+      .hero-copy {
+        margin-bottom: 22px;
+        font-size: 1rem;
+      }
+
+      .section {
+        width: calc(100% - 24px);
+        padding: 36px 0 58px;
+      }
+
+      .section-head {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 7px;
+        margin-bottom: 18px;
+      }
+
+      .section-head h2 {
+        margin: 0;
+        font-size: 2.35rem;
+      }
+
+      .section-head .muted {
+        max-width: 32ch;
+        margin: 0;
       }
 
       .culture-grid,
       .feature-grid {
         grid-template-columns: 1fr;
+      }
+
+      .culture-grid {
+        gap: 10px;
+      }
+
+      .culture-card {
+        min-height: 104px;
+        align-items: center;
+        justify-content: flex-start;
+        flex-direction: row;
+        gap: 16px;
+        padding: 17px 18px;
+      }
+
+      .culture-card > span:last-child {
+        min-width: 0;
+      }
+
+      .culture-symbol {
+        flex: 0 0 34px;
+        font-size: 1.6rem;
+        text-align: center;
+      }
+
+      .culture-name {
+        font-size: 1.4rem;
+      }
+
+      .profile-hero {
+        padding: 44px 0 28px;
+      }
+
+      .back {
+        margin-bottom: 26px;
+      }
+
+      .profile-title {
+        gap: 18px;
+      }
+
+      .profile-title h1 {
+        margin: 6px 0 10px;
+        font-size: clamp(3.35rem, 18vw, 4.5rem);
+        line-height: .96;
+        overflow-wrap: anywhere;
+      }
+
+      .profile-meta {
+        gap: 7px;
+      }
+
+      .profile-meta .pill {
+        max-width: 100%;
+        white-space: normal;
+      }
+
+      .placeholder-note {
+        padding: 10px 12px;
+      }
+
+      .quote {
+        margin: 34px 0;
+        font-size: 1.9rem;
+      }
+
+      .living-word {
+        gap: 16px;
+        margin: -4px 0 24px;
+        padding: 17px;
+      }
+
+      .living-mini-card {
+        padding: 13px 14px;
+      }
+
+      .feature-grid {
+        gap: 9px;
+      }
+
+      .feature-button {
+        display: grid;
+        grid-template-columns: 38px minmax(0, 1fr);
+        align-items: center;
+        min-height: 86px;
+        column-gap: 12px;
+        padding: 15px 17px;
+      }
+
+      .feature-icon {
+        grid-row: 1 / 3;
+        margin: 0;
+      }
+
+      .feature-button strong,
+      .feature-button small {
+        grid-column: 2;
+      }
+
+      .module-grid {
+        gap: 11px;
+        margin-top: 32px;
+      }
+
+      .module {
+        padding: 20px;
+      }
+
+      .module h3 {
+        font-size: 1.55rem;
+      }
+
+      .timeline {
+        margin: 32px 0 16px;
+      }
+
+      .year {
+        min-width: 0;
+        padding-inline: 2px;
+        font-size: .74rem;
       }
 
       .search {
@@ -1483,6 +1689,152 @@
         grid-template-columns: 1fr;
       }
 
+      .ai-dialog,
+      .voice-dialog {
+        width: calc(100% - 16px);
+        max-height: calc(100dvh - 16px);
+        border-radius: 18px;
+      }
+
+      .ai-dialog-inner {
+        padding: 18px;
+      }
+
+      .dialog-top {
+        position: sticky;
+        top: 0;
+        z-index: 4;
+        margin: -2px -2px 0;
+        padding: 2px 2px 10px;
+        background: linear-gradient(var(--card) 82%, rgba(255, 253, 247, 0));
+      }
+
+      .dialog-close {
+        width: 42px;
+        height: 42px;
+        flex: 0 0 42px;
+      }
+
+      .ai-dialog h2 {
+        margin-top: 14px;
+        font-size: 2rem;
+        line-height: 1.05;
+        overflow-wrap: anywhere;
+      }
+
+      .ai-form {
+        gap: 12px;
+        margin-top: 20px;
+      }
+
+      .ai-result {
+        margin-top: 18px;
+        padding: 14px;
+      }
+
+      .ai-loading-shell {
+        grid-template-columns: 38px minmax(0, 1fr);
+        min-width: 0;
+      }
+
+      .ai-loading-orbit {
+        width: 36px;
+        height: 36px;
+      }
+
+      .ai-loading-core {
+        inset: 12px;
+      }
+
+      .voice-attribution {
+        margin-bottom: 16px;
+      }
+
+      .voice-quote {
+        padding: 17px;
+        border-radius: 15px;
+      }
+
+      .voice-original {
+        gap: 12px;
+        margin-bottom: 20px;
+        font-size: 1.02rem;
+        line-height: 1.52;
+      }
+
+      .voice-translation {
+        padding-top: 16px;
+      }
+
+      .voice-translation p {
+        font-size: .94rem;
+      }
+
+      .response-section,
+      .phrase-card {
+        padding: 14px;
+      }
+
+      .message,
+      .message.ai-rich {
+        width: 100%;
+        max-width: 100%;
+      }
+
+      .demo-panel {
+        width: calc(100% - 24px);
+        padding: 36px 0 58px;
+      }
+
+      .panel-card {
+        padding: 20px;
+        border-radius: 18px;
+      }
+
+      .panel-card h1 {
+        font-size: 2.4rem;
+        line-height: .98;
+      }
+
+      .form-grid {
+        gap: 11px;
+        margin: 24px 0;
+      }
+
+      .primary,
+      .secondary,
+      .quick-questions button {
+        min-height: 44px;
+      }
+
+      .video-caption {
+        left: 15px;
+        bottom: 13px;
+      }
+
+      .story-intro {
+        padding: 17px;
+      }
+
+      .chat-log {
+        min-height: 130px;
+      }
+
+      .toast {
+        right: 12px;
+        bottom: 12px;
+        left: 12px;
+        max-width: none;
+      }
+
+      footer {
+        padding: 56px 16px;
+      }
+
+      footer h2 {
+        font-size: 2.15rem;
+      }
+
       .dialog-timeline-row {
         grid-template-columns: 34px minmax(0, 1fr) 34px;
         gap: 6px;
@@ -1500,6 +1852,68 @@
       .dialog-year {
         padding-inline: 2px;
         font-size: .68rem;
+      }
+    }
+
+    @media (max-width: 360px) {
+      .search {
+        align-items: stretch;
+        flex-direction: column;
+        gap: 5px;
+      }
+
+      .search input {
+        padding: 11px 12px;
+      }
+
+      .search button {
+        width: 100%;
+        min-height: 44px;
+      }
+
+      .ai-dialog-inner {
+        padding: 15px;
+      }
+
+      .dialog-timeline {
+        padding: 12px 8px;
+      }
+
+      .dialog-timeline-row {
+        grid-template-columns: 32px minmax(0, 1fr) 32px;
+        gap: 4px;
+      }
+
+      .timeline-step {
+        width: 32px;
+        height: 32px;
+      }
+
+      .dialog-year {
+        font-size: .63rem;
+      }
+    }
+
+    @media (max-height: 500px) and (orientation: landscape) {
+      .ai-dialog,
+      .voice-dialog {
+        max-height: calc(100dvh - 10px);
+      }
+
+      .ai-dialog-inner {
+        padding-block: 14px;
+      }
+
+      .dialog-top {
+        padding-bottom: 6px;
+      }
+
+      .ai-dialog h2 {
+        margin-top: 8px;
+      }
+
+      .demo-panel {
+        padding-top: 28px;
       }
     }
 
@@ -1527,7 +1941,8 @@
       <button type="button" data-scroll="learn">Education</button>
       <button type="button" data-scroll="community">Community</button>
     </nav>
-    <span class="pill ai-status" id="ai-status">Checking AI…</span>
+    <span class="pill ai-status" id="ai-status"><span class="ai-status-full">Checking AI…</span><span
+        class="ai-status-short">AI…</span></span>
   </header>
 
   <main>
@@ -2723,18 +3138,22 @@
 
     async function refreshAIStatus() {
       const status = document.getElementById("ai-status");
+      const setStatusText = (full, short = full) => {
+        status.querySelector(".ai-status-full").textContent = full;
+        status.querySelector(".ai-status-short").textContent = short;
+      };
       try {
         const response = await fetch("/api/ai", { cache: "no-store" });
         const data = await response.json();
         if (data.configured) {
-          status.textContent = data.runtime === "pydantic-ai" ? "PydanticAI · AI live" : "AI stream live";
+          setStatusText(data.runtime === "pydantic-ai" ? "PydanticAI · AI live" : "AI stream live", "AI live");
           status.classList.add("live");
         } else {
-          status.textContent = "AI key needed";
+          setStatusText("AI key needed", "AI setup");
           status.classList.remove("live");
         }
       } catch {
-        status.textContent = "AI unavailable";
+        setStatusText("AI unavailable", "AI offline");
         status.classList.remove("live");
       }
     }
