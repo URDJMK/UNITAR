@@ -88,6 +88,44 @@ def test_word_prompt_includes_format_and_sample_answer() -> None:
     assert "never copy this content for another culture" in prompt
 
 
+@pytest.mark.parametrize(
+    "agent_request",
+    [
+        AgentRequest(action="ask", culture="Māori", question="How is the language learned today?"),
+        AgentRequest(action="word", culture="Māori"),
+        AgentRequest(action="phrases", culture="Māori"),
+        AgentRequest(action="lesson", culture="Māori", grade="Grade 7"),
+        AgentRequest(action="compare", culture="Māori", compareCulture="Ainu"),
+        AgentRequest(
+            action="translate",
+            culture="Māori",
+            text="Welcome, friends.",
+            targetLanguage="te reo Māori",
+        ),
+        AgentRequest(action="timeline", culture="Māori", year="1950"),
+        AgentRequest(action="museum", culture="Māori"),
+        AgentRequest(action="archive", culture="Māori"),
+    ],
+    ids=[
+        "ask",
+        "word",
+        "phrases",
+        "lesson",
+        "compare",
+        "translate",
+        "timeline",
+        "museum",
+        "archive",
+    ],
+)
+def test_every_action_prompt_includes_a_format_and_sample(
+    agent_request: AgentRequest,
+) -> None:
+    prompt = prompt_for(agent_request)
+    assert "RESPONSE FORMAT (required)" in prompt
+    assert "SAMPLE ANSWER" in prompt
+
+
 def test_word_stream_uses_prompted_output_for_incremental_json() -> None:
     output = streaming_output_type_for("word")
     assert isinstance(output, PromptedOutput)

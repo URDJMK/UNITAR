@@ -125,3 +125,31 @@ test("AI route is implemented as an NDJSON stream", async () => {
   assert.match(source, /stream:\s*true/);
   assert.match(source, /async function proxyPydanticAgent[\s\S]*response\.body\.getReader\(\)/);
 });
+
+test("every direct Claude experience has an explicit format and sample answer", async () => {
+  const source = await readFile(new URL("../app/api/ai/route.ts", import.meta.url), "utf8");
+  const actions = [
+    "ask",
+    "word",
+    "phrases",
+    "lesson",
+    "compare",
+    "translate",
+    "timeline",
+    "museum",
+    "archive",
+  ];
+
+  for (const action of actions) {
+    assert.match(
+      source,
+      new RegExp(action + ": `RESPONSE FORMAT \\(required\\)[\\s\\S]*?SAMPLE ANSWER"),
+      `${action} should define a response format and sample`,
+    );
+    assert.match(
+      source,
+      new RegExp(`withResponseGuide\\(\\s*["']${action}["']`),
+      `${action} should attach its response guide`,
+    );
+  }
+});

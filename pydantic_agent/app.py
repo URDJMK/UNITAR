@@ -163,6 +163,289 @@ SAMPLE ANSWER (Ainu example; copy the format, never copy this content for anothe
 """
 
 
+DISCLAIMER = "AI-generated learning aid — verify with community-led and primary sources."
+
+
+def response_guide(
+    response_shape: dict[str, object],
+    sample_label: str,
+    sample_answer: dict[str, object],
+) -> str:
+    return f"""RESPONSE FORMAT (required)
+Return raw JSON matching this shape, not Markdown or a code fence. Replace the descriptive values with the answer. Do not add prose outside the JSON.
+
+{json.dumps(response_shape, ensure_ascii=False, indent=2)}
+
+SAMPLE ANSWER ({sample_label}; copy the format, never copy the content into another answer)
+{json.dumps(sample_answer, ensure_ascii=False, indent=2)}
+"""
+
+
+ACTION_RESPONSE_GUIDES: dict[Action, str] = {
+    "ask": response_guide(
+        {
+            "title": "Short answer title",
+            "summary": "Direct answer in one or two sentences",
+            "sections": [
+                {
+                    "heading": "Clear section heading",
+                    "body": "Short explanation",
+                    "bullets": ["Concrete supporting point"],
+                }
+            ],
+            "verification": ["Specific way to verify this answer"],
+            "disclaimer": DISCLAIMER,
+        },
+        "format-only example about language learning",
+        {
+            "title": "How language learning continues",
+            "summary": "Language learning can continue through families, schools, and community-led programs.",
+            "sections": [
+                {
+                    "heading": "Learning today",
+                    "body": "Methods differ by community and should be described using current community sources.",
+                    "bullets": ["Look for classes or resources led by speakers and educators."],
+                }
+            ],
+            "verification": ["Check a current community language-program website."],
+            "disclaimer": DISCLAIMER,
+        },
+    ),
+    "phrases": response_guide(
+        {
+            "title": "10 useful phrases",
+            "summary": "One-sentence scope and confidence note",
+            "language": "Specific language name",
+            "variant": "Specific variant or Varies by community",
+            "phrases": [
+                {
+                    "original": "Phrase in original writing",
+                    "pronunciation": "Short pronunciation guide",
+                    "meaning": "Short English meaning",
+                    "usage": "One-line usage note",
+                    "confidence": "high, medium, or verify",
+                }
+            ],
+            "verification": ["Specific language source to consult"],
+            "disclaimer": DISCLAIMER,
+        },
+        "abbreviated two-item example; the real answer should contain ten when supported",
+        {
+            "title": "Everyday greetings",
+            "summary": "These examples need confirmation for the learner's community and variant.",
+            "language": "Example language",
+            "variant": "Varies by community",
+            "phrases": [
+                {
+                    "original": "Example phrase one",
+                    "pronunciation": "example pronunciation",
+                    "meaning": "Hello",
+                    "usage": "Use as an everyday greeting when locally appropriate.",
+                    "confidence": "verify",
+                },
+                {
+                    "original": "Example phrase two",
+                    "pronunciation": "example pronunciation",
+                    "meaning": "Thank you",
+                    "usage": "Use to express gratitude when locally appropriate.",
+                    "confidence": "verify",
+                },
+            ],
+            "verification": ["Confirm spelling and pronunciation with a community-led language source."],
+            "disclaimer": DISCLAIMER,
+        },
+    ),
+    "lesson": response_guide(
+        {
+            "title": "35-minute lesson title",
+            "summary": "Age-appropriate lesson overview",
+            "sections": [
+                {
+                    "heading": "Objectives, activity, key ideas, quiz, or reflection",
+                    "body": "Short teaching guidance",
+                    "bullets": ["Classroom-ready item"],
+                }
+            ],
+            "verification": ["Source teachers and learners should review"],
+            "disclaimer": DISCLAIMER,
+        },
+        "format-only lesson excerpt",
+        {
+            "title": "Learning from living voices",
+            "summary": "Students practice distinguishing community sources from outside interpretation.",
+            "sections": [
+                {
+                    "heading": "Learning objective",
+                    "body": "Students identify who created a source and whose perspective it represents.",
+                    "bullets": ["Compare one community-led source with one museum description."],
+                },
+                {
+                    "heading": "Reflection",
+                    "body": "Invite students to name one question that still needs verification.",
+                    "bullets": [],
+                },
+            ],
+            "verification": ["Use a current source published or reviewed by the community."],
+            "disclaimer": DISCLAIMER,
+        },
+    ),
+    "compare": response_guide(
+        {
+            "title": "Respectful comparison title",
+            "summary": "Shared theme plus an important limit on comparison",
+            "sections": [
+                {
+                    "heading": "Living context, language, place, arts, similarities, or differences",
+                    "body": "Balanced comparison",
+                    "bullets": ["Specific point for each community"],
+                }
+            ],
+            "verification": ["Community-led source for each community"],
+            "disclaimer": DISCLAIMER,
+        },
+        "format-only comparison excerpt",
+        {
+            "title": "Two distinct living communities",
+            "summary": "A shared theme can support learning, but it does not make two cultures equivalent.",
+            "sections": [
+                {
+                    "heading": "Important differences",
+                    "body": "Describe each community on its own terms before drawing a comparison.",
+                    "bullets": ["Name the specific place, language, and source behind each point."],
+                }
+            ],
+            "verification": ["Check one current community-led source for each side of the comparison."],
+            "disclaimer": DISCLAIMER,
+        },
+    ),
+    "translate": response_guide(
+        {
+            "title": "Translation into the requested language",
+            "summary": "The translation itself",
+            "language": "Target language",
+            "variant": "Variant or Varies by community",
+            "sections": [
+                {
+                    "heading": "Tone or ambiguity",
+                    "body": "Short note about choices or uncertainty",
+                    "bullets": [],
+                }
+            ],
+            "verification": ["Specific reason or source for speaker review"],
+            "disclaimer": DISCLAIMER,
+        },
+        "format-only translation example",
+        {
+            "title": "Translation into the requested language",
+            "summary": "[Translated text appears here first.]",
+            "language": "Requested language",
+            "variant": "Varies by community",
+            "sections": [
+                {
+                    "heading": "Tone and ambiguity",
+                    "body": "This wording aims for a warm, everyday tone; a fluent speaker should confirm the local variant.",
+                    "bullets": [],
+                }
+            ],
+            "verification": ["Ask a fluent speaker to review meaning, tone, and variant."],
+            "disclaimer": DISCLAIMER,
+        },
+    ),
+    "timeline": response_guide(
+        {
+            "title": "Community around the requested year",
+            "summary": "Two-sentence historical context",
+            "sections": [
+                {
+                    "heading": "Broader context, continuity, change, or verification",
+                    "body": "Short, dated context",
+                    "bullets": ["Specific fact with a cautious scope"],
+                }
+            ],
+            "verification": ["Archive or community history source to consult"],
+            "disclaimer": DISCLAIMER,
+        },
+        "format-only timeline excerpt",
+        {
+            "title": "A community in historical context",
+            "summary": "A date is one viewpoint into a continuing community, not a complete portrait.",
+            "sections": [
+                {
+                    "heading": "Community continuity",
+                    "body": "Explain what people maintained and adapted, while noting regional differences.",
+                    "bullets": ["Connect the historical moment to present-day community life."],
+                }
+            ],
+            "verification": ["Compare community histories with the relevant archival record."],
+            "disclaimer": DISCLAIMER,
+        },
+    ),
+    "museum": response_guide(
+        {
+            "title": "Audio-guide introduction",
+            "summary": "A short invitation to listen and look responsibly",
+            "sections": [
+                {
+                    "heading": "Objects, interpretation, provenance, consent, or living community",
+                    "body": "Visitor-facing guidance",
+                    "bullets": ["Question visitors can ask"],
+                }
+            ],
+            "verification": ["Museum or community information to verify"],
+            "disclaimer": DISCLAIMER,
+        },
+        "format-only audio-guide excerpt",
+        {
+            "title": "Begin with the people, not the object",
+            "summary": "Treat the display as one interpretation and look for the community voices connected to it.",
+            "sections": [
+                {
+                    "heading": "Questions to carry",
+                    "body": "Provenance and consent shape how an object should be understood and shown.",
+                    "bullets": ["Who authorized its collection and display?", "How does the community describe it today?"],
+                }
+            ],
+            "verification": ["Read the museum's provenance record alongside a community-led source."],
+            "disclaimer": DISCLAIMER,
+        },
+    ),
+    "archive": response_guide(
+        {
+            "title": "Contribution and consent checklist",
+            "summary": "Purpose and review status of this draft",
+            "sections": [
+                {
+                    "heading": "Authority, attribution, access, reuse, review, or governance",
+                    "body": "Short explanation",
+                    "bullets": ["Actionable checkbox item"],
+                }
+            ],
+            "verification": ["Community and legal review step"],
+            "disclaimer": DISCLAIMER,
+        },
+        "format-only archive checklist excerpt",
+        {
+            "title": "Community archive consent checklist",
+            "summary": "This draft separates public access, reuse, and AI-training permission for community and legal review.",
+            "sections": [
+                {
+                    "heading": "Contributor authority",
+                    "body": "Confirm that the contributor has the right to share the material.",
+                    "bullets": ["☐ Record who owns or stewards the item.", "☐ Record any culturally restricted access."],
+                },
+                {
+                    "heading": "AI-training permission",
+                    "body": "Treat AI training as a separate, optional decision.",
+                    "bullets": ["☐ Yes", "☐ No", "☐ Revisit later"],
+                },
+            ],
+            "verification": ["Have community governance and legal reviewers approve the final form."],
+            "disclaimer": DISCLAIMER,
+        },
+    ),
+}
+
+
 model_name = os.getenv("ANTHROPIC_MODEL", "claude-sonnet-5")
 agent = Agent(
     f"anthropic:{model_name}",
@@ -293,7 +576,11 @@ def prompt_for(request: AgentRequest) -> str:
     if request.action == "ask":
         if not request.question.strip():
             raise HTTPException(400, "Please enter a question.")
-        return f"Culture or community: {culture}\nQuestion: {request.question}\nAnswer with a summary, two to four clear sections, and verification guidance."
+        return f"""Culture or community: {culture}
+Question: {request.question}
+Answer with a summary, two to four clear sections, and verification guidance.
+
+{ACTION_RESPONSE_GUIDES["ask"]}"""
     if request.action == "word":
         return f"""Create a compact Living Word card for {culture}.
 
@@ -301,24 +588,42 @@ Put exactly one public, everyday, non-sacred cultural habit in cultural_habit an
 
 {WORD_RESPONSE_GUIDE}"""
     if request.action == "phrases":
-        return f"Create up to 10 beginner everyday phrases connected to {culture}. Put each in phrases with original writing, pronunciation, meaning, usage, and confidence. Name the language and variant. Do not fabricate to reach ten. MUST PROVIDE TEN PHRASES."
+        return f"""Create up to 10 beginner everyday phrases connected to {culture}. Put each in phrases with original writing, pronunciation, meaning, usage, and confidence. Name the language and variant. Do not fabricate to reach ten. MUST PROVIDE TEN PHRASES when they can be supported; otherwise explain why fewer are safe to provide.
+
+{ACTION_RESPONSE_GUIDES["phrases"]}"""
     if request.action == "lesson":
-        return f"Create a 35-minute lesson kit about {culture} for {request.grade}. Use sections for objectives, opening, key ideas, source evaluation, five quiz questions with answers, and reflection. Avoid role-playing sacred practices."
+        return f"""Create a 35-minute lesson kit about {culture} for {request.grade}. Use sections for objectives, opening, key ideas, source evaluation, five quiz questions with answers, and reflection. Avoid role-playing sacred practices.
+
+{ACTION_RESPONSE_GUIDES["lesson"]}"""
     if request.action == "compare":
         if not request.compareCulture.strip():
             raise HTTPException(400, "Choose a second culture to compare.")
-        return f"Compare {culture} and {request.compareCulture} respectfully. Use sections for living context, language, relationships to place, arts or storytelling, shared themes, important differences, and verification. Avoid unsupported claims of equivalence, ancestry, or borrowing."
+        return f"""Compare {culture} and {request.compareCulture} respectfully. Use sections for living context, language, relationships to place, arts or storytelling, shared themes, important differences, and verification. Avoid unsupported claims of equivalence, ancestry, or borrowing.
+
+{ACTION_RESPONSE_GUIDES["compare"]}"""
     if request.action == "translate":
         if not request.text.strip():
             raise HTTPException(400, "Enter text to translate.")
-        return f"Translate this text into {request.targetLanguage}:\n\n{request.text}\n\nUse cultural context related to {culture} only when relevant. Put the translation in summary and ambiguity or variant notes in sections."
+        return f"""Translate this text into {request.targetLanguage}:
+
+{request.text}
+
+Use cultural context related to {culture} only when relevant. Put the translation in summary and ambiguity or variant notes in sections.
+
+{ACTION_RESPONSE_GUIDES["translate"]}"""
     if request.action == "timeline":
         if not request.year.strip():
             raise HTTPException(400, "Choose a timeline year.")
-        return f"Give historical context for {culture} around {request.year}. Use sections for broader context, community continuity, what changed, and what needs verification."
+        return f"""Give historical context for {culture} around {request.year}. Use sections for broader context, community continuity, what changed, and what needs verification.
+
+{ACTION_RESPONSE_GUIDES["timeline"]}"""
     if request.action == "museum":
-        return f"Create a responsible museum audio-guide introduction to {culture}. Use sections for how to approach objects, community knowledge versus museum interpretation, provenance, consent, and present-day community life."
-    return f"Create a practical contribution and consent checklist for a community archive connected to {culture}. Cover contributor authority, attribution, visibility, restricted access, AI-training permission as a separate choice, reuse, review, withdrawal, and governance."
+        return f"""Create a responsible museum audio-guide introduction to {culture}. Use sections for how to approach objects, community knowledge versus museum interpretation, provenance, consent, and present-day community life.
+
+{ACTION_RESPONSE_GUIDES["museum"]}"""
+    return f"""Create a practical contribution and consent checklist for a community archive connected to {culture}. Cover contributor authority, attribution, visibility, restricted access, AI-training permission as a separate choice, reuse, review, withdrawal, and governance.
+
+{ACTION_RESPONSE_GUIDES["archive"]}"""
 
 
 def packet(kind: str, **payload: object) -> bytes:
