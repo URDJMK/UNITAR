@@ -7,7 +7,14 @@ from pydantic import ValidationError
 from pydantic_ai.usage import RunUsage
 import pytest
 
-from app import PhraseLearningResponse, WordLearningResponse, app, packet
+from app import (
+    AgentRequest,
+    PhraseLearningResponse,
+    WordLearningResponse,
+    app,
+    packet,
+    prompt_for,
+)
 
 
 client = TestClient(app)
@@ -66,3 +73,13 @@ def test_word_schema_accepts_one_habit_and_one_phrase() -> None:
     assert result.cultural_habit
     assert result.featured_word.original == "Irankarapte"
     assert result.sections == []
+
+
+def test_word_prompt_includes_format_and_sample_answer() -> None:
+    prompt = prompt_for(AgentRequest(action="word", culture="Māori"))
+    assert "Create a compact Living Word card for Māori" in prompt
+    assert "RESPONSE FORMAT (required)" in prompt
+    assert '"featured_word": {' in prompt
+    assert '"cultural_habit":' in prompt
+    assert "SAMPLE ANSWER" in prompt
+    assert "never copy this content for another culture" in prompt

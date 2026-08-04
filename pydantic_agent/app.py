@@ -110,6 +110,50 @@ Rules:
 """
 
 
+WORD_RESPONSE_GUIDE = """RESPONSE FORMAT (required)
+Populate exactly one structured response with this shape. Use empty arrays and empty strings exactly where shown; do not add fields or prose outside the response.
+
+{
+  "title": "",
+  "summary": "",
+  "language": "Specific language name",
+  "variant": "Specific variant or Varies by community",
+  "featured_word": {
+    "original": "One phrase in its original writing",
+    "pronunciation": "One short pronunciation hint",
+    "meaning": "One short English meaning",
+    "usage": "One short usage note",
+    "confidence": "high, medium, or verify"
+  },
+  "phrases": [],
+  "sections": [],
+  "verification": [],
+  "disclaimer": "AI-generated learning aid — verify with community-led and primary sources.",
+  "cultural_habit": "One public, everyday, non-sacred cultural habit in one sentence"
+}
+
+SAMPLE ANSWER (Ainu example; copy the format, never copy this content for another culture)
+{
+  "title": "",
+  "summary": "",
+  "language": "Ainu",
+  "variant": "Varies by community",
+  "featured_word": {
+    "original": "Iyairaykere",
+    "pronunciation": "ee-yai-rai-keh-reh",
+    "meaning": "Thank you",
+    "usage": "Used to express sincere gratitude.",
+    "confidence": "verify"
+  },
+  "phrases": [],
+  "sections": [],
+  "verification": [],
+  "disclaimer": "AI-generated learning aid — verify with community-led and primary sources.",
+  "cultural_habit": "Traditional embroidery is practiced as a living art in many Ainu communities."
+}
+"""
+
+
 model_name = os.getenv("ANTHROPIC_MODEL", "claude-sonnet-5")
 agent = Agent(
     f"anthropic:{model_name}",
@@ -139,9 +183,13 @@ def prompt_for(request: AgentRequest) -> str:
             raise HTTPException(400, "Please enter a question.")
         return f"Culture or community: {culture}\nQuestion: {request.question}\nAnswer with a summary, two to four clear sections, and verification guidance."
     if request.action == "word":
-        return f"Create a compact Living Word card for {culture}. Put exactly one public, everyday, non-sacred cultural habit in cultural_habit and exactly one well-attested useful phrase in featured_word. Name the language and keep variant under five words. Keep the habit to one sentence and every phrase field to one short line. Leave title, summary, phrases, sections, and verification empty. Do not add history, explanation, sources, or extra context. If the phrase is uncertain, write 'Community verification needed' rather than guessing."
+        return f"""Create a compact Living Word card for {culture}.
+
+Put exactly one public, everyday, non-sacred cultural habit in cultural_habit and exactly one well-attested useful phrase in featured_word. Name the language and keep variant under five words. Keep the habit to one sentence and every phrase field to one short line. Leave title, summary, phrases, sections, and verification empty. Do not add history, explanation, sources, or extra context. If the phrase is uncertain, write "Community verification needed" rather than guessing.
+
+{WORD_RESPONSE_GUIDE}"""
     if request.action == "phrases":
-        return f"Create up to 10 beginner everyday phrases connected to {culture}. Put each in phrases with original writing, pronunciation, meaning, usage, and confidence. Name the language and variant. Do not fabricate to reach ten."
+        return f"Create up to 10 beginner everyday phrases connected to {culture}. Put each in phrases with original writing, pronunciation, meaning, usage, and confidence. Name the language and variant. Do not fabricate to reach ten. MUST PROVIDE TEN PHRASES."
     if request.action == "lesson":
         return f"Create a 35-minute lesson kit about {culture} for {request.grade}. Use sections for objectives, opening, key ideas, source evaluation, five quiz questions with answers, and reflection. Avoid role-playing sacred practices."
     if request.action == "compare":
