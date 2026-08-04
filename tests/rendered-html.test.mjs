@@ -92,6 +92,7 @@ test("standalone demo includes live AI learning tools and the film demo", async 
   assert.match(html, /\/api\/living-word/);
   assert.match(html, /renderLivingWordCards\(/);
   assert.match(html, /pauseForLivePaint\(/);
+  assert.match(html, /liveTextPieces\(/);
   assert.doesNotMatch(html, />Generate (?:phrases|lesson|comparison|documentary)</i);
   assert.match(html, /Community archive/);
   assert.match(html, /Compare cultures/);

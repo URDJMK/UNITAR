@@ -1349,6 +1349,15 @@
         return new Promise((resolve) => setTimeout(resolve, 18));
       }
 
+      function liveTextPieces(value, size = 8) {
+        const text = String(value || "");
+        const pieces = [];
+        for (let index = 0; index < text.length; index += size) {
+          pieces.push(text.slice(index, index + size));
+        }
+        return pieces;
+      }
+
       function renderLearningResponse(target, data, options = {}) {
         if (options.compact) {
           renderLivingWordCards(target, data, options.streaming);
@@ -1520,10 +1529,15 @@
                 if (options.compact) await pauseForLivePaint();
               }
             } else if (event.type === "delta") {
-              markdown += event.text || "";
               if (options.compact) {
-                if (renderCompactWordResponse(target, markdown, true)) await pauseForLivePaint();
-              } else renderMarkdownResponse(target, markdown, true);
+                for (const piece of liveTextPieces(event.text)) {
+                  markdown += piece;
+                  if (renderCompactWordResponse(target, markdown, true)) await pauseForLivePaint();
+                }
+              } else {
+                markdown += event.text || "";
+                renderMarkdownResponse(target, markdown, true);
+              }
             } else if (event.type === "done") {
               if (event.data) {
                 latestStructured = event.data;
