@@ -139,22 +139,27 @@
     .home-hero {
       position: relative;
       isolation: isolate;
-      min-height: clamp(640px, 76vh, 790px);
+      min-height: clamp(650px, 76vh, 840px);
       overflow: hidden;
       place-items: center;
-      padding: 92px 20px 86px;
+      padding: 92px 0 76px;
       border-bottom: 1px solid rgba(22, 34, 29, .18);
-      background: linear-gradient(112deg, #faf7ef 0%, var(--paper) 56%, #eee9dd 100%);
-      text-align: center;
+      background:
+        radial-gradient(circle at 18% 20%, rgba(189, 123, 43, .08), transparent 22rem),
+        repeating-linear-gradient(90deg, rgba(22, 34, 29, .018) 0 1px, transparent 1px 8px),
+        linear-gradient(112deg, #f8f3e7 0%, var(--paper) 58%, #ebe7da 100%);
+      text-align: left;
     }
 
     .home-hero::before {
       position: absolute;
-      z-index: 1;
-      inset: 0;
-      background: linear-gradient(90deg, rgba(244, 241, 233, .24), transparent 16% 84%, rgba(244, 241, 233, .24));
+      z-index: -1;
+      top: 0;
+      bottom: 0;
+      left: 52.5%;
+      width: 1px;
+      background: rgba(22, 34, 29, .28);
       content: "";
-      pointer-events: none;
     }
 
     .home-hero::after {
@@ -171,14 +176,8 @@
     .home-hero-inner {
       position: relative;
       z-index: 3;
-      width: min(920px, 100%);
+      width: min(1180px, calc(100% - clamp(40px, 9vw, 140px)));
       margin: 0 auto;
-    }
-
-    .home-hero-copy {
-      position: relative;
-      min-width: 0;
-      padding: clamp(38px, 6vw, 66px) clamp(18px, 5vw, 64px);
     }
 
     .home-hero .eyebrow {
@@ -187,84 +186,91 @@
     }
 
     .home-hero h1 {
-      margin-bottom: 26px;
-      font-size: clamp(5.4rem, 10vw, 9rem);
-      line-height: .84;
+      width: min-content;
+      margin-bottom: 24px;
+      font-size: clamp(5.4rem, 10.3vw, 9.6rem);
+      line-height: .75;
       text-wrap: balance;
     }
 
     .home-hero h1 span {
-      display: inline;
-    }
-
-    .home-hero h1 span + span {
-      color: var(--green);
-      font-style: italic;
+      display: block;
     }
 
     .home-hero .hero-copy {
       max-width: 570px;
-      margin: 0 auto 32px;
+      margin: 0 0 32px;
       color: var(--ink);
       font-size: clamp(1.05rem, 1.6vw, 1.32rem);
     }
 
     .home-hero .search {
-      width: min(560px, 100%);
-      margin: 0 auto;
+      width: min(620px, 100%);
+      margin: 0;
       border-color: rgba(22, 34, 29, .26);
-      background: var(--card);
-      box-shadow: none;
-      backdrop-filter: none;
+      background: rgba(255, 253, 247, .9);
+      box-shadow: 0 22px 60px rgba(17, 33, 27, .15);
+      backdrop-filter: blur(14px);
     }
 
-    .hero-wave-field {
+    .home-voice-art {
       position: absolute;
       z-index: 0;
-      inset: 0;
-      overflow: hidden;
+      top: 50%;
+      left: 55%;
+      width: min(78vw, 1080px);
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background:
+        repeating-radial-gradient(circle at 55% 50%, transparent 0 20px, rgba(232, 178, 102, .38) 21px 22px),
+        radial-gradient(circle at 55% 50%, #155746 0 67%, #0e493c 68% 100%);
+      box-shadow:
+        0 0 0 14px rgba(21, 87, 70, .14),
+        0 0 0 32px rgba(21, 87, 70, .07);
+      opacity: .98;
+      transform: translateY(-50%);
+    }
+
+    .home-voice-wave {
+      position: absolute;
+      z-index: 2;
+      top: 50%;
+      right: -2px;
+      left: 49%;
+      display: flex;
+      height: min(20vw, 250px);
+      align-items: center;
+      justify-content: space-between;
+      gap: clamp(2px, .36vw, 7px);
+      padding-right: clamp(12px, 2vw, 34px);
       pointer-events: none;
+      transform: translateY(-50%);
     }
 
-    .hero-wave-field svg {
-      width: 100%;
-      height: 100%;
-      overflow: visible;
-      transform-origin: 50% 50%;
-      animation: wave-field-breathe 8s ease-in-out infinite alternate;
-      will-change: transform;
+    .home-voice-wave::before {
+      position: absolute;
+      z-index: -1;
+      right: 0;
+      left: -13vw;
+      height: 1px;
+      background: rgba(222, 149, 59, .55);
+      content: "";
     }
 
-    .hero-wave-line {
-      fill: none;
-      stroke: rgba(23, 108, 86, .42);
-      stroke-dasharray: 1;
-      stroke-dashoffset: 1;
-      stroke-linecap: round;
-      stroke-width: 1.2;
-      vector-effect: non-scaling-stroke;
-      animation: wave-line-reveal 1.35s cubic-bezier(.22, .75, .2, 1) forwards;
+    .home-voice-wave span {
+      width: clamp(2px, .18vw, 4px);
+      min-height: 3px;
+      flex: 0 0 auto;
+      border-radius: 999px;
+      background: #df963a;
+      box-shadow: 0 0 10px rgba(223, 150, 58, .28);
+      animation: home-wave-pulse 3.4s ease-in-out infinite;
+      transform-origin: center;
     }
 
-    .hero-wave-line-accent {
-      stroke: rgba(189, 123, 43, .66);
-      stroke-width: 1.45;
-    }
-
-    @keyframes wave-line-reveal {
-      to {
-        stroke-dashoffset: 0;
-      }
-    }
-
-    @keyframes wave-field-breathe {
-      from {
-        transform: scaleX(1) scaleY(.985);
-      }
-
-      to {
-        transform: scaleX(1.025) scaleY(1.015);
-      }
+    @keyframes home-wave-pulse {
+      0%, 100% { transform: scaleY(.84); }
+      50% { transform: scaleY(1.08); }
     }
 
     .eyebrow {
@@ -1656,28 +1662,32 @@
       }
 
       .home-hero {
-        min-height: auto;
-        padding: 72px 24px 76px;
+        min-height: 680px;
+        padding-inline: 0;
+      }
+
+      .home-hero::before {
+        left: 72%;
       }
 
       .home-hero-inner {
-        width: min(760px, 100%);
-      }
-
-      .home-hero-copy {
-        max-width: none;
+        width: calc(100% - 48px);
       }
 
       .home-hero h1 {
-        font-size: clamp(4.7rem, 14vw, 7.2rem);
+        font-size: clamp(5rem, 16vw, 7.1rem);
       }
 
-      .home-hero .search {
-        width: min(620px, 100%);
+      .home-voice-art {
+        left: 62%;
+        width: 780px;
+        opacity: .3;
       }
 
-      .hero-wave-field {
-        opacity: .88;
+      .home-voice-wave {
+        left: 43%;
+        height: 190px;
+        opacity: .72;
       }
     }
 
@@ -1721,8 +1731,8 @@
       }
 
       .home-hero {
-        min-height: 610px;
-        padding: 52px 12px 58px;
+        min-height: 650px;
+        padding: 68px 0 70px;
       }
 
       .home-hero::after {
@@ -1730,7 +1740,7 @@
       }
 
       .home-hero-inner {
-        width: 100%;
+        width: calc(100% - 30px);
       }
 
       .hero h1 {
@@ -1740,41 +1750,32 @@
 
       .home-hero h1 {
         margin-bottom: 24px;
-        font-size: clamp(4rem, 20vw, 5.4rem);
-        line-height: .82;
-      }
-
-      .home-hero h1 span {
-        display: block;
+        font-size: clamp(4.3rem, 22vw, 6rem);
+        line-height: .78;
       }
 
       .home-hero .eyebrow {
         max-width: 28ch;
-        margin-inline: auto;
         margin-bottom: 18px;
-        text-align: center;
       }
 
       .home-hero .hero-copy {
-        max-width: 30ch;
-        margin: 0 auto 26px;
+        max-width: 28ch;
+        margin: 0 0 26px;
       }
 
-      .home-hero-copy {
-        padding: 38px 8px 42px;
+      .home-voice-art {
+        top: 39%;
+        left: 62%;
+        width: 630px;
+        opacity: .2;
       }
 
-      .hero-wave-field {
-        inset: 16px -34% 12px;
-        opacity: .86;
-      }
-
-      .hero-wave-line {
-        stroke-width: .9;
-      }
-
-      .hero-wave-line-accent {
-        stroke-width: 1.1;
+      .home-voice-wave {
+        top: 39%;
+        left: 36%;
+        height: 150px;
+        opacity: .64;
       }
 
       .hero-copy {
@@ -2119,15 +2120,11 @@
 
     @media (max-width: 360px) {
       .home-hero {
-        padding-top: 42px;
+        min-height: 610px;
       }
 
       .home-hero h1 {
-        font-size: clamp(3.7rem, 20vw, 4.4rem);
-      }
-
-      .hero-wave-field {
-        inset-inline: -48%;
+        font-size: clamp(3.8rem, 21vw, 4.7rem);
       }
 
       .search {
@@ -2168,6 +2165,12 @@
       }
     }
 
+    @media (prefers-reduced-motion: reduce) {
+      .home-voice-wave span {
+        animation: none;
+      }
+    }
+
     @media (max-height: 500px) and (orientation: landscape) {
       .ai-dialog,
       .voice-dialog,
@@ -2193,11 +2196,6 @@
     }
 
     @media (prefers-reduced-motion: reduce) {
-      .hero-wave-line {
-        animation: none;
-        stroke-dashoffset: 0;
-      }
-
 
       *,
       *::before,
