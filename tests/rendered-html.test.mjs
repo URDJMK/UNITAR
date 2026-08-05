@@ -34,6 +34,8 @@ test("discovery is server-rendered as React without the legacy iframe", async ()
   assert.match(html, /href="\/culture\/ainu"/);
   assert.match(html, /href="\/culture\/maasai"/);
   assert.match(html, /href="\/culture\/nubian"/);
+  assert.match(html, /class="home-voice-art"/);
+  assert.match(html, /class="home-voice-wave"/);
   assert.doesNotMatch(html, /<iframe|living-voices-demo\.html/i);
 });
 
@@ -211,6 +213,9 @@ test("mobile safeguards remain active for routed components", async () => {
   assert.match(css, /\.feature-button \{[\s\S]*grid-template-columns: 38px minmax\(0, 1fr\)/);
   assert.match(css, /\.ai-dialog \{[\s\S]*position: fixed;[\s\S]*inset: 0;[\s\S]*margin: auto;/);
   assert.match(css, /\.story-video-dialog \{[\s\S]*position: fixed;[\s\S]*margin: auto;/);
+  assert.match(css, /\.home-voice-art \{[\s\S]*repeating-radial-gradient/);
+  assert.match(css, /\.home-voice-wave span \{[\s\S]*background: #df963a/);
+  assert.match(css, /@media \(prefers-reduced-motion: reduce\)/);
 });
 
 test("AI route reports configuration without exposing credentials", async () => {
