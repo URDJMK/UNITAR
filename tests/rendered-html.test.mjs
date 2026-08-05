@@ -30,16 +30,14 @@ test("discovery is server-rendered as React without the legacy iframe", async ()
   const html = await response.text();
   assert.match(html, /<title>Living Voices — A Conversation with Humanity<\/title>/i);
   assert.match(html, /Not a museum of the past\. A conversation with humanity\./);
-  assert.match(html, /Field index[\s\S]*50[\s\S]*communities/);
+  assert.match(html, /50 communities/);
   assert.match(html, /href="\/culture\/ainu"/);
   assert.match(html, /href="\/culture\/maasai"/);
   assert.match(html, /href="\/culture\/nubian"/);
   assert.match(html, /class="hero-wave-field"/);
   assert.match(html, /class="hero-wave-line/);
   assert.doesNotMatch(html, /<canvas|TIME \/ ms|AMPLITUDE/);
-  assert.match(html, /class="archive-status"/);
-  assert.match(html, /class="community-index"/);
-  assert.match(html, /Complete index/);
+  assert.doesNotMatch(html, /archive-status|community-index|Complete index/);
   assert.doesNotMatch(html, /<iframe|living-voices-demo\.html/i);
 });
 
@@ -213,14 +211,13 @@ test("mobile safeguards remain active for routed components", async () => {
   assert.match(css, /@media \(max-width: 360px\)/);
   assert.match(css, /@media \(max-height: 500px\) and \(orientation: landscape\)/);
   assert.match(css, /max-height: calc\(100dvh - 16px\)/);
-  assert.match(css, /@media \(max-width: 520px\)[\s\S]*\.culture-card \{[\s\S]*min-height: 126px/);
+  assert.match(css, /\.culture-card \{[\s\S]*min-height: 104px/);
   assert.match(css, /\.feature-button \{[\s\S]*grid-template-columns: 38px minmax\(0, 1fr\)/);
   assert.match(css, /\.ai-dialog \{[\s\S]*position: fixed;[\s\S]*inset: 0;[\s\S]*margin: auto;/);
   assert.match(css, /\.story-video-dialog \{[\s\S]*position: fixed;[\s\S]*margin: auto;/);
   assert.match(css, /\.hero-wave-field \{[\s\S]*position: absolute/);
   assert.match(css, /@media \(max-width: 520px\)[\s\S]*\.hero-wave-field \{[\s\S]*inset: 16px -34% 12px/);
-  assert.match(css, /\.archive-status \{[\s\S]*font-family: var\(--font-geist-mono\)/);
-  assert.match(css, /@media \(max-width: 520px\)[\s\S]*\.culture-card \{[\s\S]*grid-template-columns: 48px minmax\(0, 1fr\) 24px/);
+  assert.doesNotMatch(css, /\.archive-status|\.community-card-head|\.community-focus/);
 });
 
 test("homepage uses a decorative mirrored wave field instead of a data chart", async () => {

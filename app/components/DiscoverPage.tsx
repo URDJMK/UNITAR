@@ -53,17 +53,13 @@ export function DiscoverPage() {
         </div>
       </section>
 
-      <section className="section community-index-section" aria-labelledby="featured-title">
+      <section className="section" aria-labelledby="featured-title">
         <div className="section-head">
           <div>
-            <div className="eyebrow">Field index · {communities.length} communities</div>
+            <div className="eyebrow">Start listening</div>
             <h2 id="featured-title">Featured voices</h2>
-            <p className="muted">A living index of language, memory, place, and community-led knowledge.</p>
           </div>
-          <div className="archive-status" role="status" aria-live="polite">
-            <strong>{String(visibleCommunities.length).padStart(2, "0")}</strong>
-            <span>records shown<small>{query.trim() ? "Filtered index" : "Complete index"}</small></span>
-          </div>
+          <p className="muted">50 communities · Every profile opens live learning tools.</p>
         </div>
         {visibleCommunities.length ? (
           <div className="culture-grid">
@@ -73,16 +69,11 @@ export function DiscoverPage() {
                 href={`/culture/${community.slug}`}
                 key={community.slug}
               >
-                <span className="community-card-head">
-                  <span className="community-index">LV–{String(communities.indexOf(community) + 1).padStart(2, "0")}</span>
-                  <span className="culture-symbol" aria-hidden="true">{community.symbol}</span>
+                <span className="culture-symbol" aria-hidden="true">{community.symbol}</span>
+                <span>
+                  <span className="culture-name">{community.name}</span><br />
+                  <span className="culture-meta">{community.meta}</span>
                 </span>
-                <span className="community-card-body">
-                  <span className="culture-name">{community.name}</span>
-                  <span className="culture-meta">{community.region}</span>
-                  <span className="community-focus">{community.focus}</span>
-                </span>
-                <span className="community-open" aria-hidden="true">↗</span>
               </Link>
             ))}
           </div>
