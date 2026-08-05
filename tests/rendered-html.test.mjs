@@ -217,11 +217,13 @@ test("mobile safeguards remain active for routed components", async () => {
   assert.match(css, /\.story-video-dialog \{[\s\S]*position: fixed;[\s\S]*margin: auto;/);
   assert.match(css, /\.hero-wave-field \{[\s\S]*position: absolute/);
   assert.match(css, /@media \(max-width: 520px\)[\s\S]*\.hero-wave-field \{[\s\S]*inset: 16px -34% 12px/);
+  assert.match(css, /@media \(max-width: 520px\)[\s\S]*\.home-hero \.eyebrow \{[\s\S]*margin-inline: auto/);
   assert.doesNotMatch(css, /\.archive-status|\.community-card-head|\.community-focus/);
 });
 
 test("homepage uses a decorative mirrored wave field instead of a data chart", async () => {
   const graphic = await readFile(new URL("../app/components/HeroWaveField.tsx", import.meta.url), "utf8");
+  const css = await readFile(new URL("../app/living-voices.css", import.meta.url), "utf8");
   const packageJson = JSON.parse(await readFile(new URL("../package.json", import.meta.url), "utf8"));
   assert.equal(packageJson.dependencies["chart.js"], undefined);
   assert.match(graphic, /const lineCount = 34/);
@@ -229,6 +231,9 @@ test("homepage uses a decorative mirrored wave field instead of a data chart", a
   assert.match(graphic, /<WaveBand mirrored \/>/);
   assert.match(graphic, /preserveAspectRatio="none"/);
   assert.doesNotMatch(graphic, /canvas|chart\.js|TIME \/ ms|AMPLITUDE/);
+  assert.match(css, /animation: wave-field-breathe 8s ease-in-out infinite alternate/);
+  assert.match(css, /@keyframes wave-field-breathe/);
+  assert.match(css, /stroke: rgba\(23, 108, 86, \.42\)/);
 });
 
 test("AI route reports configuration without exposing credentials", async () => {
