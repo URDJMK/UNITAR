@@ -34,8 +34,8 @@ test("discovery is server-rendered as React without the legacy iframe", async ()
   assert.match(html, /href="\/culture\/ainu"/);
   assert.match(html, /href="\/culture\/maasai"/);
   assert.match(html, /href="\/culture\/nubian"/);
-  assert.match(html, /class="home-voice-art"/);
-  assert.match(html, /class="home-voice-wave"/);
+  assert.match(html, /class="signal-figure"/);
+  assert.match(html, /<canvas[^>]+aria-label="Illustrative voice signal/);
   assert.doesNotMatch(html, /<iframe|living-voices-demo\.html/i);
 });
 
@@ -213,9 +213,21 @@ test("mobile safeguards remain active for routed components", async () => {
   assert.match(css, /\.feature-button \{[\s\S]*grid-template-columns: 38px minmax\(0, 1fr\)/);
   assert.match(css, /\.ai-dialog \{[\s\S]*position: fixed;[\s\S]*inset: 0;[\s\S]*margin: auto;/);
   assert.match(css, /\.story-video-dialog \{[\s\S]*position: fixed;[\s\S]*margin: auto;/);
-  assert.match(css, /\.home-voice-art \{[\s\S]*repeating-radial-gradient/);
-  assert.match(css, /\.home-voice-wave span \{[\s\S]*background: #df963a/);
-  assert.match(css, /@media \(prefers-reduced-motion: reduce\)/);
+  assert.match(css, /\.signal-figure \{[\s\S]*border-radius: 34px/);
+  assert.match(css, /\.signal-canvas-wrap \{[\s\S]*height: clamp\(320px, 31vw, 460px\)/);
+  assert.match(css, /@media \(max-width: 520px\)[\s\S]*\.signal-canvas-wrap \{[\s\S]*height: clamp\(245px, 69vw, 340px\)/);
+});
+
+test("homepage signal graphic is rendered by Chart.js with scientific scales", async () => {
+  const graphic = await readFile(new URL("../app/components/VoiceSignalGraphic.tsx", import.meta.url), "utf8");
+  const packageJson = JSON.parse(await readFile(new URL("../package.json", import.meta.url), "utf8"));
+  assert.equal(packageJson.dependencies["chart.js"], "^4.5.1");
+  assert.match(graphic, /import\("chart\.js\/auto"\)/);
+  assert.match(graphic, /type: "linear"/);
+  assert.match(graphic, /text: "TIME \/ ms"/);
+  assert.match(graphic, /text: "AMPLITUDE"/);
+  assert.match(graphic, /plugins: \[acousticField\]/);
+  assert.match(graphic, /prefers-reduced-motion: reduce/);
 });
 
 test("AI route reports configuration without exposing credentials", async () => {
@@ -253,5 +265,6 @@ test("expected project assets and route files exist", async () => {
     "../app/culture/[slug]/page.tsx",
     "../app/culture/[slug]/ask/page.tsx",
     "../app/culture/[slug]/documentary/page.tsx",
+    "../app/components/VoiceSignalGraphic.tsx",
   ]) await access(new URL(path, import.meta.url));
 });
