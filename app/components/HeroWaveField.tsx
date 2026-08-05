@@ -47,7 +47,6 @@ export function HeroWaveField() {
         <WaveBand />
         <WaveBand mirrored />
       </svg>
-      <span className="hero-wave-glow" />
     </div>
   );
 }
