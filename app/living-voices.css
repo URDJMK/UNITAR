@@ -139,27 +139,26 @@
     .home-hero {
       position: relative;
       isolation: isolate;
-      min-height: clamp(680px, 78vh, 860px);
+      min-height: clamp(640px, 76vh, 790px);
       overflow: hidden;
       place-items: center;
-      padding: 78px 0 82px;
+      padding: 92px 20px 86px;
       border-bottom: 1px solid rgba(22, 34, 29, .18);
       background:
-        radial-gradient(circle at 14% 18%, rgba(189, 123, 43, .09), transparent 24rem),
-        repeating-linear-gradient(90deg, rgba(22, 34, 29, .018) 0 1px, transparent 1px 10px),
-        linear-gradient(112deg, #faf6ec 0%, var(--paper) 62%, #ebe7da 100%);
-      text-align: left;
+        radial-gradient(circle at 50% 44%, rgba(255, 253, 247, .96) 0 15%, transparent 48%),
+        linear-gradient(112deg, #faf7ef 0%, var(--paper) 56%, #eee9dd 100%);
+      text-align: center;
     }
 
     .home-hero::before {
       position: absolute;
-      z-index: -1;
-      top: 0;
-      bottom: 0;
-      left: 47%;
-      width: 1px;
-      background: rgba(22, 34, 29, .28);
+      z-index: 1;
+      inset: 0;
+      background:
+        linear-gradient(90deg, rgba(244, 241, 233, .34), transparent 16% 84%, rgba(244, 241, 233, .34)),
+        radial-gradient(ellipse at center, rgba(244, 241, 233, .93) 0 15%, rgba(244, 241, 233, .68) 27%, transparent 57%);
       content: "";
+      pointer-events: none;
     }
 
     .home-hero::after {
@@ -176,16 +175,14 @@
     .home-hero-inner {
       position: relative;
       z-index: 3;
-      display: grid;
-      width: min(1180px, calc(100% - clamp(40px, 9vw, 140px)));
-      align-items: center;
-      grid-template-columns: minmax(0, .84fr) minmax(420px, 1.16fr);
-      gap: clamp(38px, 6vw, 92px);
+      width: min(920px, 100%);
       margin: 0 auto;
     }
 
     .home-hero-copy {
+      position: relative;
       min-width: 0;
+      padding: clamp(38px, 6vw, 66px) clamp(18px, 5vw, 64px);
     }
 
     .home-hero .eyebrow {
@@ -194,166 +191,83 @@
     }
 
     .home-hero h1 {
-      width: min-content;
-      margin-bottom: 24px;
-      font-size: clamp(5.1rem, 8.5vw, 8.6rem);
-      line-height: .77;
+      margin-bottom: 26px;
+      font-size: clamp(5.4rem, 10vw, 9rem);
+      line-height: .84;
       text-wrap: balance;
     }
 
     .home-hero h1 span {
-      display: block;
+      display: inline;
+    }
+
+    .home-hero h1 span + span {
+      color: var(--green);
+      font-style: italic;
     }
 
     .home-hero .hero-copy {
       max-width: 570px;
-      margin: 0 0 32px;
+      margin: 0 auto 32px;
       color: var(--ink);
       font-size: clamp(1.05rem, 1.6vw, 1.32rem);
     }
 
     .home-hero .search {
       width: min(560px, 100%);
-      margin: 0;
+      margin: 0 auto;
       border-color: rgba(22, 34, 29, .26);
-      background: rgba(255, 253, 247, .9);
+      background: rgba(255, 253, 247, .94);
       box-shadow: 0 22px 60px rgba(17, 33, 27, .15);
       backdrop-filter: blur(14px);
     }
 
-    .signal-figure {
-      position: relative;
-      min-width: 0;
-      margin: 0;
-      padding: 18px 20px 16px;
-      overflow: hidden;
-      border: 1px solid rgba(227, 160, 76, .55);
-      border-radius: 34px;
-      background:
-        radial-gradient(circle at 88% 50%, rgba(33, 112, 89, .9), transparent 45%),
-        linear-gradient(145deg, #0f5443 0%, #0a4136 72%, #073329 100%);
-      color: #f7ead4;
-      box-shadow:
-        0 30px 80px rgba(9, 45, 36, .25),
-        inset 0 1px rgba(255, 255, 255, .09);
-    }
-
-    .signal-figure::before,
-    .signal-figure::after {
+    .hero-wave-field {
       position: absolute;
-      width: 34px;
-      height: 34px;
-      border-color: rgba(227, 160, 76, .72);
-      content: "";
+      z-index: 0;
+      inset: 0;
+      overflow: hidden;
       pointer-events: none;
     }
 
-    .signal-figure::before {
-      top: 10px;
-      left: 10px;
-      border-top: 1px solid;
-      border-left: 1px solid;
-      border-radius: 12px 0 0;
+    .hero-wave-field svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
     }
 
-    .signal-figure::after {
-      right: 10px;
-      bottom: 10px;
-      border-right: 1px solid;
-      border-bottom: 1px solid;
-      border-radius: 0 0 12px;
+    .hero-wave-line {
+      fill: none;
+      stroke: rgba(23, 108, 86, .32);
+      stroke-dasharray: 1;
+      stroke-dashoffset: 1;
+      stroke-linecap: round;
+      stroke-width: 1.15;
+      vector-effect: non-scaling-stroke;
+      animation: wave-line-reveal 1.35s cubic-bezier(.22, .75, .2, 1) forwards;
     }
 
-    .signal-figure-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      padding: 0 7px 10px;
-      border-bottom: 1px solid rgba(247, 234, 212, .18);
-      color: rgba(247, 234, 212, .7);
-      font-family: var(--font-geist-mono), ui-monospace, monospace;
-      font-size: .61rem;
-      letter-spacing: .12em;
-      text-transform: uppercase;
+    .hero-wave-line-accent {
+      stroke: rgba(189, 123, 43, .54);
+      stroke-width: 1.35;
     }
 
-    .signal-figure-head span {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-    }
-
-    .signal-figure-head i {
-      width: 7px;
-      height: 7px;
+    .hero-wave-glow {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: min(34vw, 500px);
+      aspect-ratio: 1;
       border-radius: 50%;
-      background: #e3a04c;
-      box-shadow: 0 0 0 4px rgba(227, 160, 76, .13);
+      background: rgba(189, 123, 43, .08);
+      filter: blur(54px);
+      transform: translate(-50%, -50%);
     }
 
-    .signal-canvas-wrap {
-      position: relative;
-      height: clamp(320px, 31vw, 460px);
-      padding-top: 8px;
-    }
-
-    .signal-canvas-wrap canvas {
-      width: 100% !important;
-      height: 100% !important;
-    }
-
-    .signal-figure figcaption {
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      gap: 18px;
-      padding: 12px 7px 15px;
-      border-top: 1px solid rgba(247, 234, 212, .18);
-    }
-
-    .signal-figure figcaption span {
-      font-family: Georgia, "Times New Roman", serif;
-      font-size: clamp(1.25rem, 2vw, 1.7rem);
-      line-height: 1.05;
-    }
-
-    .signal-figure figcaption small {
-      color: rgba(247, 234, 212, .62);
-      font-family: var(--font-geist-mono), ui-monospace, monospace;
-      font-size: .58rem;
-      letter-spacing: .08em;
-      text-align: right;
-      text-transform: uppercase;
-    }
-
-    .signal-metrics {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      border-top: 1px solid rgba(227, 160, 76, .38);
-    }
-
-    .signal-metrics span {
-      min-width: 0;
-      padding: 11px 8px 2px;
-      color: rgba(247, 234, 212, .56);
-      font-family: var(--font-geist-mono), ui-monospace, monospace;
-      font-size: .53rem;
-      letter-spacing: .05em;
-      line-height: 1.35;
-      text-transform: uppercase;
-    }
-
-    .signal-metrics span + span {
-      border-left: 1px solid rgba(247, 234, 212, .14);
-    }
-
-    .signal-metrics strong {
-      display: block;
-      margin-bottom: 2px;
-      color: #f7ead4;
-      font-size: .75rem;
-      font-weight: 600;
+    @keyframes wave-line-reveal {
+      to {
+        stroke-dashoffset: 0;
+      }
     }
 
     .eyebrow {
@@ -1906,38 +1820,27 @@
 
       .home-hero {
         min-height: auto;
-        padding: 64px 0 72px;
-        padding-inline: 0;
-      }
-
-      .home-hero::before {
-        left: 78%;
+        padding: 72px 24px 76px;
       }
 
       .home-hero-inner {
-        width: calc(100% - 48px);
-        grid-template-columns: minmax(0, 1fr);
-        gap: 46px;
+        width: min(760px, 100%);
       }
 
       .home-hero-copy {
-        max-width: 650px;
+        max-width: none;
       }
 
       .home-hero h1 {
-        font-size: clamp(5.3rem, 16vw, 7.2rem);
+        font-size: clamp(4.7rem, 14vw, 7.2rem);
       }
 
       .home-hero .search {
         width: min(620px, 100%);
       }
 
-      .signal-figure {
-        width: 100%;
-      }
-
-      .signal-canvas-wrap {
-        height: clamp(310px, 54vw, 430px);
+      .hero-wave-field {
+        opacity: .88;
       }
     }
 
@@ -1981,8 +1884,8 @@
       }
 
       .home-hero {
-        min-height: auto;
-        padding: 48px 0 54px;
+        min-height: 610px;
+        padding: 52px 12px 58px;
       }
 
       .home-hero::after {
@@ -1990,8 +1893,7 @@
       }
 
       .home-hero-inner {
-        width: calc(100% - 24px);
-        gap: 32px;
+        width: 100%;
       }
 
       .hero h1 {
@@ -2001,8 +1903,12 @@
 
       .home-hero h1 {
         margin-bottom: 24px;
-        font-size: clamp(4rem, 20vw, 5.6rem);
-        line-height: .8;
+        font-size: clamp(4rem, 20vw, 5.4rem);
+        line-height: .82;
+      }
+
+      .home-hero h1 span {
+        display: block;
       }
 
       .home-hero .eyebrow {
@@ -2012,51 +1918,24 @@
 
       .home-hero .hero-copy {
         max-width: 30ch;
-        margin: 0 0 26px;
+        margin: 0 auto 26px;
       }
 
-      .signal-figure {
-        padding: 12px 12px 11px;
-        border-radius: 24px;
+      .home-hero-copy {
+        padding: 38px 8px 42px;
       }
 
-      .signal-figure-head {
-        gap: 8px;
-        padding: 1px 4px 9px;
-        font-size: .5rem;
-        letter-spacing: .08em;
+      .hero-wave-field {
+        inset: 16px -34% 12px;
+        opacity: .72;
       }
 
-      .signal-figure-head span:last-child {
-        text-align: right;
+      .hero-wave-line {
+        stroke-width: .9;
       }
 
-      .signal-canvas-wrap {
-        height: clamp(245px, 69vw, 340px);
-      }
-
-      .signal-figure figcaption {
-        align-items: flex-start;
-        flex-direction: column;
-        gap: 6px;
-        padding: 11px 4px 12px;
-      }
-
-      .signal-figure figcaption span {
-        font-size: 1.3rem;
-      }
-
-      .signal-figure figcaption small {
-        text-align: left;
-      }
-
-      .signal-metrics span {
-        padding: 9px 5px 1px;
-        font-size: .45rem;
-      }
-
-      .signal-metrics strong {
-        font-size: .66rem;
+      .hero-wave-line-accent {
+        stroke-width: 1.1;
       }
 
       .hero-copy {
@@ -2475,12 +2354,8 @@
         font-size: clamp(3.7rem, 20vw, 4.4rem);
       }
 
-      .signal-canvas-wrap {
-        height: 220px;
-      }
-
-      .signal-figure-head span:last-child {
-        display: none;
+      .hero-wave-field {
+        inset-inline: -48%;
       }
 
       .culture-card {
@@ -2554,6 +2429,11 @@
     }
 
     @media (prefers-reduced-motion: reduce) {
+      .hero-wave-line {
+        animation: none;
+        stroke-dashoffset: 0;
+      }
+
 
       *,
       *::before,

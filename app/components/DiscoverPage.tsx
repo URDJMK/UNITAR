@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { communities } from "../data/communities";
 import { clearAIResponseCache } from "../lib/ai-cache";
-import { VoiceSignalGraphic } from "./VoiceSignalGraphic";
+import { HeroWaveField } from "./HeroWaveField";
 
 export function DiscoverPage() {
   const router = useRouter();
@@ -33,6 +33,7 @@ export function DiscoverPage() {
   return (
     <main className="route-main page-enter">
       <section className="hero home-hero" aria-labelledby="home-title">
+        <HeroWaveField />
         <div className="hero-inner home-hero-inner">
           <div className="home-hero-copy">
             <div className="eyebrow">Community-led cultural heritage</div>
@@ -49,7 +50,6 @@ export function DiscoverPage() {
               <button type="submit">Search</button>
             </form>
           </div>
-          <VoiceSignalGraphic />
         </div>
       </section>
 
