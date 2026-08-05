@@ -213,9 +213,9 @@
       width: min(560px, 100%);
       margin: 0 auto;
       border-color: rgba(22, 34, 29, .26);
-      background: rgba(255, 253, 247, .94);
-      box-shadow: 0 22px 60px rgba(17, 33, 27, .15);
-      backdrop-filter: blur(14px);
+      background: var(--card);
+      box-shadow: none;
+      backdrop-filter: none;
     }
 
     .hero-wave-field {

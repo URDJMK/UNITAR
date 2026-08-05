@@ -236,6 +236,7 @@ test("homepage uses a decorative mirrored wave field instead of a data chart", a
   assert.match(css, /stroke: rgba\(23, 108, 86, \.42\)/);
   assert.doesNotMatch(graphic, /hero-wave-glow/);
   assert.doesNotMatch(css, /radial-gradient\(circle at 50% 44%|radial-gradient\(ellipse at center|\.hero-wave-glow/);
+  assert.match(css, /\.home-hero \.search \{[\s\S]*?box-shadow: none;[\s\S]*?backdrop-filter: none;/);
 });
 
 test("AI route reports configuration without exposing credentials", async () => {
