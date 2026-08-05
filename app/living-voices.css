@@ -445,6 +445,67 @@
       font-size: clamp(2rem, 4vw, 3.4rem);
     }
 
+    .community-index-section {
+      padding-top: 68px;
+    }
+
+    .community-index-section .section-head {
+      align-items: end;
+      margin-bottom: 18px;
+      padding-bottom: 22px;
+      border-bottom: 1px solid rgba(22, 34, 29, .24);
+    }
+
+    .community-index-section .section-head > div:first-child {
+      max-width: 690px;
+    }
+
+    .community-index-section .section-head h2 {
+      margin: 5px 0 7px;
+      font-size: clamp(2.8rem, 5vw, 4.7rem);
+    }
+
+    .community-index-section .section-head .muted {
+      max-width: 60ch;
+      margin: 0;
+    }
+
+    .archive-status {
+      display: grid;
+      min-width: 184px;
+      align-items: center;
+      grid-template-columns: auto 1fr;
+      gap: 12px;
+      padding: 10px 14px;
+      border: 1px solid rgba(22, 34, 29, .22);
+      border-radius: 12px;
+      background: rgba(255, 253, 247, .64);
+      font-family: var(--font-geist-mono), ui-monospace, monospace;
+      text-transform: uppercase;
+    }
+
+    .archive-status strong {
+      color: var(--green);
+      font-size: 1.75rem;
+      font-weight: 500;
+      line-height: 1;
+    }
+
+    .archive-status span {
+      color: var(--ink);
+      font-size: .58rem;
+      letter-spacing: .08em;
+      line-height: 1.25;
+    }
+
+    .archive-status small {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: .5rem;
+      letter-spacing: .06em;
+    }
+
     .muted {
       color: var(--muted);
     }
@@ -452,42 +513,141 @@
     .culture-grid {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 14px;
+      gap: 12px;
     }
 
     .culture-card {
-      min-height: 172px;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      justify-content: space-between;
-      padding: 22px;
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      background: var(--card);
+      position: relative;
+      isolation: isolate;
+      min-height: 230px;
+      display: grid;
+      overflow: hidden;
+      grid-template-rows: auto 1fr auto;
+      padding: 17px 18px 16px;
+      border: 1px solid rgba(22, 34, 29, .2);
+      border-radius: 14px;
+      background:
+        linear-gradient(90deg, transparent 0 95%, rgba(23, 108, 86, .035) 95%),
+        var(--card);
       color: var(--ink);
       text-align: left;
-      transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+      transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease, background-color 180ms ease;
+    }
+
+    .culture-card::before {
+      position: absolute;
+      z-index: -1;
+      inset: 0;
+      background:
+        linear-gradient(rgba(22, 34, 29, .035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(22, 34, 29, .035) 1px, transparent 1px);
+      background-size: 28px 28px;
+      content: "";
+      opacity: .38;
+      mask-image: linear-gradient(to bottom left, black, transparent 64%);
+    }
+
+    .culture-card::after {
+      position: absolute;
+      top: 0;
+      right: 18px;
+      left: 18px;
+      height: 2px;
+      background: linear-gradient(90deg, var(--gold) 0 42px, rgba(23, 108, 86, .28) 42px 100%);
+      content: "";
     }
 
     .culture-card:hover {
-      transform: translateY(-3px);
-      border-color: #aebbb4;
-      box-shadow: 0 16px 35px rgba(17, 33, 27, 0.09);
+      transform: translateY(-4px);
+      border-color: rgba(23, 108, 86, .46);
+      background-color: #fffef9;
+      box-shadow: 0 18px 44px rgba(17, 33, 27, .11);
+    }
+
+    .culture-card:focus-visible {
+      outline: 3px solid rgba(23, 108, 86, .35);
+      outline-offset: 3px;
+    }
+
+    .community-card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding-top: 2px;
+    }
+
+    .community-index {
+      color: var(--green);
+      font-family: var(--font-geist-mono), ui-monospace, monospace;
+      font-size: .63rem;
+      font-weight: 650;
+      letter-spacing: .11em;
     }
 
     .culture-symbol {
-      font-size: 1.8rem;
+      display: grid;
+      width: 36px;
+      height: 36px;
+      place-items: center;
+      border: 1px solid rgba(23, 108, 86, .28);
+      border-radius: 50%;
+      background: rgba(220, 236, 228, .58);
+      color: var(--green);
+      font-size: 1.1rem;
+      transition: transform 180ms ease, background-color 180ms ease;
+    }
+
+    .culture-card:hover .culture-symbol {
+      background: var(--green-soft);
+      transform: rotate(8deg) scale(1.05);
+    }
+
+    .community-card-body {
+      display: flex;
+      min-width: 0;
+      align-self: end;
+      flex-direction: column;
+      padding: 28px 0 16px;
     }
 
     .culture-name {
       font-family: Georgia, serif;
-      font-size: 1.55rem;
+      font-size: clamp(1.55rem, 2vw, 1.9rem);
+      line-height: 1.02;
     }
 
     .culture-meta {
+      margin-top: 9px;
       color: var(--muted);
-      font-size: 0.88rem;
+      font-family: var(--font-geist-mono), ui-monospace, monospace;
+      font-size: .61rem;
+      letter-spacing: .07em;
+      line-height: 1.35;
+      text-transform: uppercase;
+    }
+
+    .community-focus {
+      display: -webkit-box;
+      margin-top: 7px;
+      overflow: hidden;
+      color: #45524c;
+      font-size: .82rem;
+      line-height: 1.38;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+    }
+
+    .community-open {
+      justify-self: end;
+      color: var(--gold);
+      font-family: var(--font-geist-mono), ui-monospace, monospace;
+      font-size: 1rem;
+      transition: transform 180ms ease;
+    }
+
+    .culture-card:hover .community-open {
+      transform: translate(2px, -2px);
     }
 
     .empty {
@@ -1926,36 +2086,103 @@
         margin: 0;
       }
 
+      .community-index-section {
+        padding-top: 42px;
+      }
+
+      .community-index-section .section-head {
+        align-items: stretch;
+        gap: 16px;
+        margin-bottom: 12px;
+        padding-bottom: 16px;
+      }
+
+      .community-index-section .section-head h2 {
+        font-size: 2.7rem;
+      }
+
+      .archive-status {
+        width: 100%;
+        min-width: 0;
+        grid-template-columns: 44px 1fr;
+        padding: 9px 11px;
+      }
+
+      .archive-status strong {
+        font-size: 1.45rem;
+      }
+
       .culture-grid,
       .feature-grid {
         grid-template-columns: 1fr;
       }
 
       .culture-grid {
-        gap: 10px;
+        gap: 8px;
       }
 
       .culture-card {
-        min-height: 104px;
-        align-items: center;
-        justify-content: flex-start;
-        flex-direction: row;
-        gap: 16px;
-        padding: 17px 18px;
+        min-height: 126px;
+        align-items: stretch;
+        grid-template-columns: 48px minmax(0, 1fr) 24px;
+        grid-template-rows: minmax(0, 1fr);
+        gap: 13px;
+        padding: 13px 13px 12px;
+        border-radius: 12px;
       }
 
-      .culture-card > span:last-child {
-        min-width: 0;
+      .culture-card::after {
+        right: 13px;
+        left: 13px;
+      }
+
+      .community-card-head {
+        align-items: center;
+        grid-column: 1;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 5px 10px 3px 0;
+        border-right: 1px solid rgba(22, 34, 29, .12);
+      }
+
+      .community-index {
+        font-size: .52rem;
+        letter-spacing: .04em;
+        white-space: nowrap;
       }
 
       .culture-symbol {
-        flex: 0 0 34px;
-        font-size: 1.6rem;
-        text-align: center;
+        width: 33px;
+        height: 33px;
+        font-size: 1rem;
+      }
+
+      .community-card-body {
+        align-self: center;
+        grid-column: 2;
+        padding: 4px 0;
       }
 
       .culture-name {
         font-size: 1.4rem;
+      }
+
+      .culture-meta {
+        margin-top: 6px;
+        font-size: .55rem;
+      }
+
+      .community-focus {
+        margin-top: 5px;
+        font-size: .75rem;
+        -webkit-line-clamp: 1;
+      }
+
+      .community-open {
+        align-self: center;
+        grid-column: 3;
+        justify-self: center;
       }
 
       .profile-hero {
@@ -2253,6 +2480,14 @@
       }
 
       .signal-figure-head span:last-child {
+        display: none;
+      }
+
+      .culture-card {
+        min-height: 112px;
+      }
+
+      .community-focus {
         display: none;
       }
 

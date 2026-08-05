@@ -30,12 +30,15 @@ test("discovery is server-rendered as React without the legacy iframe", async ()
   const html = await response.text();
   assert.match(html, /<title>Living Voices — A Conversation with Humanity<\/title>/i);
   assert.match(html, /Not a museum of the past\. A conversation with humanity\./);
-  assert.match(html, /50 communities/);
+  assert.match(html, /Field index[\s\S]*50[\s\S]*communities/);
   assert.match(html, /href="\/culture\/ainu"/);
   assert.match(html, /href="\/culture\/maasai"/);
   assert.match(html, /href="\/culture\/nubian"/);
   assert.match(html, /class="signal-figure"/);
   assert.match(html, /<canvas[^>]+aria-label="Illustrative voice signal/);
+  assert.match(html, /class="archive-status"/);
+  assert.match(html, /class="community-index"/);
+  assert.match(html, /Complete index/);
   assert.doesNotMatch(html, /<iframe|living-voices-demo\.html/i);
 });
 
@@ -209,13 +212,15 @@ test("mobile safeguards remain active for routed components", async () => {
   assert.match(css, /@media \(max-width: 360px\)/);
   assert.match(css, /@media \(max-height: 500px\) and \(orientation: landscape\)/);
   assert.match(css, /max-height: calc\(100dvh - 16px\)/);
-  assert.match(css, /\.culture-card \{[\s\S]*min-height: 104px/);
+  assert.match(css, /@media \(max-width: 520px\)[\s\S]*\.culture-card \{[\s\S]*min-height: 126px/);
   assert.match(css, /\.feature-button \{[\s\S]*grid-template-columns: 38px minmax\(0, 1fr\)/);
   assert.match(css, /\.ai-dialog \{[\s\S]*position: fixed;[\s\S]*inset: 0;[\s\S]*margin: auto;/);
   assert.match(css, /\.story-video-dialog \{[\s\S]*position: fixed;[\s\S]*margin: auto;/);
   assert.match(css, /\.signal-figure \{[\s\S]*border-radius: 34px/);
   assert.match(css, /\.signal-canvas-wrap \{[\s\S]*height: clamp\(320px, 31vw, 460px\)/);
   assert.match(css, /@media \(max-width: 520px\)[\s\S]*\.signal-canvas-wrap \{[\s\S]*height: clamp\(245px, 69vw, 340px\)/);
+  assert.match(css, /\.archive-status \{[\s\S]*font-family: var\(--font-geist-mono\)/);
+  assert.match(css, /@media \(max-width: 520px\)[\s\S]*\.culture-card \{[\s\S]*grid-template-columns: 48px minmax\(0, 1fr\) 24px/);
 });
 
 test("homepage signal graphic is rendered by Chart.js with scientific scales", async () => {
